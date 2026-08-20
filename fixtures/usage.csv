@@ -1,0 +1,15 @@
+account_id,month,seats_active,logins,tickets_open
+hooli,2026-01,12,40,0
+hooli,2026-02,12,45,1
+acme,2026-01,10,5,0
+acme,2026-02,8,5,0
+acme,2026-03,,5,0
+globex,2026-01,4,5,0
+globex,2026-02,10,5,0
+globex,2026-03,6,5,0
+vandelay,2026-01,10,5,0
+vandelay,2026-02,6,5,0
+vandelay,2026-03,5,5,0
+initech,2026-01,6,4,0
+initech,2026-02,6,2,3
+umbrella,2026-02,3,10,0
