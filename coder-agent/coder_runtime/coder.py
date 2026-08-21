@@ -12,27 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""The coding loop, run by the Antigravity SDK.
+"""The coding loop: an Antigravity SDK agent, run as an ADK agent.
 
-Agent Platform is where an agent lives; the SDK is what an agent can do. The
-ADK agent in ``agent.py`` is the deployed surface -- it is what Agent Runtime
-knows how to invoke. The actual read-edit-run-test loop is the SDK's, whose
-built-in tools (``VIEW_FILE``, ``EDIT_FILE``, ``CREATE_FILE``, ``RUN_COMMAND``,
-``LIST_DIR``) are the coding harness this agent would otherwise hand-roll.
+Agent Platform is where an agent lives; the SDK is what an agent can do.
+``AntigravityAgent`` is the seam between them -- it wraps a
+``google.antigravity.Agent`` as a native ADK ``BaseAgent`` and turns the SDK's
+trajectory into ADK events, which the session service then persists. So the
+reasoning is recorded by the platform rather than by a string this module
+assembles.
 
-Two measured facts shape the configuration below, and neither is guessable:
+Three measured facts shape what follows, and none is guessable:
 
-1. ``LocalAgentConfig``'s default policy is ``confirm_run_command``, and with
-   no handler it **denies ``run_command`` outright**. Unattended, that turns
-   every test run into a denial -- and a model that cannot run the tests will
-   still cheerfully report that they pass. ``allow_all()`` is therefore
-   mandatory here, not a convenience.
+1. ``LocalAgentConfig``'s default policy is ``confirm_run_command``, and with no
+   handler it **denies ``run_command`` outright**. Unattended that means the
+   agent cannot run the tests -- and it will report them as passing anyway.
+   ``allow_all()`` is required, not a convenience.
 2. ``workspace_only()`` restricts the **file tools only** -- its own docstring
-   says "Other tools are unaffected". Measured: with ``run_command`` allowed,
-   the agent was refused ``write_to_file`` outside the tree and then wrote the
-   same path through the shell instead. It is a guardrail against a stray edit,
-   **not** a sandbox. The disposable container is the only real boundary, and
-   neither 0.1.12 nor 0.1.13 offers a way to confine ``run_command`` to a path.
+   says "Other tools are unaffected". Measured: refused ``write_to_file``
+   outside the tree, then wrote the same path through the shell. It is a
+   guardrail against a stray edit, not a sandbox. The disposable container is
+   the boundary.
+3. ``AntigravityAgent`` is **root-only** and requires ``save_dir``. Its resume
+   never actually engages with SDK 0.1.13: it is gated on
+   ``has_trajectory()`` finding ``traj-<conversation_id>`` in ``save_dir``, and
+   0.1.13 keeps conversations in a ``.db`` there instead -- only a ``.resume``
+   sidecar is written, never the file being looked for. So every turn starts a
+   fresh SDK conversation. Measured, twice in one container.
+
+**Nothing here resumes, and the design does not need it to.** The branch is the
+durable record, which is why the agent is told to push after every iteration
+rather than at the end.
 """
 
 from __future__ import annotations
@@ -46,6 +55,12 @@ MODEL = os.environ.get("CODER_MODEL", "gemini-3.6-flash")
 # The whole Gemini 3 family answers only from `global`; a regional endpoint
 # returns a 404 that names the model and reads like a typo.
 MODEL_LOCATION = os.environ.get("MODEL_LOCATION", "global")
+
+APP_NAME = "coder"
+AGENT_NAME = "coder"
+# Outside the workspace root on purpose: start_work wipes that directory, and
+# this is where the resumable trajectory lives.
+SAVE_DIR = "/tmp/agentic-sdlc-trajectories"
 
 TASK = """\
 You are finishing an implementation in this repository, against a contract you \
@@ -68,18 +83,39 @@ Never report tests as passing unless you ran them and saw them pass.
 """
 
 
+def _session_service(emit):
+    """The coding run's sessions are in-memory, and that is forced.
+
+    Agent Platform Sessions is reachable only through
+    ``VertexAiSessionService``, whose ``__init__`` does ``import vertexai`` --
+    that is ``google-cloud-aiplatform``, which caps protobuf below 7.0.0 and so
+    cannot exist in this environment. The import is inside the constructor, not
+    at the top of the module, so it does not show up in the module's imports
+    and fails only when the service is built.
+
+    Durability is not lost, it just lives elsewhere: the branch holds the code,
+    and the parent -- which does have aiplatform -- is itself an ADK agent in an
+    Agent Platform Session, so the report of this run is persisted there as its
+    tool result. What the in-memory service costs is per-step events in that
+    session, and cross-instance replay of the SDK trajectory.
+    """
+    from google.adk.sessions.in_memory_session_service import InMemorySessionService
+
+    return InMemorySessionService(), False
+
+
 async def run(
     repo: str,
     sha: str,
     branch: str,
-    budget_seconds: float = 540.0,
+    budget_seconds: float = 500.0,
+    user_id: str = "coder-agent",
     emit=lambda kind, **f: None,
 ) -> None:
-    """Prepare the workspace and hand it to the Antigravity coding agent.
+    """Prepare the workspace and run the coding agent over it.
 
-    Streams progress through ``emit`` rather than returning it: the parent
-    relays events as they happen, and a run that is cut off mid-flight has
-    still reported everything up to that point.
+    Streams progress through ``emit`` rather than returning it, so a run cut off
+    at the invocation cap has still reported everything up to that point.
     """
     workspace.set_budget(budget_seconds)
     tree, note = await workspace.prepare(repo, sha, branch)
@@ -88,21 +124,25 @@ async def run(
         return
     emit("note", text=note)
 
-    from google.antigravity import Agent, CapabilitiesConfig, LocalAgentConfig
+    from google.adk.apps import App
+    from google.adk.labs.antigravity import AntigravityAgent
+    from google.adk.runners import Runner
+    from google.antigravity import CapabilitiesConfig, LocalAgentConfig
     from google.antigravity.hooks import policy
+    from google.genai import types
+
+    os.makedirs(SAVE_DIR, exist_ok=True)
 
     config = LocalAgentConfig(
         workspaces=[tree],
         capabilities=CapabilitiesConfig(),
-        # Without allow_all the agent cannot run the tests at all. workspace_only
-        # keeps the file tools pointed at the checkout; it does not fence the
-        # shell, so the container is what actually bounds this agent.
         policies=[policy.allow_all(), *policy.workspace_only([tree])],
         tools=[workspace.commit_and_push, workspace.time_remaining],
         vertex=True,
         project=os.environ["GOOGLE_CLOUD_PROJECT"],
         location=MODEL_LOCATION,
         model=MODEL,
+        save_dir=SAVE_DIR,
         system_instructions=(
             "You are a careful engineer working alone against a deadline. You "
             "verify by running things, never by reasoning about what would "
@@ -110,14 +150,54 @@ async def run(
         ),
     )
 
+    service, durable = _session_service(emit)
+    runner = Runner(
+        app=App(root_agent=AntigravityAgent(name=AGENT_NAME, config=config), name=APP_NAME),
+        session_service=service,
+    )
+
+    # One session per repository and branch, named rather than generated, so a
+    # second dispatch of the same work continues the same conversation instead
+    # of opening a new one beside it.
+    session_id = f"coder-{workspace.slug(repo, branch)}"
+    session = await service.get_session(
+        app_name=APP_NAME, user_id=user_id, session_id=session_id
+    )
+    resumed = session is not None
+    if session is None:
+        session = await service.create_session(
+            app_name=APP_NAME, user_id=user_id, session_id=session_id
+        )
+    # Reported rather than assumed: with SDK 0.1.13 this is always a fresh
+    # conversation (see the module docstring), and a claim of resumption that
+    # never happens is worse than no claim.
+    replayed = os.path.exists(os.path.join(SAVE_DIR, f"traj-{session_id}_{AGENT_NAME}"))
+    emit(
+        "note",
+        text=(
+            f"session {session_id} ({'resumed' if resumed else 'new'}); "
+            f"SDK conversation {'replayed' if replayed else 'fresh'}"
+        ),
+    )
+
     started = time.monotonic()
     calls = 0
-    async with Agent(config) as agent:
-        response = await agent.chat(TASK)
-        async for call in response.tool_calls:
-            calls += 1
-            emit("tool", name=call.name, at=round(time.monotonic() - started, 1))
-        final = await response.text()
+    final = ""
+    async for event in runner.run_async(
+        user_id=user_id,
+        session_id=session.id,
+        new_message=types.Content(role="user", parts=[types.Part(text=TASK)]),
+    ):
+        for part in (event.content.parts if event.content and event.content.parts else []):
+            if getattr(part, "function_call", None):
+                calls += 1
+                emit(
+                    "tool",
+                    name=part.function_call.name,
+                    at=round(time.monotonic() - started, 1),
+                )
+            elif getattr(part, "text", None):
+                final = part.text
 
     emit(
         "final",
@@ -125,4 +205,6 @@ async def run(
         tool_calls=calls,
         elapsed=round(time.monotonic() - started, 1),
         budget_left=round(workspace.seconds_left()),
+        session_id=session_id,
+        durable_session=durable,
     )

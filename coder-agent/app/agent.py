@@ -16,6 +16,7 @@
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.models import Gemini
+from google.adk.tools import ToolContext
 from google.genai import types
 
 
@@ -84,7 +85,9 @@ def probe_image() -> str:
     return " | ".join(out)
 
 
-async def start_coding_run(repo: str, sha: str, branch: str) -> str:
+async def start_coding_run(
+    repo: str, sha: str, branch: str, tool_context: ToolContext = None
+) -> str:
     """Runs the coding agent against a repository, at an exact commit.
 
     Call this once per dispatch, including a dispatch that resumes earlier
@@ -102,7 +105,13 @@ async def start_coding_run(repo: str, sha: str, branch: str) -> str:
     """
     from app import coder_client
 
-    return await coder_client.run(repo=repo, sha=sha, branch=branch)
+    # Attribution only -- the coding run gets its own session, named after the
+    # repository and branch rather than after this conversation.
+    user_id = getattr(
+        getattr(getattr(tool_context, "_invocation_context", None), "session", None),
+        "user_id", None,
+    ) or "coder-agent"
+    return await coder_client.run(repo=repo, sha=sha, branch=branch, user_id=user_id)
 
 
 root_agent = Agent(

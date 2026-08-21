@@ -6,13 +6,19 @@ requires-python = ">=3.12,<3.13"
 
 # This environment exists because google-antigravity needs protobuf >= 7.35 at
 # runtime, while google-cloud-aiplatform -- which the ADK serving surface needs
-# for its reasoning-engine routes -- caps protobuf below 7.0.0. The two cannot
-# share a venv, so they get one each and talk over a pipe.
+# for the reasoning-engine routes :streamQuery dispatches to -- caps protobuf
+# below 7.0.0. The two cannot share a venv, so they get one each.
 #
-# Nothing from the ADK stack belongs in here. Adding it back is what would
-# reintroduce the conflict, silently, at image build time.
+# ADK itself is fine at protobuf 7: the cap comes from google-cloud-aiplatform
+# and from a2a-sdk >= 1.1, neither of which belongs in here. That is what lets
+# this environment run AntigravityAgent against Agent Platform Sessions while
+# the serving environment keeps aiplatform. Adding either package back here
+# reintroduces the conflict, and it reappears as a VersionError at import.
 dependencies = [
-    "google-antigravity==0.1.12",
+    "google-adk[antigravity]>=2.7.1",
+    # 0.1.12 declares protobuf>=4.25 but ships gencode 7.35.0, so it resolves
+    # green and dies at import. 0.1.13 is the first release whose pin is true.
+    "google-antigravity>=0.1.13",
     "google-cloud-secret-manager>=2.20.0",
     "protobuf>=7.35",
 ]

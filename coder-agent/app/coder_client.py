@@ -57,7 +57,7 @@ def _child_env() -> dict[str, str]:
     return env
 
 
-async def run(repo: str, sha: str, branch: str) -> str:
+async def run(repo: str, sha: str, branch: str, user_id: str = "coder-agent") -> str:
     """Run one coding job and return a report of what happened."""
     if not os.path.exists(RUNTIME_PYTHON):
         return (
@@ -66,9 +66,10 @@ async def run(repo: str, sha: str, branch: str) -> str:
             "produces exactly this."
         )
 
-    job = json.dumps(
-        {"repo": repo, "sha": sha, "branch": branch, "budget_seconds": BUDGET_SECONDS}
-    ).encode()
+    job = json.dumps({
+        "repo": repo, "sha": sha, "branch": branch,
+        "budget_seconds": BUDGET_SECONDS, "user_id": user_id,
+    }).encode()
 
     proc = await asyncio.create_subprocess_exec(
         RUNTIME_PYTHON, RUNTIME_ENTRY,
@@ -110,7 +111,9 @@ async def run(repo: str, sha: str, branch: str) -> str:
                 final = str(event.get("text", ""))
                 notes.append(
                     f"{event.get('tool_calls')} tool calls in "
-                    f"{event.get('elapsed')}s, {event.get('budget_left')}s of budget left"
+                    f"{event.get('elapsed')}s, {event.get('budget_left')}s of budget left; "
+                    f"trajectory recorded in session {event.get('session_id')} "
+                    f"({'Agent Platform Sessions' if event.get('durable_session') else 'in-memory'})"
                 )
             elif kind == "error":
                 errors.append(str(event.get("text", "")))

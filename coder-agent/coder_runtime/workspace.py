@@ -59,7 +59,9 @@ def set_budget(seconds: float) -> None:
     _budget_seconds = seconds
 
 
-def _slug(*parts: str) -> str:
+def slug(*parts: str) -> str:
+    """Stable short id for a repo+branch pair. Names the workspace and the session,
+    so a second dispatch of the same work lands on both."""
     return hashlib.sha1("/".join(parts).encode()).hexdigest()[:12]
 
 
@@ -113,7 +115,7 @@ async def prepare(repo: str, sha: str, branch: str) -> tuple[str | None, str]:
 
     Returns (tree, message). ``tree`` is None when the message is a failure.
     """
-    root = f"/tmp/agentic-sdlc-{_slug(repo, branch)}"
+    root = f"/tmp/agentic-sdlc-{slug(repo, branch)}"
     shutil.rmtree(root, ignore_errors=True)
     os.makedirs(root, mode=0o700, exist_ok=True)
 
