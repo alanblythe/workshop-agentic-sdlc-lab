@@ -302,8 +302,10 @@ the wrong thing.
 uv run pytest -q
 ```
 
-They should **fail**, and fail for the right reason: there is no implementation
-yet. A test that passes now is testing nothing.
+You get errors, not failures: `ModuleNotFoundError: No module named 'usage'`.
+That is the right result. The contract names a module nobody has written yet,
+so the tests cannot be imported, let alone pass, and collection stops before
+the starter tests run. A test that passes now is testing nothing.
 
 ## Check the deploy landed
 
