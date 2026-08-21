@@ -1,0 +1,283 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>The agentic SDLC lab</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14" ga4id=""></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  codelab-ga4id=""
+                  id="agentic-sdlc-lab"
+                  title="The agentic SDLC lab"
+                  environment="web"
+                  feedback-link="https://github.com/alanblythe/workshop-agentic-sdlc/issues">
+    
+      <google-codelab-step label="Before you begin" duration="3">
+        <p>You are going to take a request written the way requests actually arrive — prose, from a stakeholder, with the important parts unsaid — and get working code out of the other end. A coding agent writes the code. You never do.</p>
+<p>The interesting part is not the agent. It is what you have to make true before an agent can be useful: a specification precise enough that two parties could build from it independently and their code would fit.</p>
+<h2 class="checklist" is-upgraded>What you&#39;ll learn</h2>
+<ul class="checklist">
+<li>How to interrogate a specification until the ambiguity is gone, using an agent that refuses to decide anything for you</li>
+<li>How to turn resolved decisions into contract tests, which are what make an agent&#39;s work checkable</li>
+<li>How to deploy an agent to Agent Runtime under its own identity, and dispatch work to it at a pinned commit</li>
+<li>Why the commit is pinned, and what that buys you</li>
+</ul>
+<h2 is-upgraded>What you&#39;ll need</h2>
+<ul>
+<li>The preflight from the setup guide, finished and reporting <strong>ready</strong></li>
+<li><code>MODEL_LOCATION</code> and <code>AGENT_ENGINE_LOCATION</code> still exported in this shell</li>
+<li>A GitHub account with <code>gh</code> logged in</li>
+</ul>
+<pre><code language="language-bash" class="language-bash">echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
+gh auth status
+</code></pre>
+<aside class="warning"><p>If those two variables are empty, set them again before going further. They are not the same value and never will be: the model answers from <code>global</code>, your agent runs in a region. Setting them equal produces a 404 that names the model and reads like a typo.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">gcloud secrets describe agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
+</code></pre>
+<p>It should print the secret&#39;s resource name. That secret is empty — preflight created the container, and you will put a key in it later today.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Fork the lab repository" duration="3">
+        <p>The application lives in its own repository. You fork it, because the agent will push to your copy and you will merge its work.</p>
+<pre><code language="language-bash" class="language-bash">gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
+cd workshop-agentic-sdlc-lab
+</code></pre>
+<p>That gives you <code>origin</code> pointing at your fork and <code>upstream</code> at the original.</p>
+<aside class="special"><p>Forks do not copy issues. That is deliberate — you are about to file one, and it should be yours.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">gh repo view --json nameWithOwner,isFork --jq &#39;.nameWithOwner + &#34; fork=&#34; + (.isFork|tostring)&#39;
+</code></pre>
+<p>The owner should be <strong>you</strong>, and <code>fork=true</code>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Start the agent deploying, then walk away" duration="4">
+        <p>The agent takes several minutes to build and deploy. Start it now and do the thinking while it works — waiting at a progress bar teaches nothing.</p>
+<pre><code language="language-bash" class="language-bash">cd coder-agent
+agents-cli deploy \
+  --project &#34;$(gcloud config get-value project)&#34; \
+  --region &#34;$AGENT_ENGINE_LOCATION&#34; \
+  --agent-identity \
+  --update-env-vars GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true,MODEL_LOCATION=global \
+  --no-wait
+cd ..
+</code></pre>
+<p><code>--no-wait</code> returns as soon as the build is submitted. <code>--agent-identity</code> is the part that matters most: it gives the deployment a federated identity of its own rather than borrowing a service account, which is how it will read a secret you have not given it yet.</p>
+<aside class="warning"><p>Budget about seven minutes. A first deploy in a cold project is slower than every later one, because nothing is cached yet.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">agents-cli deploy --status
+</code></pre>
+<p>It reports the deployment as in progress. You are not waiting for it — the next four steps happen while it builds.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="File the request as an issue" duration="3">
+        <p><code>docs/request.md</code> is the request as it arrived. Read it first — it is short, and it is the only statement of what anyone actually wants.</p>
+<pre><code language="language-bash" class="language-bash">cat docs/request.md
+</code></pre>
+<p>Now file it, so the work has a home and a number:</p>
+<pre><code language="language-bash" class="language-bash">gh issue create --title &#34;Account health scoring&#34; --body-file docs/request.md
+</code></pre>
+<aside class="warning"><p>Use <code>--body-file</code>, not <code>-F</code>. With <code>-F</code> the command stops and asks for a title interactively, which is easy to miss and looks like a hang.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">gh issue list
+</code></pre>
+<p>One open issue, titled <strong>Account health scoring</strong>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Read the spec the way a builder would" duration="4">
+        <p>Someone has already turned that request into <code>docs/spec.md</code>. Read it as though you had to implement it this afternoon.</p>
+<pre><code language="language-bash" class="language-bash">cat docs/spec.md
+</code></pre>
+<aside class="warning"><p><strong>This spec was written to be flawed, and you should know that up front.</strong> It reads well, which is the point — the gaps in it are the kind that survive review because nothing about them looks wrong. Finding them is the exercise.</p>
+</aside>
+<p>As you read, keep one question in mind, and only this one:</p>
+<p>Could two people build from this independently, without talking, and would their code fit together?</p>
+<p>Anything that passes is precise enough. Anything that does not is a decision nobody has made yet.</p>
+<h2 is-upgraded>Verify your work</h2>
+<p>Write down two things in the spec you could implement in more than one way, and that a reviewer would probably wave through. You will find out shortly whether they are the ones that matter.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Interrogate the spec" duration="12">
+        <p>You installed a plugin called <strong>spec-adversary</strong> during preflight. It finds ambiguity and makes you decide it. It will not decide anything for you, and it will not write the spec.</p>
+<pre><code language="language-bash" class="language-bash">agy
+</code></pre>
+<p>Then ask it to go to work:</p>
+<pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
+</code></pre>
+<p>It shows you a single ambiguity, two readings, and the assertion that would differ between them. You choose. It writes your decision into <code>docs/spec.md</code> and moves to the next one.</p>
+<aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision — it hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
+</aside>
+<p>Keep going until it stops finding anything consequential. That usually takes longer than people expect, and the questions get better as they get smaller.</p>
+<aside class="warning"><p>Resist the urge to fix the spec yourself while you are in there. The value is in the decisions being explicit and attributed, not in the prose being tidy.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">git diff --stat docs/spec.md
+</code></pre>
+<p><code>docs/spec.md</code> has changed. Read your diff: every hunk should be a decision you made, not a rewording.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Emit the contract" duration="8">
+        <p>Decisions in prose are still prose. Now turn them into tests, which is the form an agent can be held to.</p>
+<p>Still in <code>agy</code>:</p>
+<pre><code language="language-text" class="language-text">From the resolved docs/spec.md, write contract tests into tests/. Cover the
+parsing rules and the scoring rules separately. Do not write an implementation.
+</code></pre>
+<p>These tests are the contract. They are what &#34;done&#34; means, and they are the only thing standing between you and an agent that writes plausible code which does the wrong thing.</p>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">uv run pytest -q
+</code></pre>
+<p>They should <strong>fail</strong>, and fail for the right reason: there is no implementation yet. A test that passes now is testing nothing.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Check the deploy landed" duration="3">
+        <p>Your agent should be up by now.</p>
+<pre><code language="language-bash" class="language-bash">agents-cli deploy --status
+</code></pre>
+<pre><code language="language-bash" class="language-bash">agents-cli deploy --list
+</code></pre>
+<p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so ask the API directly:</p>
+<pre><code language="language-bash" class="language-bash">export API=&#34;https://${AGENT_ENGINE_LOCATION}-aiplatform.googleapis.com/v1&#34;
+export BASE=&#34;${API}/projects/$(gcloud config get-value project)/locations/${AGENT_ENGINE_LOCATION}/reasoningEngines&#34;
+export ENGINE=$(curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;$BASE&#34; \
+  | python3 -c &#34;import json,sys; print(next(e[&#39;name&#39;] for e in json.load(sys.stdin)[&#39;reasoningEngines&#39;] if e.get(&#39;displayName&#39;)==&#39;coder-agent&#39;))&#34;)
+
+curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;${API}/${ENGINE}&#34; \
+  | python3 -c &#34;import json,sys; print(json.load(sys.stdin)[&#39;spec&#39;][&#39;effectiveIdentity&#39;])&#34;
+</code></pre>
+<aside class="warning"><p>The deploy output prints a <code>gcp-sa-aiplatform-re</code> service account even when <code>--agent-identity</code> worked. It is not the identity your agent runs as. <code>spec.effectiveIdentity</code> is the only field that tells the truth.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<p><code>effectiveIdentity</code> is a long federated principal containing <code>system.id.goog</code>, ending in your engine&#39;s id. That principal — and not any service account — is what the next step grants access to.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Give the agent a key to your fork" duration="4">
+        <p>The agent has to push. It needs a credential, and it needs one that cannot do anything else.</p>
+<pre><code language="language-bash" class="language-bash">bash scripts/setup-deploy-key.sh
+</code></pre>
+<p>That generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
+<aside class="special"><p>A deploy key&#39;s blast radius is one repository, by construction. There is no scope matrix to get wrong, and revoking it is deleting one key from one repo.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<p>The script ends by printing the secret the agent reads and the repository it can push to. It also refuses to finish unless a real clone and a real push succeeded, so reaching the end <em>is</em> the verification.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Dispatch" duration="5">
+        <p>Commit the contract and send the work.</p>
+<pre><code language="language-bash" class="language-bash">git add -A
+git commit -m &#34;The contract: resolved spec and the tests it implies&#34;
+git push
+bash scripts/dispatch.sh
+</code></pre>
+<p>The dispatch pins the exact commit you just pushed. The agent fetches that commit and nothing else.</p>
+<aside class="special"><p>That pin is why you cannot rescue a bad contract once the agent is working. Anything you commit after this moment is invisible to it — not by agreement, but because it never fetches anything else. If the contract was wrong, you find out the way you would with a colleague who took the brief and went quiet.</p>
+</aside>
+<p>The script follows your branch and prints each commit as it lands. Closing it does not stop the agent.</p>
+<h2 is-upgraded>Verify your work</h2>
+<p>You should see the agent&#39;s branch appear and at least one commit arrive on it. The run ends with the branch name and how to merge it.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Read what it did" duration="6">
+        <p>Do not merge yet. Read.</p>
+<pre><code language="language-bash" class="language-bash">git fetch origin
+git log --oneline origin/agent/parse
+git diff main...origin/agent/parse
+</code></pre>
+<p>Then check it against the contract rather than against your impression of it:</p>
+<pre><code language="language-bash" class="language-bash">git checkout -b review origin/agent/parse
+uv run pytest -q
+</code></pre>
+<p>You can also watch the whole trajectory — every file it read, every command it ran — in the console, because each step was recorded as an event in the agent&#39;s session.</p>
+<aside class="warning"><p>Green tests mean it satisfied the contract. They do not mean the contract was right. If the code passes and still does the wrong thing, that is a finding about your spec, and it is the most valuable thing this lab can hand you.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<p>The tests pass, and the diff touches the implementation only. If the agent edited a test to make it pass, you have learned something about how contracts need to be written.</p>
+<p>Merge when you are satisfied:</p>
+<pre><code language="language-bash" class="language-bash">git checkout main
+git merge origin/agent/parse
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Tear it down" duration="4">
+        <p>The agent costs money while it is deployed. Remove it, and the credential with it.</p>
+<p>Delete the deployment, using the <code>ENGINE</code> you resolved earlier:</p>
+<pre><code language="language-bash" class="language-bash">curl -sS -X DELETE -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;${API}/${ENGINE}&#34;
+</code></pre>
+<p>Then revoke the key. Deleting it from the repository is what actually ends the agent&#39;s access — the copy in Secret Manager is inert once the key is gone:</p>
+<pre><code language="language-bash" class="language-bash">gh repo deploy-key list
+gh repo deploy-key delete KEY_ID
+</code></pre>
+<p>Finally, disable the stored key so nothing can read it back:</p>
+<pre><code language="language-bash" class="language-bash">gcloud secrets versions list agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
+gcloud secrets versions destroy VERSION --secret=agentic-sdlc-deploy-key --quiet
+</code></pre>
+<aside class="warning"><p>Do this even if you plan to come back. A deployed agent holds a warm instance and bills for it, and the deploy key stays valid until you delete it.</p>
+</aside>
+<h2 is-upgraded>What you did</h2>
+<p>You took prose from a stakeholder and produced merged, tested code without writing any of it. The agent was the least interesting part: it did what the contract said, because by then the contract said something.</p>
+<p>The work that mattered was refusing to let the ambiguity through — and the reason the agent could be trusted with the rest is that you had made &#34;done&#34; checkable before you asked anyone, human or otherwise, to do it.</p>
+<h2 is-upgraded>What&#39;s next</h2>
+<ul>
+<li>Run it again with a spec you actually own, and see how far the interrogation gets before you have to make a decision you were avoiding</li>
+<li>Read the trajectory in the console — the tool calls are a record of how it reasoned, and they show where the contract was doing the work</li>
+</ul>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">agents-cli deploy --list
+gh repo deploy-key list
+</code></pre>
+<p>No <code>coder-agent</code> deployment, and no deploy key. Nothing is billing.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
