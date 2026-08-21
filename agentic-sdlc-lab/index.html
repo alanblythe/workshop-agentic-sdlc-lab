@@ -48,6 +48,12 @@
 <p>Cloud Shell hands you a new VM today. <code>$HOME</code> came with you — your logins, the ADK skills, the <code>spec-adversary</code> plugin — but <code>/usr/bin</code> did not, so the <code>agy</code> update you ran during setup is gone.</p>
 <pre><code language="language-bash" class="language-bash">sudo agy update &amp;&amp; agy --version
 </code></pre>
+<p>Your <code>agy</code> login lives in <code>$HOME</code>, so it should still be there:</p>
+<pre><code language="language-bash" class="language-bash">agy -p &#34;Reply with exactly: authenticated&#34;
+</code></pre>
+<p>If that asks you to open a URL instead of answering, the grant has lapsed and you need to log in again. Do it with the terminal widened — <code>agy</code> wraps the URL to the width the terminal reports, and clicking a wrapped fragment sends an incomplete URL, which Google answers with <code>Error 400 (Bad Request)</code>:</p>
+<pre><code language="language-bash" class="language-bash">COLS=$(tput cols); stty cols 2000; agy; stty cols &#34;$COLS&#34;
+</code></pre>
 <p>Then check the rest survived:</p>
 <pre><code language="language-bash" class="language-bash">echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 gh auth status
