@@ -104,7 +104,14 @@ KEY="$KEYDIR/id_ed25519"
 # No passphrase: nothing in the container can type one.
 ssh-keygen -t ed25519 -N '' -C "$KEY_TITLE ($REPO)" -f "$KEY" -q \
   || die "ssh-keygen failed" "ssh-keygen -t ed25519 -N '' -f $KEY"
-ok "ed25519 key, $(stat -f '%Lp' "$KEY" 2>/dev/null || stat -c '%a' "$KEY") on disk"
+# GNU stat first: on Linux `-f` means *filesystem*, so it exits 0 with a garbage
+# mode and the fallback never fires. BSD stat rejects `-c` outright, so this
+# order is the one that works on both. ssh refuses a key looser than 0600 and
+# says so in terms of file modes, naming no credential.
+MODE=$(stat -c '%a' "$KEY" 2>/dev/null || stat -f '%Lp' "$KEY" 2>/dev/null)
+[ "$MODE" = "600" ] || die "the generated key is mode ${MODE:-unknown}, and ssh refuses anything looser than 600" \
+  "chmod 600 $KEY"
+ok "ed25519 key, mode $MODE"
 
 # --- 5. install on the fork ------------------------------------------------
 # Deleting first is what makes a re-run safe. Without it a second run leaves the
