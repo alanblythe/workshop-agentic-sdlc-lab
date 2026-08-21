@@ -34,9 +34,9 @@ import traceback
 import coder
 
 
-def emit(kind: str, **fields: object) -> None:
+def emit(event_type: str, **fields: object) -> None:
     """Write one NDJSON event and flush -- the parent reads these live."""
-    sys.stdout.write(json.dumps({"type": kind, **fields}, default=str) + "\n")
+    sys.stdout.write(json.dumps({"type": event_type, **fields}, default=str) + "\n")
     sys.stdout.flush()
 
 

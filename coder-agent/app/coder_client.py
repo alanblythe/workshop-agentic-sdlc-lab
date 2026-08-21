@@ -57,14 +57,20 @@ def _child_env() -> dict[str, str]:
     return env
 
 
-async def run(repo: str, sha: str, branch: str, user_id: str = "coder-agent") -> str:
-    """Run one coding job and return a report of what happened."""
+async def stream(repo: str, sha: str, branch: str, user_id: str = "coder-agent"):
+    """Run one coding job, yielding the child's events as they arrive.
+
+    A generator rather than a report, because the caller turns each event into
+    an ADK event: that is what puts the trajectory in Agent Platform Sessions
+    instead of collapsing it into one tool result.
+    """
     if not os.path.exists(RUNTIME_PYTHON):
-        return (
+        yield {"type": "error", "text": (
             f"the coding environment is missing at {RUNTIME_PYTHON}. The image "
             "builds it from coder_runtime/; a deploy that skipped that layer "
             "produces exactly this."
-        )
+        )}
+        return
 
     job = json.dumps({
         "repo": repo, "sha": sha, "branch": branch,
@@ -84,60 +90,32 @@ async def run(repo: str, sha: str, branch: str, user_id: str = "coder-agent") ->
     await proc.stdin.drain()
     proc.stdin.close()
 
-    notes: list[str] = []
-    tools: list[str] = []
-    final = ""
-    errors: list[str] = []
-
-    async def read_events() -> None:
-        nonlocal final
-        assert proc.stdout is not None
-        async for raw in proc.stdout:
+    deadline = asyncio.get_running_loop().time() + KILL_AFTER
+    try:
+        while True:
+            remaining = deadline - asyncio.get_running_loop().time()
+            if remaining <= 0:
+                raise asyncio.TimeoutError
+            raw = await asyncio.wait_for(proc.stdout.readline(), timeout=remaining)
+            if not raw:
+                break
             line = raw.decode(errors="replace").strip()
             if not line:
                 continue
             try:
-                event = json.loads(line)
+                yield json.loads(line)
             except json.JSONDecodeError:
                 logger.info("coder (unparsed): %s", line)
-                continue
-            kind = event.get("type")
-            if kind == "tool":
-                tools.append(f"[{event.get('at', 0):>6}s] {event.get('name')}")
-                logger.info("coder tool: %s", event.get("name"))
-            elif kind == "note":
-                notes.append(str(event.get("text", "")))
-            elif kind == "final":
-                final = str(event.get("text", ""))
-                notes.append(
-                    f"{event.get('tool_calls')} tool calls in "
-                    f"{event.get('elapsed')}s, {event.get('budget_left')}s of budget left; "
-                    f"trajectory recorded in session {event.get('session_id')} "
-                    f"({'Agent Platform Sessions' if event.get('durable_session') else 'in-memory'})"
-                )
-            elif kind == "error":
-                errors.append(str(event.get("text", "")))
-
-    try:
-        await asyncio.wait_for(read_events(), timeout=KILL_AFTER)
         await proc.wait()
     except asyncio.TimeoutError:
         proc.kill()
         await proc.wait()
-        errors.append(
+        yield {"type": "error", "text": (
             f"the coding run was killed at {KILL_AFTER:.0f}s. Whatever it pushed "
-            "before then is on the branch -- that is the point of pushing every "
-            "iteration."
-        )
+            "before then is on the branch."
+        )}
 
-    stderr = (await proc.stderr.read()).decode(errors="replace") if proc.stderr else ""
-    if proc.returncode not in (0, None) and stderr:
-        errors.append(f"the coding environment exited {proc.returncode}:\n{stderr[-1500:]}")
-
-    parts = ["\n".join(notes) or "(no progress reported)"]
-    parts.append("--- trajectory ---\n" + ("\n".join(tools[-40:]) or "(no tool calls)"))
-    if final:
-        parts.append("--- the coder's own account ---\n" + final)
-    if errors:
-        parts.append("--- errors ---\n" + "\n\n".join(errors))
-    return "\n\n".join(parts)
+    if proc.returncode not in (0, None):
+        stderr = (await proc.stderr.read()).decode(errors="replace") if proc.stderr else ""
+        yield {"type": "error",
+               "text": f"the coding environment exited {proc.returncode}:\n{stderr[-1500:]}"}

@@ -88,6 +88,20 @@ Never report tests as passing unless you ran them and saw them pass.
 """
 
 
+# pytest output and file contents both arrive here, and the pipe to the parent
+# is not the place to move a megabyte.
+MAX_FIELD = 4000
+
+
+def _trim(value):
+    if isinstance(value, dict):
+        return {k: _trim(v) for k, v in value.items()}
+    text = value if isinstance(value, str) else str(value)
+    if len(text) <= MAX_FIELD:
+        return value
+    return text[:MAX_FIELD] + f"\n...(trimmed {len(text) - MAX_FIELD} chars)"
+
+
 def _session_service(emit):
     """The coding run's sessions are in-memory, and that is forced.
 
@@ -115,7 +129,7 @@ async def run(
     branch: str,
     budget_seconds: float = 500.0,
     user_id: str = "coder-agent",
-    emit=lambda kind, **f: None,
+    emit=lambda event_type, **f: None,
 ) -> None:
     """Prepare the workspace and run the coding agent over it.
 
@@ -193,16 +207,23 @@ async def run(
         session_id=session.id,
         new_message=types.Content(role="user", parts=[types.Part(text=TASK)]),
     ):
+        # Each part is relayed as its own step so the parent can rebuild it as
+        # an ADK event. Collapsing them into a summary here is what would make
+        # the trajectory unviewable in Agent Platform.
         for part in (event.content.parts if event.content and event.content.parts else []):
+            at = round(time.monotonic() - started, 1)
             if getattr(part, "function_call", None):
                 calls += 1
-                emit(
-                    "tool",
-                    name=part.function_call.name,
-                    at=round(time.monotonic() - started, 1),
-                )
+                emit("step", kind="function_call", at=at,
+                     name=part.function_call.name,
+                     args=_trim(dict(part.function_call.args or {})))
+            elif getattr(part, "function_response", None):
+                emit("step", kind="function_response", at=at,
+                     name=part.function_response.name,
+                     response=_trim(part.function_response.response))
             elif getattr(part, "text", None):
                 final = part.text
+                emit("step", kind="text", at=at, text=part.text)
 
     emit(
         "final",
