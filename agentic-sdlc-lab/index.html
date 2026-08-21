@@ -144,11 +144,15 @@ cd workshop-agentic-sdlc-lab
       </google-codelab-step>
     
       <google-codelab-step label="Interrogate the spec" duration="12">
-        <p>You installed a plugin called <strong>spec-adversary</strong> during preflight. It finds ambiguity and makes you decide it. It will not decide anything for you, and it will not write the spec.</p>
-<pre><code language="language-bash" class="language-bash">agy
+        <p>Preflight installed an agent called <strong>spec-adversary</strong>. Not a prompt you have to remember: a persona with its own rules, which finds ambiguity and makes you decide it. It will not decide anything for you, it will not write the spec, and it will not write code.</p>
+<p>Check it is there, then start a session as it:</p>
+<pre><code language="language-bash" class="language-bash">agy agents
+agy --agent spec-adversary
 </code></pre>
-<p>Then ask it to go to work:</p>
-<pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
+<aside class="warning"><p><code>agy --agent</code> says nothing about a name it does not recognise. Misspell it and you get the ordinary agent, which will cheerfully decide things for you, which is why you look for <code>spec-adversary</code> in that list first.</p>
+</aside>
+<p>Then point it at the spec:</p>
+<pre><code language="language-text" class="language-text">Interrogate docs/spec.md.
 </code></pre>
 <p>It puts one ambiguity in front of you at a time: the passage, the two readings, and the case where they disagree. Arrow keys move, enter chooses. There is a write-in option for when neither reading is what you meant. It writes your decision into <code>docs/spec.md</code> and moves to the next one.</p>
 <aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision. It hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
