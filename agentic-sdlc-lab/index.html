@@ -58,9 +58,11 @@
 <pre><code language="language-bash" class="language-bash">gcloud config set project YOUR_PROJECT_ID
 gcloud config get-value project
 </code></pre>
-<p>Set your two locations. A new shell has neither, and they are not the same value: the model answers from <code>global</code>, your agent runs in a region.</p>
+<p>Set your two locations. A new shell has neither. <code>MODEL_LOCATION</code> is fixed by the model: the Gemini 3 family answers only from <code>global</code>. Your engine region is whatever you chose during setup, and the project remembers it, because Terraform replicated the secret into that region:</p>
 <pre><code language="language-bash" class="language-bash">export MODEL_LOCATION=global
-export AGENT_ENGINE_LOCATION=us-central1
+export AGENT_ENGINE_LOCATION=$(gcloud secrets describe agentic-sdlc-deploy-key \
+  --format=&#39;value(replication.userManaged.replicas[0].location)&#39;)
+echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 </code></pre>
 <p>Then check your GitHub login survived, which it should have:</p>
 <pre><code language="language-bash" class="language-bash">gh auth status
