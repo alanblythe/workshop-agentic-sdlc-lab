@@ -44,7 +44,8 @@ logger = logging.getLogger(__name__)
 
 USAGE = (
     'Send a JSON payload naming the work, for example:\n'
-    '  {"repo": "you/your-fork", "sha": "<commit>", "branch": "agent/parse"}\n'
+    '  {"repo": "you/your-fork", "sha": "<commit>", "branch": "agent/parse",\n'
+    '   "issue": "1"}\n'
     'The sha is pinned deliberately: nothing committed after dispatch is visible.'
 )
 
@@ -87,7 +88,8 @@ class CoderAgent(BaseAgent):
         )
 
         async for event in coder_client.stream(
-            repo=job["repo"], sha=job["sha"], branch=job["branch"], user_id=user_id
+            repo=job["repo"], sha=job["sha"], branch=job["branch"],
+            issue=job.get("issue"), user_id=user_id,
         ):
             kind = event.get("type")
             if kind == "step":

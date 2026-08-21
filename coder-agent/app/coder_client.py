@@ -57,7 +57,10 @@ def _child_env() -> dict[str, str]:
     return env
 
 
-async def stream(repo: str, sha: str, branch: str, user_id: str = "coder-agent"):
+async def stream(
+    repo: str, sha: str, branch: str,
+    issue: str | None = None, user_id: str = "coder-agent",
+):
     """Run one coding job, yielding the child's events as they arrive.
 
     A generator rather than a report, because the caller turns each event into
@@ -73,7 +76,7 @@ async def stream(repo: str, sha: str, branch: str, user_id: str = "coder-agent")
         return
 
     job = json.dumps({
-        "repo": repo, "sha": sha, "branch": branch,
+        "repo": repo, "sha": sha, "branch": branch, "issue": issue,
         "budget_seconds": BUDGET_SECONDS, "user_id": user_id,
     }).encode()
 

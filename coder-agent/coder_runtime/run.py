@@ -52,6 +52,7 @@ async def main() -> None:
             repo=job["repo"],
             sha=job["sha"],
             branch=job["branch"],
+            issue=job.get("issue"),
             budget_seconds=float(job.get("budget_seconds", 500)),
             user_id=str(job.get("user_id") or "coder-agent"),
             emit=emit,

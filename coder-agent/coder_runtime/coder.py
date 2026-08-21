@@ -87,6 +87,15 @@ did not write and may not change.
 Never report tests as passing unless you ran them and saw them pass.
 """
 
+# The issue is the team's record of this work, so the commits reference it and
+# merging the branch closes it. Every commit carries the trailer rather than
+# only the last: the invocation is capped, so any push could be the final one,
+# and a repeated Closes line costs nothing.
+ISSUE_RULE = """\
+This work is tracked by issue #{issue}. End every commit message with a line \
+reading `Closes #{issue}`.
+"""
+
 
 # pytest output and file contents both arrive here, and the pipe to the parent
 # is not the place to move a megabyte.
@@ -127,6 +136,7 @@ async def run(
     repo: str,
     sha: str,
     branch: str,
+    issue: str | None = None,
     budget_seconds: float = 500.0,
     user_id: str = "coder-agent",
     emit=lambda event_type, **f: None,
@@ -199,13 +209,15 @@ async def run(
         ),
     )
 
+    task = TASK + ("\n" + ISSUE_RULE.format(issue=issue) if issue else "")
+
     started = time.monotonic()
     calls = 0
     final = ""
     async for event in runner.run_async(
         user_id=user_id,
         session_id=session.id,
-        new_message=types.Content(role="user", parts=[types.Part(text=TASK)]),
+        new_message=types.Content(role="user", parts=[types.Part(text=task)]),
     ):
         # Each part is relayed as its own step so the parent can rebuild it as
         # an ADK event. Collapsing them into a summary here is what would make

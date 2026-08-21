@@ -10,6 +10,8 @@
 #   bash scripts/dispatch.sh --follow-only      # follow a run already going
 #
 #   --branch NAME   where the agent pushes (default: agent/parse)
+#   --issue N       the issue the agent's commits close (default: the one open
+#                   issue on the fork, if there is exactly one)
 #   --engine ID     override engine discovery
 #   --help          this text
 #
@@ -20,6 +22,7 @@
 set -uo pipefail
 
 BRANCH="agent/parse"
+ISSUE=""
 ENGINE=""
 FOLLOW=1
 DISPATCH=1
@@ -27,6 +30,7 @@ DISPATCH=1
 while [ $# -gt 0 ]; do
   case "$1" in
     --branch)      BRANCH="${2:-}"; shift 2 ;;
+    --issue)       ISSUE="${2:-}"; shift 2 ;;
     --engine)      ENGINE="${2:-}"; shift 2 ;;
     --no-follow)   FOLLOW=0; shift ;;
     --follow-only) DISPATCH=0; shift ;;
@@ -111,6 +115,18 @@ if [ "$DISPATCH" -eq 1 ]; then
     "git push origin $LOCAL_BRANCH"
   ok "$REPO at $(echo "$SHA" | cut -c1-12), pushed"
   ok "the agent will push to $BRANCH"
+
+  # Exactly one open issue, or none. Two would mean guessing which the work
+  # belongs to, and a wrong number closes something nobody looked at.
+  if [ -z "$ISSUE" ] && have gh; then
+    ISSUE=$(gh issue list --repo "$REPO" --state open --json number --jq \
+      'if length == 1 then .[0].number else empty end' 2>/dev/null)
+  fi
+  if [ -n "$ISSUE" ]; then
+    ok "its commits will close #$ISSUE"
+  else
+    info "no single open issue found; the commits will not reference one"
+  fi
 fi
 
 # --- 3. dispatch -----------------------------------------------------------
@@ -120,8 +136,11 @@ if [ "$DISPATCH" -eq 1 ]; then
   step "dispatch"
   PAYLOAD=$(python3 -c "
 import json,sys
-print(json.dumps({'repo': sys.argv[1], 'sha': sys.argv[2], 'branch': sys.argv[3]}))
-" "$REPO" "$SHA" "$BRANCH")
+job = {'repo': sys.argv[1], 'sha': sys.argv[2], 'branch': sys.argv[3]}
+if sys.argv[4]:
+    job['issue'] = sys.argv[4]
+print(json.dumps(job))
+" "$REPO" "$SHA" "$BRANCH" "$ISSUE")
 
   BODY=$(python3 -c "
 import json,sys
@@ -182,7 +201,7 @@ while :; do
     echo
     echo "  Review it, then merge when you are satisfied:"
     echo "      git fetch origin $BRANCH && git log origin/$BRANCH"
-    echo "      git merge origin/$BRANCH"
+    echo "      git merge origin/$BRANCH && git push"
     exit 0
   fi
   sleep 10

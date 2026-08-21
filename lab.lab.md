@@ -182,18 +182,19 @@ have not given it yet.
 It reports the deployment as in progress. You are not waiting for it. The next
 four steps happen while it builds.
 
-## File the request as an issue
+## Read the request, then the spec
 
-Duration: 3
+Duration: 6
 
-`docs/request.md` is the request as it arrived. Read it first. It
-is short, and it is the only statement of what anyone actually wants.
+`docs/request.md` is the request as it arrived. It is short, and
+it is the only statement of what anyone actually wants.
 
 ```bash
 cat docs/request.md
 ```
 
-Now file it, so the work has a home and a number:
+File it, so the work has a number. The agent's commits will reference it and
+merging its branch will close it, which is what the number is for:
 
 ```bash
 gh issue create --title "Account health scoring" --body-file docs/request.md
@@ -204,20 +205,8 @@ gh issue create --title "Account health scoring" --body-file docs/request.md
 > Use `--body-file`, not `-F`. With `-F` the command stops and asks for a title
 > interactively, which is easy to miss and looks like a hang.
 
-### Verify your work
-
-```bash
-gh issue list
-```
-
-One open issue, titled **Account health scoring**.
-
-## Read the spec the way a builder would
-
-Duration: 4
-
-Someone has already turned that request into `docs/spec.md`. Read
-it as though you had to implement it this afternoon.
+Someone else has already turned it into a spec. Read `docs/spec.md`
+as though you had to implement it this afternoon.
 
 ```bash
 cat docs/spec.md
@@ -240,8 +229,8 @@ nobody has made yet.
 ### Verify your work
 
 Think about two things in the spec you could implement in more than one way,
-and that a reviewer would probably wave through. You will find out shortly whether
-they are the ones that matter.
+and that a reviewer would probably wave through. You will find out shortly
+whether they are the ones that matter.
 
 ## Interrogate the spec
 
@@ -261,9 +250,10 @@ Then ask it to go to work:
 Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
 ```
 
-It shows you a single ambiguity, two readings, and the assertion that would
-differ between them. You choose. It writes your decision into `docs/spec.md` and
-moves to the next one.
+It puts one ambiguity in front of you at a time: the passage, the two readings,
+and the case where they disagree. Arrow keys move, enter chooses. There is a
+write-in option for when neither reading is what you meant. It writes your
+decision into `docs/spec.md` and moves to the next one.
 
 > aside positive
 >
@@ -446,12 +436,17 @@ The tests pass, and the diff touches the implementation only. If the agent
 edited a test to make it pass, you have learned something about how contracts
 need to be written.
 
-Merge when you are satisfied:
+Merge when you are satisfied, and push:
 
 ```bash
 git checkout main
 git merge origin/agent/parse
+git push
 ```
+
+The push is what closes your issue. The agent wrote `Closes #1` into its commit
+messages, and GitHub acts on that when those commits land on your default
+branch, not when they land on a branch.
 
 ## Tear it down
 
