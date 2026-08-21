@@ -220,9 +220,10 @@ curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#
 <pre><code language="language-bash" class="language-bash">git add -A
 git commit -m &#34;The contract: resolved spec and the tests it implies&#34;
 git push
-bash scripts/dispatch.sh
+bash scripts/dispatch.sh --issue 1
 </code></pre>
 <p>The dispatch pins the exact commit you just pushed. The agent fetches that commit and nothing else.</p>
+<p><code>--issue</code> is the number you filed earlier, which is <strong>1</strong> on a fork whose issues you had just turned on. Run <code>gh issue list</code> if yours is not. The agent writes it into every commit it pushes, and dispatch refuses a number that is not an open issue rather than let a wrong one reach the commits.</p>
 <aside class="special"><p>That pin is why you cannot rescue a bad contract once the agent is working. Anything you commit after this moment is invisible to it, not by agreement but because it never fetches anything else. If the contract was wrong, you find out the way you would with a colleague who took the brief and went quiet.</p>
 </aside>
 <p>The script follows your branch and prints each commit as it lands. Closing it does not stop the agent.</p>
