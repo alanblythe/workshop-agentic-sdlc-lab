@@ -83,6 +83,9 @@ echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 cd workshop-agentic-sdlc-lab
 </code></pre>
 <p>Either way <code>origin</code> now points at your fork and <code>upstream</code> at the original.</p>
+<p>Two remotes means <code>gh</code> will not guess which repository a command means, so tell it. Everything after this files issues and reads state on your fork:</p>
+<pre><code language="language-bash" class="language-bash">gh repo set-default &#34;$(git remote get-url origin)&#34;
+</code></pre>
 <aside class="special"><p>Forks do not copy issues. That is deliberate. You are about to file one, and it should be yours.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
