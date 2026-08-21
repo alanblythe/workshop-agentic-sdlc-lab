@@ -86,12 +86,16 @@ cd workshop-agentic-sdlc-lab
 <p>Two remotes means <code>gh</code> will not guess which repository a command means, so tell it. Everything after this files issues and reads state on your fork:</p>
 <pre><code language="language-bash" class="language-bash">gh repo set-default &#34;$(git remote get-url origin)&#34;
 </code></pre>
-<aside class="special"><p>Forks do not copy issues. That is deliberate. You are about to file one, and it should be yours.</p>
+<p>Then turn issues on. GitHub ships every new fork with them disabled, and it says so only when you try to file one, two steps from here:</p>
+<pre><code language="language-bash" class="language-bash">gh repo edit &#34;$(git remote get-url origin)&#34; --enable-issues
+</code></pre>
+<aside class="special"><p>A fork does not copy the issues from the repository it came from either. That is deliberate. You are about to file one, and it should be yours.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">gh repo view --json nameWithOwner,isFork --jq &#39;.nameWithOwner + &#34; fork=&#34; + (.isFork|tostring)&#39;
+<pre><code language="language-bash" class="language-bash">gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
+  --jq &#39;.nameWithOwner + &#34; fork=&#34; + (.isFork|tostring) + &#34; issues=&#34; + (.hasIssuesEnabled|tostring)&#39;
 </code></pre>
-<p>The owner should be <strong>you</strong>, and <code>fork=true</code>.</p>
+<p>The owner should be <strong>you</strong>, with <code>fork=true</code> and <code>issues=true</code>.</p>
 
 
       </google-codelab-step>
