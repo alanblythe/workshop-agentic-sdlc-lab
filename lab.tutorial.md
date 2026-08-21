@@ -41,6 +41,21 @@ update you ran during setup is gone.
 sudo agy update && agy --version
 ```
 
+Your `agy` login lives in `$HOME`, so it should still be there:
+
+```bash
+agy -p "Reply with exactly: authenticated"
+```
+
+If that asks you to open a URL instead of answering, the grant has lapsed and
+you need to log in again. Do it with the terminal widened — `agy` wraps the URL
+to the width the terminal reports, and clicking a wrapped fragment sends an
+incomplete URL, which Google answers with `Error 400 (Bad Request)`:
+
+```bash
+COLS=$(tput cols); stty cols 2000; agy; stty cols "$COLS"
+```
+
 Then check the rest survived:
 
 ```bash
