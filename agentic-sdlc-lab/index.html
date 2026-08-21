@@ -28,7 +28,7 @@
                   environment="web"
                   feedback-link="https://github.com/alanblythe/workshop-agentic-sdlc/issues">
     
-      <google-codelab-step label="Before you begin" duration="3">
+      <google-codelab-step label="Before you begin" duration="4">
         <p>You are going to take a request written the way requests actually arrive — prose, from a stakeholder, with the important parts unsaid — and get working code out of the other end. A coding agent writes the code. You never do.</p>
 <p>The interesting part is not the agent. It is what you have to make true before an agent can be useful: a specification precise enough that two parties could build from it independently and their code would fit.</p>
 <h2 class="checklist" is-upgraded>What you&#39;ll learn</h2>
@@ -44,6 +44,11 @@
 <li><code>MODEL_LOCATION</code> and <code>AGENT_ENGINE_LOCATION</code> still exported in this shell</li>
 <li>A GitHub account with <code>gh</code> logged in</li>
 </ul>
+<h2 is-upgraded>Restore your Cloud Shell</h2>
+<p>Cloud Shell hands you a new VM today. <code>$HOME</code> came with you — your logins, the ADK skills, the <code>spec-adversary</code> plugin — but <code>/usr/bin</code> did not, so the <code>agy</code> update you ran during setup is gone.</p>
+<pre><code language="language-bash" class="language-bash">sudo agy update &amp;&amp; agy --version
+</code></pre>
+<p>Then check the rest survived:</p>
 <pre><code language="language-bash" class="language-bash">echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 gh auth status
 </code></pre>
