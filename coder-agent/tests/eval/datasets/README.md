@@ -29,10 +29,10 @@ agents-cli eval generate --url https://my-agent.run.app --app-name app
 ## Dataset Format
 
 Each dataset file follows the Gemini Enterprise Agent Platform Evaluation
-dataset format. An eval case may use **either** of two shapes — both are
+dataset format. An eval case may use **either** of two shapes, both are
 valid input to `agents-cli eval generate`:
 
-**Shape A — single-prompt case:**
+**Shape A, single-prompt case:**
 
 ```json
 {
@@ -48,7 +48,7 @@ valid input to `agents-cli eval generate`:
 }
 ```
 
-**Shape B — continued-conversation case (the "N+1" pattern):**
+**Shape B, continued-conversation case (the "N+1" pattern):**
 The case carries prior turns in `agent_data` and the last turn ends with a
 user message; `eval generate` appends the next agent response.
 
@@ -78,8 +78,8 @@ user message; `eval generate` appends the next agent response.
 
 - `eval_cases`: Array of evaluation cases.
 - `eval_case_id`: Unique identifier for the evaluation case (optional).
-- `prompt`: A single user message — Shape A.
-- `agent_data.turns`: Prior conversation turns ending with a user message — Shape B.
+- `prompt`: A single user message. Shape A.
+- `agent_data.turns`: Prior conversation turns ending with a user message. Shape B.
 
 ## Creating Custom Datasets
 
@@ -103,8 +103,8 @@ agents-cli eval metric list
 
 Once you have a baseline, the eval surface has a few more commands worth knowing about:
 
-- `agents-cli eval compare BASE CAND` — diff two grade-results files (regression check).
-- `agents-cli eval analyze RESULTS` — cluster failure modes from a grade-results file.
-- `agents-cli eval optimize` — auto-tune your agent's prompts using eval data.
+- `agents-cli eval compare BASE CAND`, diff two grade-results files (regression check).
+- `agents-cli eval analyze RESULTS`, cluster failure modes from a grade-results file.
+- `agents-cli eval optimize`, auto-tune your agent's prompts using eval data.
 
 See the [Evaluation Guide](https://google.github.io/agents-cli/guide/evaluation/) for the full surface and metric reference.

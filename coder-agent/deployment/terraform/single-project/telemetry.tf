@@ -51,7 +51,7 @@ resource "google_storage_bucket_iam_member" "telemetry_connection_access" {
 }
 
 # ====================================================================
-# Log Sinks — route GenAI and feedback logs directly to BigQuery
+# Log Sinks, route GenAI and feedback logs directly to BigQuery
 # ====================================================================
 
 # Log sink to route GenAI telemetry logs directly to BigQuery
@@ -72,7 +72,7 @@ resource "google_logging_project_sink" "genai_logs_to_bq" {
   depends_on = [google_bigquery_dataset.telemetry_dataset]
 }
 
-# Log sink for user feedback logs — routes to the same BigQuery dataset
+# Log sink for user feedback logs, routes to the same BigQuery dataset
 resource "google_logging_project_sink" "feedback_logs_to_bq" {
   name        = "${var.project_name}-feedback"
   project     = var.project_id

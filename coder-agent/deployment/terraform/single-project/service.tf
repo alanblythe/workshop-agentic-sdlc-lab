@@ -104,7 +104,7 @@ resource "google_vertex_ai_reasoning_engine" "app" {
 
   # Terraform creates the resource with a placeholder source build; CI/CD
   # overwrites the same source_code_spec with the real code. The deploy writes
-  # source_code_spec, so the placeholder must use it too — a container_spec
+  # source_code_spec, so the placeholder must use it too, a container_spec
   # placeholder would be left alongside it and Agent Engine rejects the update.
   # Ignore the spec and deployment_spec so Terraform never reverts the deployed agent.
   lifecycle {

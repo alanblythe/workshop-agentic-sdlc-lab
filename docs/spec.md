@@ -4,7 +4,7 @@
 
 Customer Success needs to know an account is in trouble before the cancellation
 email arrives. This reads the monthly usage export, gives each account a health
-score, puts it in a tier, and names the reasons — so CS can work a list rather
+score, puts it in a tier, and names the reasons, so CS can work a list rather
 than a hunch.
 
 ## Input
@@ -68,7 +68,7 @@ touches the filesystem, so both stay pure functions over their inputs.
 ## Scoring
 
 Every account starts at **10**. Each rule below deducts once, at most. The score
-is floored at 0 — it never goes negative.
+is floored at 0. It never goes negative.
 
 | Rule | Deduction | Reason string |
 | --- | --- | --- |

@@ -7,8 +7,8 @@
 
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
-You are going to take a request written the way requests actually arrive —
-prose, from a stakeholder, with the important parts unsaid — and get working
+You are going to take a request written the way requests actually arrive:
+prose, from a stakeholder, with the important parts unsaid, and get working
 code out of the other end. A coding agent writes the code. You never do.
 
 The interesting part is not the agent. It is what you have to make true before
@@ -27,14 +27,14 @@ build from it independently and their code would fit.
 
 ### What you'll need
 
-- The preflight from the setup guide, finished and reporting **ready**
+- The [preflight from the setup guide](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/), finished and reporting **ready**
 - `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` still exported in this shell
 - A GitHub account with `gh` logged in
 
 ### Restore your Cloud Shell
 
-Cloud Shell hands you a new VM today. `$HOME` came with you — your logins, the
-ADK skills, the `spec-adversary` plugin — but `/usr/bin` did not, so the `agy`
+Cloud Shell hands you a new VM today. `$HOME` came with you, carrying your logins, the
+ADK skills and the `spec-adversary` plugin. `/usr/bin` did not, so the `agy`
 update you ran during setup is gone.
 
 ```bash
@@ -48,7 +48,7 @@ agy -p "Reply with exactly: authenticated"
 ```
 
 If that asks you to open a URL instead of answering, the grant has lapsed and
-you need to log in again. Do it with the terminal widened — `agy` wraps the URL
+you need to log in again. Do it with the terminal widened, because `agy` wraps the URL
 to the width the terminal reports, and clicking a wrapped fragment sends an
 incomplete URL, which Google answers with `Error 400 (Bad Request)`:
 
@@ -76,7 +76,7 @@ gh auth status
 gcloud secrets describe agentic-sdlc-deploy-key --format='value(name)'
 ```
 
-It should print the secret's resource name. That secret is empty — preflight
+It should print the secret's resource name. That secret is empty. Preflight
 created the container, and you will put a key in it later today.
 
 ## Fork the lab repository
@@ -86,7 +86,7 @@ created the container, and you will put a key in it later today.
 The application lives in its own repository. You fork it, because the agent will
 push to your copy and you will merge its work.
 
-You are already in a clone of it — the one Cloud Shell made when you opened this
+You are already in a clone of it, the one Cloud Shell made when you opened this
 guide. Fork in place:
 
 ```bash
@@ -97,7 +97,7 @@ Either way `origin` now points at your fork and `upstream` at the original.
 
 > **Tip:**
 >
-> Forks do not copy issues. That is deliberate — you are about to file one, and it
+> Forks do not copy issues. That is deliberate. You are about to file one, and it
 > should be yours.
 
 ### Verify your work
@@ -113,7 +113,7 @@ The owner should be **you**, and `fork=true`.
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
 The agent takes several minutes to build and deploy. Start it now and do the
-thinking while it works — waiting at a progress bar teaches nothing.
+thinking while it works. Waiting at a progress bar teaches nothing.
 
 ```bash
 cd coder-agent
@@ -142,14 +142,14 @@ have not given it yet.
 agents-cli deploy --status
 ```
 
-It reports the deployment as in progress. You are not waiting for it — the next
+It reports the deployment as in progress. You are not waiting for it. The next
 four steps happen while it builds.
 
 ## File the request as an issue
 
 <walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
-`docs/request.md` is the request as it arrived. Read it first — it is short, and
+`docs/request.md` is the request as it arrived. Read it first. It is short, and
 it is the only statement of what anyone actually wants.
 
 ```bash
@@ -189,7 +189,7 @@ cat docs/spec.md
 > **Careful:**
 >
 > **This spec was written to be flawed, and you should know that up front.** It
-> reads well, which is the point — the gaps in it are the kind that survive review
+> reads well, which is the point. The gaps in it are the kind that survive review
 > because nothing about them looks wrong. Finding them is the exercise.
 
 As you read, keep one question in mind, and only this one:
@@ -231,7 +231,7 @@ moves to the next one.
 > **Tip:**
 >
 > Answer as the person who owns the product, not as the person who has to build
-> it. "Whichever is easier" is not a decision — it hands the choice back to
+> it. "Whichever is easier" is not a decision. It hands the choice back to
 > whoever writes the code, which is exactly the situation you are removing.
 
 Keep going until it stops finding anything consequential. That usually takes
@@ -314,8 +314,8 @@ curl -sS -H "Authorization: Bearer $(gcloud auth print-access-token)" "${API}/${
 ### Verify your work
 
 `effectiveIdentity` is a long federated principal containing
-`system.id.goog`, ending in your engine's id. That principal — and not any
-service account — is what the next step grants access to.
+`system.id.goog`, ending in your engine's id. That principal, and not any
+service account, is what the next step grants access to.
 
 ## Give the agent a key to your fork
 
@@ -362,7 +362,7 @@ commit and nothing else.
 > **Tip:**
 >
 > That pin is why you cannot rescue a bad contract once the agent is working.
-> Anything you commit after this moment is invisible to it — not by agreement, but
+> Anything you commit after this moment is invisible to it, not by agreement but
 > because it never fetches anything else. If the contract was wrong, you find out
 > the way you would with a colleague who took the brief and went quiet.
 
@@ -393,8 +393,8 @@ git checkout -b review origin/agent/parse
 uv run pytest -q
 ```
 
-You can also watch the whole trajectory — every file it read, every command it
-ran — in the console, because each step was recorded as an event in the agent's
+You can also watch the whole trajectory, every file it read and every command it
+ran, in the console, because each step was recorded as an event in the agent's
 session.
 
 > **Careful:**
@@ -434,7 +434,7 @@ It shows you what it is about to remove and asks before doing it. Use
 
 It deletes three things: the deployed agent, the Secret Manager secret, and the
 deploy key on your fork. Your branches and the agent's commits are left alone,
-and so are the APIs — your project may well have been using them before today.
+and so are the APIs. Your project may well have been using them before today.
 
 > **Tip:**
 >
@@ -453,7 +453,7 @@ You took prose from a stakeholder and produced merged, tested code without
 writing any of it. The agent was the least interesting part: it did what the
 contract said, because by then the contract said something.
 
-The work that mattered was refusing to let the ambiguity through — and the
+The work that mattered was refusing to let the ambiguity through, and the
 reason the agent could be trusted with the rest is that you had made "done"
 checkable before you asked anyone, human or otherwise, to do it.
 
@@ -461,7 +461,7 @@ checkable before you asked anyone, human or otherwise, to do it.
 
 - Run it again with a spec you actually own, and see how far the interrogation
   gets before you have to make a decision you were avoiding
-- Read the trajectory in the console — the tool calls are a record of how it
+- Read the trajectory in the console. The tool calls are a record of how it
   reasoned, and they show where the contract was doing the work
 
 ### Verify your work

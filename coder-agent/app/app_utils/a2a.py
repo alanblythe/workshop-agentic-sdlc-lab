@@ -88,7 +88,7 @@ _ADK_AGENT_EXECUTOR_EXTENSION_URI = (
 
 async def _add_v0_3_compat_interface(card: AgentCard) -> AgentCard:
     """Advertise a v0.3 JSON-RPC interface so the served card stays consumable by
-    v0.3 A2A clients — notably Gemini Enterprise registration, whose validator
+    v0.3 A2A clients, notably Gemini Enterprise registration, whose validator
     still requires the 0.3 card shape (top-level ``url``/``protocolVersion``)."""
     if card.supported_interfaces:
         card.supported_interfaces.append(
@@ -159,7 +159,7 @@ async def attach_a2a_routes(
     The ``runner`` should share the session/artifact/memory services with the
     standard ADK path. ``capabilities``, ``agent_version``, and ``app_url``
     override their defaults (streaming + ADK extension, ``AGENT_VERSION``,
-    ``APP_URL``). Call once per app — typically in a FastAPI ``lifespan``, since
+    ``APP_URL``). Call once per app, typically in a FastAPI ``lifespan``, since
     the card is built asynchronously; repeated calls register duplicate routes.
     """
     resolved_app_url = _resolve_app_url(app_url)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Agentic SDLC workshop — teardown.
+# Agentic SDLC workshop, teardown.
 #
 # Removes everything the workshop created in your project and your fork, and
 # nothing else. Run it at the end of the session.
@@ -12,7 +12,7 @@
 # Safe to run twice: anything already gone is reported and skipped.
 #
 # Deliberately not `terraform destroy`. The state file is local and gitignored,
-# and you are plausibly in a fresh clone that has none — destroy would find an
+# and you are plausibly in a fresh clone that has none, destroy would find an
 # empty state, report no changes, delete nothing, and exit 0. Deleting by name
 # works from anywhere.
 #
@@ -50,7 +50,7 @@ PROJECT=$(gcloud config get-value project 2>/dev/null)
 [ -n "$PROJECT" ] && [ "$PROJECT" != "(unset)" ] || { echo "no active gcloud project" >&2; exit 1; }
 LOCATION="${AGENT_ENGINE_LOCATION:-us-central1}"
 TOKEN=$(gcloud auth print-access-token 2>/dev/null)
-[ -n "$TOKEN" ] || { echo "not authenticated — run: gcloud auth login" >&2; exit 1; }
+[ -n "$TOKEN" ] || { echo "not authenticated, run: gcloud auth login" >&2; exit 1; }
 API="https://${LOCATION}-aiplatform.googleapis.com/v1"
 BASE="${API}/projects/${PROJECT}/locations/${LOCATION}/reasoningEngines"
 
@@ -120,7 +120,7 @@ if [ -n "$KEY_IDS" ]; then
       ok "deploy key $k from $REPO"
     else
       FAILED=$((FAILED + 1))
-      fail "could not delete deploy key $k — do it at https://github.com/$REPO/settings/keys"
+      fail "could not delete deploy key $k, do it at https://github.com/$REPO/settings/keys"
     fi
   done
 fi
@@ -148,14 +148,14 @@ if [ "$SECRET_EXISTS" -eq 1 ]; then
     ok "secret $SECRET_ID and every version of it"
   else
     FAILED=$((FAILED + 1))
-    fail "could not delete $SECRET_ID — try: gcloud secrets delete $SECRET_ID --project=$PROJECT"
+    fail "could not delete $SECRET_ID, try: gcloud secrets delete $SECRET_ID --project=$PROJECT"
   fi
 fi
 
 if [ "$FAILED" -gt 0 ]; then
   step "$FAILED item(s) could not be removed"
   echo "  Something above is still there, and may still be billing or still"
-  echo "  grant access. Fix the failures and run this again — it is safe to."
+  echo "  grant access. Fix the failures and run this again, it is safe to."
   exit 1
 fi
 

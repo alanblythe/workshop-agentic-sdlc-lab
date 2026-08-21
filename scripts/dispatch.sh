@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Agentic SDLC workshop — dispatch a coding run.
+# Agentic SDLC workshop, dispatch a coding run.
 #
 # Sends your fork, one exact commit, and a branch name to the deployed agent,
 # then follows the branch while it works.

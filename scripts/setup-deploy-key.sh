@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Agentic SDLC workshop — deploy key setup.
+# Agentic SDLC workshop, deploy key setup.
 #
 # Run this from your fork, on the day. It generates an SSH key, gives it write
 # access to this one repository, and puts the private half into the Secret
@@ -59,11 +59,11 @@ ok "gh, gcloud, git, ssh-keygen"
 # --- 2. the fork -----------------------------------------------------------
 # Resolved from origin rather than by letting gh pick. A clone that also has an
 # upstream remote makes `gh repo view` ambiguous, and gh resolves that by
-# PROMPTING — which hangs a lab step that is meant to be one command.
+# PROMPTING, which hangs a lab step that is meant to be one command.
 step "your fork"
 
 ORIGIN=$(git remote get-url origin 2>/dev/null)
-[ -n "$ORIGIN" ] || die "no 'origin' remote here — run this from your clone of your fork" \
+[ -n "$ORIGIN" ] || die "no 'origin' remote here, run this from your clone of your fork" \
   'gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone'
 
 REPO=$(printf '%s' "$ORIGIN" | sed -E 's#^git@github\.com:##; s#^ssh://git@github\.com/##; s#^https://[^/]*github\.com/##; s#\.git$##')
@@ -74,9 +74,9 @@ case "$REPO" in
 esac
 
 PERM=$(gh repo view "$REPO" --json viewerPermission -q .viewerPermission 2>/dev/null)
-[ "$PERM" = "ADMIN" ] || die "you do not have admin on $REPO (you have '${PERM:-no access}'), so you cannot add a deploy key to it. This is what a clone of the upstream looks like — fork it first, then work in the fork." \
+[ "$PERM" = "ADMIN" ] || die "you do not have admin on $REPO (you have '${PERM:-no access}'), so you cannot add a deploy key to it. This is what a clone of the upstream looks like, fork it first, then work in the fork." \
   "gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone"
-ok "$REPO — you have admin"
+ok "$REPO, you have admin"
 
 # --- 3. the secret ---------------------------------------------------------
 # The container is Terraform's, made by preflight a week ago. This script only
@@ -131,8 +131,7 @@ ok "added with write access"
 
 # --- 6. prove it works -----------------------------------------------------
 # The same mechanism the agent uses: an explicit key, strict host checking left
-# ON, and a pinned known_hosts. IdentitiesOnly=yes is the load-bearing option —
-# without it ssh offers your own agent's keys first, and the check passes on
+# ON, and a pinned known_hosts. IdentitiesOnly=yes is the load-bearing option, # without it ssh offers your own agent's keys first, and the check passes on
 # your credentials rather than on the deploy key.
 step "verify"
 
@@ -142,9 +141,9 @@ ssh-keyscan -t rsa,ecdsa,ed25519 github.com > "$KEYDIR/known_hosts" 2>/dev/null
 export GIT_SSH_COMMAND="ssh -i $KEY -o IdentitiesOnly=yes -o UserKnownHostsFile=$KEYDIR/known_hosts -o StrictHostKeyChecking=yes"
 
 git clone --depth 1 "git@github.com:$REPO.git" "$KEYDIR/clone" >/dev/null 2>&1 \
-  || die "the key cannot clone $REPO over SSH. GitHub takes a few seconds to propagate a new deploy key — wait and re-run." \
+  || die "the key cannot clone $REPO over SSH. GitHub takes a few seconds to propagate a new deploy key, wait and re-run." \
     "GIT_SSH_COMMAND='$GIT_SSH_COMMAND' git clone git@github.com:$REPO.git /tmp/keycheck"
-ok "clone over SSH — no StrictHostKeyChecking=no anywhere"
+ok "clone over SSH, no StrictHostKeyChecking=no anywhere"
 
 # A read-only key is refused here, at receive-pack, before anything is sent.
 # --dry-run makes that a real authorization check that leaves no ref behind.
@@ -157,7 +156,7 @@ $(printf '%s' "$PUSH" | sed 's/^/      /')" \
       "gh repo deploy-key list --repo $REPO" ;;
   esac
 fi
-ok "push accepted — the key has write access"
+ok "push accepted, the key has write access"
 
 # --- 7. hand it to the agent -----------------------------------------------
 step "secret manager"
@@ -175,7 +174,7 @@ for v in $(gcloud secrets versions list "$SECRET_ID" --project="$PROJECT" \
              --filter='state:ENABLED' --format='value(name)' 2>/dev/null); do
   [ "$v" = "$VERSION" ] && continue
   gcloud secrets versions disable "$v" --secret="$SECRET_ID" --project="$PROJECT" >/dev/null 2>&1 \
-    && info "disabled version $v — its key is already revoked"
+    && info "disabled version $v, its key is already revoked"
 done
 
 step "done"
@@ -185,4 +184,4 @@ echo "  and pushes to:"
 echo "      git@github.com:$REPO.git"
 echo
 echo "  Nothing was left on this machine. To revoke, delete the key titled"
-echo "  '$KEY_TITLE' from $REPO — that alone is enough."
+echo "  '$KEY_TITLE' from $REPO, that alone is enough."
