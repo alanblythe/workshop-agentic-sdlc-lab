@@ -274,7 +274,7 @@ Interrogate docs/spec.md.
 It puts one ambiguity in front of you at a time: the passage, the two readings,
 and the case where they disagree. Arrow keys move, enter chooses. There is a
 write-in option for when neither reading is what you meant. It writes your
-decision into `docs/spec.md` and moves to the next one.
+decision into {{openFile "docs/spec.md"}} and moves to the next one.
 
 {{#aside "positive"}}
 Answer as the person who owns the product, not as the person who has to build
@@ -296,8 +296,8 @@ the decisions being explicit and attributed, not in the prose being tidy.
 git diff --stat docs/spec.md
 ```
 
-`docs/spec.md` has changed. Read your diff: every hunk should be a decision you
-made, not a rewording.
+{{openFile "docs/spec.md"}} has changed. Read your diff: every hunk should be
+a decision you made, not a rewording.
 
 {{step "Emit the contract" 8}}
 

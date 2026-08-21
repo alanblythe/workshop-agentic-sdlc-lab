@@ -255,7 +255,7 @@ Interrogate docs/spec.md.
 It puts one ambiguity in front of you at a time: the passage, the two readings,
 and the case where they disagree. Arrow keys move, enter chooses. There is a
 write-in option for when neither reading is what you meant. It writes your
-decision into `docs/spec.md` and moves to the next one.
+decision into <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/docs/spec.md">docs/spec.md</walkthrough-editor-open-file> and moves to the next one.
 
 > **Tip:**
 >
@@ -277,8 +277,8 @@ longer than people expect, and the questions get better as they get smaller.
 git diff --stat docs/spec.md
 ```
 
-`docs/spec.md` has changed. Read your diff: every hunk should be a decision you
-made, not a rewording.
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/docs/spec.md">docs/spec.md</walkthrough-editor-open-file> has changed. Read your diff: every hunk should be
+a decision you made, not a rewording.
 
 ## Emit the contract
 

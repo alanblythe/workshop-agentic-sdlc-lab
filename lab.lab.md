@@ -285,8 +285,8 @@ longer than people expect, and the questions get better as they get smaller.
 git diff --stat docs/spec.md
 ```
 
-`docs/spec.md` has changed. Read your diff: every hunk should be a decision you
-made, not a rewording.
+`docs/spec.md` has changed. Read your diff: every hunk should be
+a decision you made, not a rewording.
 
 ## Emit the contract
 
