@@ -37,6 +37,14 @@ build from it independently and their code would fit.
 - `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` still exported in this shell
 - A GitHub account with `gh` logged in
 
+Open this in Cloud Shell and the guide comes with you, in a panel beside the
+terminal you are typing into:
+
+<button>[Open in Cloud Shell](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md)</button>
+
+That clones the lab repository. You fork it in the next step, from inside that
+same clone.
+
 ### Restore your Cloud Shell
 
 Cloud Shell hands you a new VM today. `$HOME` came with you — your logins, the
@@ -97,7 +105,7 @@ gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
 cd workshop-agentic-sdlc-lab
 ```
 
-That gives you `origin` pointing at your fork and `upstream` at the original.
+Either way `origin` now points at your fork and `upstream` at the original.
 
 > aside positive
 >

@@ -86,12 +86,14 @@ created the container, and you will put a key in it later today.
 The application lives in its own repository. You fork it, because the agent will
 push to your copy and you will merge its work.
 
+You are already in a clone of it — the one Cloud Shell made when you opened this
+guide. Fork in place:
+
 ```bash
-gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
-cd workshop-agentic-sdlc-lab
+gh repo fork --remote
 ```
 
-That gives you `origin` pointing at your fork and `upstream` at the original.
+Either way `origin` now points at your fork and `upstream` at the original.
 
 > **Tip:**
 >

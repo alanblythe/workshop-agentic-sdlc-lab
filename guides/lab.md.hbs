@@ -38,6 +38,16 @@ build from it independently and their code would fit.
 - `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` still exported in this shell
 - A GitHub account with `gh` logged in
 
+{{#codelab}}
+Open this in Cloud Shell and the guide comes with you, in a panel beside the
+terminal you are typing into:
+
+<button>[Open in Cloud Shell](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md)</button>
+
+That clones the lab repository. You fork it in the next step, from inside that
+same clone.
+{{/codelab}}
+
 ### Restore your Cloud Shell
 
 Cloud Shell hands you a new VM today. `$HOME` came with you — your logins, the
@@ -91,12 +101,22 @@ created the container, and you will put a key in it later today.
 The application lives in its own repository. You fork it, because the agent will
 push to your copy and you will merge its work.
 
+{{#walkthrough}}
+You are already in a clone of it — the one Cloud Shell made when you opened this
+guide. Fork in place:
+
+```bash
+gh repo fork --remote
+```
+{{/walkthrough}}
+{{#codelab}}
 ```bash
 gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
 cd workshop-agentic-sdlc-lab
 ```
+{{/codelab}}
 
-That gives you `origin` pointing at your fork and `upstream` at the original.
+Either way `origin` now points at your fork and `upstream` at the original.
 
 {{#aside "positive"}}
 Forks do not copy issues. That is deliberate — you are about to file one, and it
