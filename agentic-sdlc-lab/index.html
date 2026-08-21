@@ -47,10 +47,10 @@
 <p><a href="https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md" target="_blank"><paper-button class="colored" raised>Open in Cloud Shell</paper-button></a></p>
 <p>That clones the lab repository. You fork it in the next step, from inside that same clone.</p>
 <h2 is-upgraded>Restore your Cloud Shell</h2>
-<p>Cloud Shell hands you a new VM today. <code>$HOME</code> came with you, carrying your logins, the ADK skills and the <code>spec-adversary</code> plugin. <code>/usr/bin</code> did not, so the <code>agy</code> update you ran during setup is gone.</p>
+<p>Update <code>agy</code>. It lives on the VM rather than in <code>$HOME</code>, so a new session may have an older one. No harm if you are already current.</p>
 <pre><code language="language-bash" class="language-bash">sudo agy update &amp;&amp; agy --version
 </code></pre>
-<p>Your <code>agy</code> login lives in <code>$HOME</code>, so it should still be there:</p>
+<p>Check your <code>agy</code> login:</p>
 <pre><code language="language-bash" class="language-bash">agy -p &#34;Reply with exactly: authenticated&#34;
 </code></pre>
 <p>If that asks you to open a URL instead of answering, the grant has lapsed and you need to log in again. Do it with the terminal widened, because <code>agy</code> wraps the URL to the width the terminal reports, and clicking a wrapped fragment sends an incomplete URL, which Google answers with <code>Error 400 (Bad Request)</code>:</p>
