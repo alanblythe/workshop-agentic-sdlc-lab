@@ -54,6 +54,10 @@
 <pre><code language="language-bash" class="language-bash">agy -p &#34;Reply with exactly: authenticated&#34;
 </code></pre>
 <p>If it asks you to open a URL instead of answering, the grant has lapsed. Log in again with <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7" target="_blank">Authenticate agy</a> from the setup guide, then come back.</p>
+<p>Point <code>gcloud</code> at it. A new session has no project set, and every <code>gcloud</code> command below needs one:</p>
+<pre><code language="language-bash" class="language-bash">gcloud config set project YOUR_PROJECT_ID
+gcloud config get-value project
+</code></pre>
 <p>Set your two locations. A new shell has neither, and they are not the same value: the model answers from <code>global</code>, your agent runs in a region.</p>
 <pre><code language="language-bash" class="language-bash">export MODEL_LOCATION=global
 export AGENT_ENGINE_LOCATION=us-central1
