@@ -35,7 +35,6 @@ build from it independently and their code would fit.
 ### What you'll need
 
 - The [preflight from the setup guide](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/), finished and reporting **ready**
-- `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` still exported in this shell
 - A GitHub account with `gh` logged in
 
 {{#codelab}}
@@ -73,18 +72,23 @@ incomplete URL, which Google answers with `Error 400 (Bad Request)`:
 COLS=$(tput cols); stty cols 2000; agy; stty cols "$COLS"
 ```
 
-Then check the rest survived:
+Set your two locations. A new shell has neither, and they are not the same
+value: the model answers from `global`, your agent runs in a region.
 
 ```bash
-echo "$MODEL_LOCATION / $AGENT_ENGINE_LOCATION"
+export MODEL_LOCATION=global
+export AGENT_ENGINE_LOCATION=us-central1
+```
+
+Then check your GitHub login survived, which it should have:
+
+```bash
 gh auth status
 ```
 
 {{#aside "negative"}}
-If those two variables are empty, set them again before going further. They are
-not the same value and never will be: the model answers from `global`, your
-agent runs in a region. Setting them equal produces a 404 that names the model
-and reads like a typo.
+Setting those two to the same value produces a 404 that names the model and
+reads like a typo in the model name rather than a wrong location.
 {{/aside}}
 
 ### Verify your work
