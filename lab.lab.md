@@ -59,14 +59,9 @@ Check your `agy` login:
 agy -p "Reply with exactly: authenticated"
 ```
 
-If that asks you to open a URL instead of answering, the grant has lapsed and
-you need to log in again. Do it with the terminal widened, because `agy` wraps the URL
-to the width the terminal reports, and clicking a wrapped fragment sends an
-incomplete URL, which Google answers with `Error 400 (Bad Request)`:
-
-```bash
-COLS=$(tput cols); stty cols 2000; agy; stty cols "$COLS"
-```
+If it asks you to open a URL instead of answering, the grant has lapsed. Log in
+again with [Authenticate agy](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7)
+from the setup guide, then come back.
 
 Set your two locations. A new shell has neither, and they are not the same
 value: the model answers from `global`, your agent runs in a region.
