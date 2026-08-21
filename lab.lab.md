@@ -178,8 +178,8 @@ four steps happen while it builds.
 
 Duration: 3
 
-`docs/request.md` is the request as it arrived. Read it first. It is short, and
-it is the only statement of what anyone actually wants.
+`docs/request.md` is the request as it arrived. Read it first. It
+is short, and it is the only statement of what anyone actually wants.
 
 ```bash
 cat docs/request.md
@@ -208,8 +208,8 @@ One open issue, titled **Account health scoring**.
 
 Duration: 4
 
-Someone has already turned that request into `docs/spec.md`. Read it as though
-you had to implement it this afternoon.
+Someone has already turned that request into `docs/spec.md`. Read
+it as though you had to implement it this afternoon.
 
 ```bash
 cat docs/spec.md

@@ -170,8 +170,8 @@ four steps happen while it builds.
 
 <walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
-`docs/request.md` is the request as it arrived. Read it first. It is short, and
-it is the only statement of what anyone actually wants.
+<walkthrough-editor-open-file filePath="docs/request.md">docs/request.md</walkthrough-editor-open-file> is the request as it arrived. Read it first. It
+is short, and it is the only statement of what anyone actually wants.
 
 ```bash
 cat docs/request.md
@@ -200,8 +200,8 @@ One open issue, titled **Account health scoring**.
 
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
-Someone has already turned that request into `docs/spec.md`. Read it as though
-you had to implement it this afternoon.
+Someone has already turned that request into <walkthrough-editor-open-file filePath="docs/spec.md">docs/spec.md</walkthrough-editor-open-file>. Read
+it as though you had to implement it this afternoon.
 
 ```bash
 cat docs/spec.md
