@@ -106,7 +106,7 @@ cd workshop-agentic-sdlc-lab
   --no-wait)
 </code></pre>
 <p><code>--no-wait</code> returns as soon as the build is submitted. <code>--agent-identity</code> is the part that matters most: it gives the deployment a federated identity of its own rather than borrowing a service account, which is how it will read a secret you have not given it yet.</p>
-<aside class="warning"><p>Budget about seven minutes. A first deploy in a cold project is slower than every later one, because nothing is cached yet.</p>
+<aside class="special"><p>The deploy takes about seven minutes, and it runs while you work through the next four steps. The minutes on this step are the ones you spend starting it. A first deploy in a cold project is slower than every later one, because nothing is cached yet.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
