@@ -32,16 +32,21 @@ Three measured facts shape what follows, and none is guessable:
    outside the tree, then wrote the same path through the shell. It is a
    guardrail against a stray edit, not a sandbox. The disposable container is
    the boundary.
-3. ``AntigravityAgent`` is **root-only** and requires ``save_dir``. Its resume
-   never actually engages with SDK 0.1.13: it is gated on
-   ``has_trajectory()`` finding ``traj-<conversation_id>`` in ``save_dir``, and
-   0.1.13 keeps conversations in a ``.db`` there instead -- only a ``.resume``
-   sidecar is written, never the file being looked for. So every turn starts a
-   fresh SDK conversation. Measured, twice in one container.
+3. ``AntigravityAgent`` is **root-only**, requires ``save_dir``, and its resume
+   does not work against SDK 0.1.13 -- an ADK-side bug, not an SDK one. The
+   SDK persists a conversation to ``<conversation_id>.db`` and resumes it
+   correctly when the id is passed back with ``CREATE_OR_RESUME`` (verified
+   directly: it recalled a word across two ``Agent`` instances). ADK's
+   ``_trajectory_files`` looks for ``traj-<conversation_id>`` instead, which the
+   harness never writes, so ``has_trajectory()`` is always False,
+   ``rename_trajectory()`` is a no-op, and each turn starts a fresh
+   conversation beside an orphaned ``traj-<sha256>.resume`` sidecar.
 
-**Nothing here resumes, and the design does not need it to.** The branch is the
-durable record, which is why the agent is told to push after every iteration
-rather than at the end.
+Resuming for real would mean driving the SDK directly and remembering the
+harness's conversation id -- and it would still only work while the same
+instance serves the next dispatch, since the ``.db`` is on the container's
+local disk. **The branch is the durable record**, which is why the agent is
+told to push after every iteration rather than at the end.
 """
 
 from __future__ import annotations
