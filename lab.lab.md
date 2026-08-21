@@ -117,6 +117,13 @@ cd workshop-agentic-sdlc-lab
 
 Either way `origin` now points at your fork and `upstream` at the original.
 
+Two remotes means `gh` will not guess which repository a command means, so tell
+it. Everything after this files issues and reads state on your fork:
+
+```bash
+gh repo set-default "$(git remote get-url origin)"
+```
+
 > aside positive
 >
 > Forks do not copy issues. That is deliberate. You are about to file one, and it
