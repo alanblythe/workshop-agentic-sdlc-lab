@@ -46,15 +46,14 @@ same clone.
 
 ### Restore your Cloud Shell
 
-Cloud Shell hands you a new VM today. `$HOME` came with you, carrying your logins, the
-ADK skills and the `spec-adversary` plugin. `/usr/bin` did not, so the `agy`
-update you ran during setup is gone.
+Update `agy`. It lives on the VM rather than in `$HOME`, so a new session may
+have an older one. No harm if you are already current.
 
 ```bash
 sudo agy update && agy --version
 ```
 
-Your `agy` login lives in `$HOME`, so it should still be there:
+Check your `agy` login:
 
 ```bash
 agy -p "Reply with exactly: authenticated"
