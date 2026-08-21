@@ -380,11 +380,16 @@ Commit the contract and send the work.
 git add -A
 git commit -m "The contract: resolved spec and the tests it implies"
 git push
-bash scripts/dispatch.sh
+bash scripts/dispatch.sh --issue 1
 ```
 
 The dispatch pins the exact commit you just pushed. The agent fetches that
 commit and nothing else.
+
+`--issue` is the number you filed earlier, which is **1** on a fork whose
+issues you had just turned on. Run `gh issue list` if yours is not. The agent
+writes it into every commit it pushes, and dispatch refuses a number that is
+not an open issue rather than let a wrong one reach the commits.
 
 > aside positive
 >

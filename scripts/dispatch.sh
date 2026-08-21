@@ -10,8 +10,7 @@
 #   bash scripts/dispatch.sh --follow-only      # follow a run already going
 #
 #   --branch NAME   where the agent pushes (default: agent/parse)
-#   --issue N       the issue the agent's commits close (default: the one open
-#                   issue on the fork, if there is exactly one)
+#   --issue N       the issue the agent's commits close
 #   --engine ID     override engine discovery
 #   --help          this text
 #
@@ -116,16 +115,17 @@ if [ "$DISPATCH" -eq 1 ]; then
   ok "$REPO at $(echo "$SHA" | cut -c1-12), pushed"
   ok "the agent will push to $BRANCH"
 
-  # Exactly one open issue, or none. Two would mean guessing which the work
-  # belongs to, and a wrong number closes something nobody looked at.
-  if [ -z "$ISSUE" ] && have gh; then
-    ISSUE=$(gh issue list --repo "$REPO" --state open --json number --jq \
-      'if length == 1 then .[0].number else empty end' 2>/dev/null)
-  fi
+  # Checked, not guessed. A number that names a closed or missing issue would
+  # be written into every commit message and discovered at the merge.
   if [ -n "$ISSUE" ]; then
+    if have gh; then
+      STATE=$(gh issue view "$ISSUE" --repo "$REPO" --json state --jq .state 2>/dev/null)
+      [ "$STATE" = "OPEN" ] || die "issue #$ISSUE is ${STATE:-not there} on $REPO. Its number goes into every commit the agent writes, so it has to be the one you want closed." \
+        "gh issue list --repo $REPO"
+    fi
     ok "its commits will close #$ISSUE"
   else
-    info "no single open issue found; the commits will not reference one"
+    info "no --issue given; the commits will not reference one"
   fi
 fi
 
