@@ -228,9 +228,9 @@ whether they are the ones that matter.
 
 <walkthrough-tutorial-duration duration="12"></walkthrough-tutorial-duration>
 
-You installed a plugin called **spec-adversary** during preflight. It finds
-ambiguity and makes you decide it. It will not decide anything for you, and it
-will not write the spec.
+Preflight installed the workshop plugin, and in it is a skill called
+**spec-adversary**. It finds ambiguity and makes you decide it. It will not
+decide anything for you, and it will not write the spec.
 
 ```bash
 agy
