@@ -1,6 +1,8 @@
 <!-- Generated from guides/lab.md.hbs by npm run build. Do not edit. -->
 # The agentic SDLC lab
 
+<walkthrough-tutorial-duration duration="60"></walkthrough-tutorial-duration>
+
 ## Before you begin
 
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>

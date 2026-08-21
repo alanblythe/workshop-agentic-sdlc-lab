@@ -39,6 +39,18 @@ Handlebars.registerHelper("step", function (title, minutes, options) {
   return new Handlebars.SafeString(`## ${title}\n\n${duration}\n`);
 });
 
+// The tutorial-level total, which Cloud Shell renders under the title. Summed
+// from the step minutes so it cannot drift from them; a codelab gets its total
+// from claat, which adds the per-step Durations itself.
+Handlebars.registerHelper("tutorialDuration", function (options) {
+  const { format, totalMinutes } = options.data.root;
+  return format === "walkthrough"
+    ? new Handlebars.SafeString(
+        `<walkthrough-tutorial-duration duration="${totalMinutes}"></walkthrough-tutorial-duration>`,
+      )
+    : "";
+});
+
 // claat styles `> aside positive|negative`. Cloud Shell has no equivalent, so
 // it gets a labelled blockquote -- readable, and it keeps the distinction.
 Handlebars.registerHelper("aside", function (tone, options) {
@@ -80,9 +92,10 @@ if (!sources.length) {
 
 for (const src of sources) {
   const name = basename(src, ".md.hbs");
-  const template = Handlebars.compile(readFileSync(join(SRC, src), "utf8"), {
-    noEscape: true,
-  });
+  const source = readFileSync(join(SRC, src), "utf8");
+  const totalMinutes = [...source.matchAll(/\{\{step\s+"[^"]*"\s+(\d+)\s*\}\}/g)]
+    .reduce((sum, m) => sum + Number(m[1]), 0);
+  const template = Handlebars.compile(source, { noEscape: true });
   for (const [format, { ext, label }] of Object.entries(FORMATS)) {
     const out = name + ext;
     // Collapse the blank-line runs the conditionals leave behind.
@@ -91,7 +104,7 @@ for (const src of sources) {
     // from, or someone edits the output and loses it on the next build.
     const note = `<!-- Generated from ${SRC}/${src} by ${"npm run build"}. Do not edit. -->\n`;
     const body =
-      note + template({ format }).replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "");
+      note + template({ format, totalMinutes }).replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "");
     writeFileSync(out, body);
     console.log(`  ${out.padEnd(28)} ${label}`);
   }
