@@ -48,7 +48,14 @@ would() { printf '  %swould%s    %s\n' "$YEL" "$R" "$1"; }
 
 PROJECT=$(gcloud config get-value project 2>/dev/null)
 [ -n "$PROJECT" ] && [ "$PROJECT" != "(unset)" ] || { echo "no active gcloud project" >&2; exit 1; }
-LOCATION="${AGENT_ENGINE_LOCATION:-us-central1}"
+# Never defaulted. Teardown querying the wrong region finds nothing and reports
+# a clean project while the engine keeps running, which is the one thing this
+# script exists to prevent.
+LOCATION="${AGENT_ENGINE_LOCATION:-}"
+[ -n "$LOCATION" ] || LOCATION=$(gcloud secrets describe agentic-sdlc-deploy-key \
+  --format='value(replication.userManaged.replicas[0].location)' 2>/dev/null)
+[ -n "$LOCATION" ] || die "AGENT_ENGINE_LOCATION is not set and could not be read back from the deploy-key secret" \
+  'export AGENT_ENGINE_LOCATION=<the region you deployed to>' 
 TOKEN=$(gcloud auth print-access-token 2>/dev/null)
 [ -n "$TOKEN" ] || { echo "not authenticated, run: gcloud auth login" >&2; exit 1; }
 API="https://${LOCATION}-aiplatform.googleapis.com/v1"
