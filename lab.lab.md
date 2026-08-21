@@ -63,6 +63,14 @@ If it asks you to open a URL instead of answering, the grant has lapsed. Log in
 again with [Authenticate agy](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7)
 from the setup guide, then come back.
 
+Point `gcloud` at it. A new session has no project set, and every `gcloud`
+command below needs one:
+
+```bash
+gcloud config set project YOUR_PROJECT_ID
+gcloud config get-value project
+```
+
 Set your two locations. A new shell has neither, and they are not the same
 value: the model answers from `global`, your agent runs in a region.
 
