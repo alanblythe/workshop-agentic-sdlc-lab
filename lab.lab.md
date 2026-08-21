@@ -145,14 +145,12 @@ The agent takes several minutes to build and deploy. Start it now and do the
 thinking while it works. Waiting at a progress bar teaches nothing.
 
 ```bash
-cd coder-agent
-agents-cli deploy \
+(cd coder-agent && agents-cli deploy \
   --project "$(gcloud config get-value project)" \
   --region "$AGENT_ENGINE_LOCATION" \
   --agent-identity \
   --update-env-vars GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true,MODEL_LOCATION=global \
-  --no-wait
-cd ..
+  --no-wait)
 ```
 
 `--no-wait` returns as soon as the build is submitted. `--agent-identity` is the
@@ -168,7 +166,7 @@ have not given it yet.
 ### Verify your work
 
 ```bash
-agents-cli deploy --status
+(cd coder-agent && agents-cli deploy --status)
 ```
 
 It reports the deployment as in progress. You are not waiting for it. The next
@@ -314,11 +312,11 @@ Duration: 3
 Your agent should be up by now.
 
 ```bash
-agents-cli deploy --status
+(cd coder-agent && agents-cli deploy --status)
 ```
 
 ```bash
-agents-cli deploy --list
+(cd coder-agent && agents-cli deploy --list)
 ```
 
 Confirm it is running under its own identity rather than a borrowed service
