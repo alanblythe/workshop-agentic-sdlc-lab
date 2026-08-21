@@ -124,18 +124,26 @@ it. Everything after this files issues and reads state on your fork:
 gh repo set-default "$(git remote get-url origin)"
 ```
 
+Then turn issues on. GitHub ships every new fork with them disabled, and it
+says so only when you try to file one, two steps from here:
+
+```bash
+gh repo edit "$(git remote get-url origin)" --enable-issues
+```
+
 > aside positive
 >
-> Forks do not copy issues. That is deliberate. You are about to file one, and it
-> should be yours.
+> A fork does not copy the issues from the repository it came from either. That
+> is deliberate. You are about to file one, and it should be yours.
 
 ### Verify your work
 
 ```bash
-gh repo view --json nameWithOwner,isFork --jq '.nameWithOwner + " fork=" + (.isFork|tostring)'
+gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
+  --jq '.nameWithOwner + " fork=" + (.isFork|tostring) + " issues=" + (.hasIssuesEnabled|tostring)'
 ```
 
-The owner should be **you**, and `fork=true`.
+The owner should be **you**, with `fork=true` and `issues=true`.
 
 ## Start the agent deploying, then walk away
 

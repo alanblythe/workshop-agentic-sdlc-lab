@@ -116,18 +116,26 @@ it. Everything after this files issues and reads state on your fork:
 gh repo set-default "$(git remote get-url origin)"
 ```
 
+Then turn issues on. GitHub ships every new fork with them disabled, and it
+says so only when you try to file one, two steps from here:
+
+```bash
+gh repo edit "$(git remote get-url origin)" --enable-issues
+```
+
 > **Tip:**
 >
-> Forks do not copy issues. That is deliberate. You are about to file one, and it
-> should be yours.
+> A fork does not copy the issues from the repository it came from either. That
+> is deliberate. You are about to file one, and it should be yours.
 
 ### Verify your work
 
 ```bash
-gh repo view --json nameWithOwner,isFork --jq '.nameWithOwner + " fork=" + (.isFork|tostring)'
+gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
+  --jq '.nameWithOwner + " fork=" + (.isFork|tostring) + " issues=" + (.hasIssuesEnabled|tostring)'
 ```
 
-The owner should be **you**, and `fork=true`.
+The owner should be **you**, with `fork=true` and `issues=true`.
 
 ## Start the agent deploying, then walk away
 
@@ -170,7 +178,7 @@ four steps happen while it builds.
 
 <walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
-<walkthrough-editor-open-file filePath="docs/request.md">docs/request.md</walkthrough-editor-open-file> is the request as it arrived. Read it first. It
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/docs/request.md">docs/request.md</walkthrough-editor-open-file> is the request as it arrived. Read it first. It
 is short, and it is the only statement of what anyone actually wants.
 
 ```bash
@@ -200,7 +208,7 @@ One open issue, titled **Account health scoring**.
 
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
-Someone has already turned that request into <walkthrough-editor-open-file filePath="docs/spec.md">docs/spec.md</walkthrough-editor-open-file>. Read
+Someone has already turned that request into <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/docs/spec.md">docs/spec.md</walkthrough-editor-open-file>. Read
 it as though you had to implement it this afternoon.
 
 ```bash
