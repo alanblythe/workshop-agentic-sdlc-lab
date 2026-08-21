@@ -29,7 +29,7 @@
                   feedback-link="https://github.com/alanblythe/workshop-agentic-sdlc/issues">
     
       <google-codelab-step label="Before you begin" duration="4">
-        <p>You are going to take a request written the way requests actually arrive — prose, from a stakeholder, with the important parts unsaid — and get working code out of the other end. A coding agent writes the code. You never do.</p>
+        <p>You are going to take a request written the way requests actually arrive: prose, from a stakeholder, with the important parts unsaid, and get working code out of the other end. A coding agent writes the code. You never do.</p>
 <p>The interesting part is not the agent. It is what you have to make true before an agent can be useful: a specification precise enough that two parties could build from it independently and their code would fit.</p>
 <h2 class="checklist" is-upgraded>What you&#39;ll learn</h2>
 <ul class="checklist">
@@ -40,7 +40,7 @@
 </ul>
 <h2 is-upgraded>What you&#39;ll need</h2>
 <ul>
-<li>The preflight from the setup guide, finished and reporting <strong>ready</strong></li>
+<li>The <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/" target="_blank">preflight from the setup guide</a>, finished and reporting <strong>ready</strong></li>
 <li><code>MODEL_LOCATION</code> and <code>AGENT_ENGINE_LOCATION</code> still exported in this shell</li>
 <li>A GitHub account with <code>gh</code> logged in</li>
 </ul>
@@ -48,13 +48,13 @@
 <p><a href="https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md" target="_blank"><paper-button class="colored" raised>Open in Cloud Shell</paper-button></a></p>
 <p>That clones the lab repository. You fork it in the next step, from inside that same clone.</p>
 <h2 is-upgraded>Restore your Cloud Shell</h2>
-<p>Cloud Shell hands you a new VM today. <code>$HOME</code> came with you — your logins, the ADK skills, the <code>spec-adversary</code> plugin — but <code>/usr/bin</code> did not, so the <code>agy</code> update you ran during setup is gone.</p>
+<p>Cloud Shell hands you a new VM today. <code>$HOME</code> came with you, carrying your logins, the ADK skills and the <code>spec-adversary</code> plugin. <code>/usr/bin</code> did not, so the <code>agy</code> update you ran during setup is gone.</p>
 <pre><code language="language-bash" class="language-bash">sudo agy update &amp;&amp; agy --version
 </code></pre>
 <p>Your <code>agy</code> login lives in <code>$HOME</code>, so it should still be there:</p>
 <pre><code language="language-bash" class="language-bash">agy -p &#34;Reply with exactly: authenticated&#34;
 </code></pre>
-<p>If that asks you to open a URL instead of answering, the grant has lapsed and you need to log in again. Do it with the terminal widened — <code>agy</code> wraps the URL to the width the terminal reports, and clicking a wrapped fragment sends an incomplete URL, which Google answers with <code>Error 400 (Bad Request)</code>:</p>
+<p>If that asks you to open a URL instead of answering, the grant has lapsed and you need to log in again. Do it with the terminal widened, because <code>agy</code> wraps the URL to the width the terminal reports, and clicking a wrapped fragment sends an incomplete URL, which Google answers with <code>Error 400 (Bad Request)</code>:</p>
 <pre><code language="language-bash" class="language-bash">COLS=$(tput cols); stty cols 2000; agy; stty cols &#34;$COLS&#34;
 </code></pre>
 <p>Then check the rest survived:</p>
@@ -66,7 +66,7 @@ gh auth status
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">gcloud secrets describe agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
 </code></pre>
-<p>It should print the secret&#39;s resource name. That secret is empty — preflight created the container, and you will put a key in it later today.</p>
+<p>It should print the secret&#39;s resource name. That secret is empty. Preflight created the container, and you will put a key in it later today.</p>
 
 
       </google-codelab-step>
@@ -77,7 +77,7 @@ gh auth status
 cd workshop-agentic-sdlc-lab
 </code></pre>
 <p>Either way <code>origin</code> now points at your fork and <code>upstream</code> at the original.</p>
-<aside class="special"><p>Forks do not copy issues. That is deliberate — you are about to file one, and it should be yours.</p>
+<aside class="special"><p>Forks do not copy issues. That is deliberate. You are about to file one, and it should be yours.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">gh repo view --json nameWithOwner,isFork --jq &#39;.nameWithOwner + &#34; fork=&#34; + (.isFork|tostring)&#39;
@@ -88,7 +88,7 @@ cd workshop-agentic-sdlc-lab
       </google-codelab-step>
     
       <google-codelab-step label="Start the agent deploying, then walk away" duration="4">
-        <p>The agent takes several minutes to build and deploy. Start it now and do the thinking while it works — waiting at a progress bar teaches nothing.</p>
+        <p>The agent takes several minutes to build and deploy. Start it now and do the thinking while it works. Waiting at a progress bar teaches nothing.</p>
 <pre><code language="language-bash" class="language-bash">cd coder-agent
 agents-cli deploy \
   --project &#34;$(gcloud config get-value project)&#34; \
@@ -104,13 +104,13 @@ cd ..
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">agents-cli deploy --status
 </code></pre>
-<p>It reports the deployment as in progress. You are not waiting for it — the next four steps happen while it builds.</p>
+<p>It reports the deployment as in progress. You are not waiting for it. The next four steps happen while it builds.</p>
 
 
       </google-codelab-step>
     
       <google-codelab-step label="File the request as an issue" duration="3">
-        <p><code>docs/request.md</code> is the request as it arrived. Read it first — it is short, and it is the only statement of what anyone actually wants.</p>
+        <p><code>docs/request.md</code> is the request as it arrived. Read it first. It is short, and it is the only statement of what anyone actually wants.</p>
 <pre><code language="language-bash" class="language-bash">cat docs/request.md
 </code></pre>
 <p>Now file it, so the work has a home and a number:</p>
@@ -130,7 +130,7 @@ cd ..
         <p>Someone has already turned that request into <code>docs/spec.md</code>. Read it as though you had to implement it this afternoon.</p>
 <pre><code language="language-bash" class="language-bash">cat docs/spec.md
 </code></pre>
-<aside class="warning"><p><strong>This spec was written to be flawed, and you should know that up front.</strong> It reads well, which is the point — the gaps in it are the kind that survive review because nothing about them looks wrong. Finding them is the exercise.</p>
+<aside class="warning"><p><strong>This spec was written to be flawed, and you should know that up front.</strong> It reads well, which is the point. The gaps in it are the kind that survive review because nothing about them looks wrong. Finding them is the exercise.</p>
 </aside>
 <p>As you read, keep one question in mind, and only this one:</p>
 <p>Could two people build from this independently, without talking, and would their code fit together?</p>
@@ -149,7 +149,7 @@ cd ..
 <pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
 </code></pre>
 <p>It shows you a single ambiguity, two readings, and the assertion that would differ between them. You choose. It writes your decision into <code>docs/spec.md</code> and moves to the next one.</p>
-<aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision — it hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
+<aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision. It hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
 </aside>
 <p>Keep going until it stops finding anything consequential. That usually takes longer than people expect, and the questions get better as they get smaller.</p>
 <aside class="warning"><p>Resist the urge to fix the spec yourself while you are in there. The value is in the decisions being explicit and attributed, not in the prose being tidy.</p>
@@ -195,7 +195,7 @@ curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#
 <aside class="warning"><p>The deploy output prints a <code>gcp-sa-aiplatform-re</code> service account even when <code>--agent-identity</code> worked. It is not the identity your agent runs as. <code>spec.effectiveIdentity</code> is the only field that tells the truth.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
-<p><code>effectiveIdentity</code> is a long federated principal containing <code>system.id.goog</code>, ending in your engine&#39;s id. That principal — and not any service account — is what the next step grants access to.</p>
+<p><code>effectiveIdentity</code> is a long federated principal containing <code>system.id.goog</code>, ending in your engine&#39;s id. That principal, and not any service account, is what the next step grants access to.</p>
 
 
       </google-codelab-step>
@@ -221,7 +221,7 @@ git push
 bash scripts/dispatch.sh
 </code></pre>
 <p>The dispatch pins the exact commit you just pushed. The agent fetches that commit and nothing else.</p>
-<aside class="special"><p>That pin is why you cannot rescue a bad contract once the agent is working. Anything you commit after this moment is invisible to it — not by agreement, but because it never fetches anything else. If the contract was wrong, you find out the way you would with a colleague who took the brief and went quiet.</p>
+<aside class="special"><p>That pin is why you cannot rescue a bad contract once the agent is working. Anything you commit after this moment is invisible to it, not by agreement but because it never fetches anything else. If the contract was wrong, you find out the way you would with a colleague who took the brief and went quiet.</p>
 </aside>
 <p>The script follows your branch and prints each commit as it lands. Closing it does not stop the agent.</p>
 <h2 is-upgraded>Verify your work</h2>
@@ -240,7 +240,7 @@ git diff main...origin/agent/parse
 <pre><code language="language-bash" class="language-bash">git checkout -b review origin/agent/parse
 uv run pytest -q
 </code></pre>
-<p>You can also watch the whole trajectory — every file it read, every command it ran — in the console, because each step was recorded as an event in the agent&#39;s session.</p>
+<p>You can also watch the whole trajectory, every file it read and every command it ran, in the console, because each step was recorded as an event in the agent&#39;s session.</p>
 <aside class="warning"><p>Green tests mean it satisfied the contract. They do not mean the contract was right. If the code passes and still does the wrong thing, that is a finding about your spec, and it is the most valuable thing this lab can hand you.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
@@ -259,18 +259,18 @@ git merge origin/agent/parse
 <pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
 <p>It shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
-<p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs — your project may well have been using them before today.</p>
+<p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs. Your project may well have been using them before today.</p>
 <aside class="special"><p>Deleting the deploy key is the part that matters most. The agent is only costing you money; the key is granting write access to your repository until it is gone. The script removes it first for that reason.</p>
 </aside>
 <aside class="warning"><p>Do this even if you plan to come back. A deployed agent holds a warm instance and bills for it, and the deploy key stays valid until you delete it.</p>
 </aside>
 <h2 is-upgraded>What you did</h2>
 <p>You took prose from a stakeholder and produced merged, tested code without writing any of it. The agent was the least interesting part: it did what the contract said, because by then the contract said something.</p>
-<p>The work that mattered was refusing to let the ambiguity through — and the reason the agent could be trusted with the rest is that you had made &#34;done&#34; checkable before you asked anyone, human or otherwise, to do it.</p>
+<p>The work that mattered was refusing to let the ambiguity through, and the reason the agent could be trusted with the rest is that you had made &#34;done&#34; checkable before you asked anyone, human or otherwise, to do it.</p>
 <h2 is-upgraded>What&#39;s next</h2>
 <ul>
 <li>Run it again with a spec you actually own, and see how far the interrogation gets before you have to make a decision you were avoiding</li>
-<li>Read the trajectory in the console — the tool calls are a record of how it reasoned, and they show where the contract was doing the work</li>
+<li>Read the trajectory in the console. The tool calls are a record of how it reasoned, and they show where the contract was doing the work</li>
 </ul>
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
