@@ -1,4 +1,4 @@
-<!-- Generated from guides/lab.md.hbs by npm run build. Do not edit. -->
+<!-- Generated from guides/lab.md.hbs by the presenter repo. Do not edit. -->
 summary: Take a vague request to working code with a coding agent you deploy and dispatch
 id: agentic-sdlc-lab
 categories: cloud,agents
