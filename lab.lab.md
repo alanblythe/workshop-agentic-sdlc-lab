@@ -236,18 +236,28 @@ whether they are the ones that matter.
 
 Duration: 12
 
-You installed a plugin called **spec-adversary** during preflight. It finds
-ambiguity and makes you decide it. It will not decide anything for you, and it
-will not write the spec.
+Preflight installed an agent called **spec-adversary**. Not a prompt you have
+to remember: a persona with its own rules, which finds ambiguity and makes you
+decide it. It will not decide anything for you, it will not write the spec, and
+it will not write code.
+
+Check it is there, then start a session as it:
 
 ```bash
-agy
+agy agents
+agy --agent spec-adversary
 ```
 
-Then ask it to go to work:
+> aside negative
+>
+> `agy --agent` says nothing about a name it does not recognise. Misspell it and
+> you get the ordinary agent, which will cheerfully decide things for you, which
+> is why you look for `spec-adversary` in that list first.
+
+Then point it at the spec:
 
 ```text
-Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
+Interrogate docs/spec.md.
 ```
 
 It puts one ambiguity in front of you at a time: the passage, the two readings,
