@@ -241,17 +241,13 @@ git merge origin/agent/parse
     
       <google-codelab-step label="Tear it down" duration="4">
         <p>The agent costs money while it is deployed. Remove it, and the credential with it.</p>
-<p>Delete the deployment, using the <code>ENGINE</code> you resolved earlier:</p>
-<pre><code language="language-bash" class="language-bash">curl -sS -X DELETE -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;${API}/${ENGINE}&#34;
+<p>One command removes everything the day created:</p>
+<pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
-<p>Then revoke the key. Deleting it from the repository is what actually ends the agent&#39;s access — the copy in Secret Manager is inert once the key is gone:</p>
-<pre><code language="language-bash" class="language-bash">gh repo deploy-key list
-gh repo deploy-key delete KEY_ID
-</code></pre>
-<p>Finally, disable the stored key so nothing can read it back:</p>
-<pre><code language="language-bash" class="language-bash">gcloud secrets versions list agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
-gcloud secrets versions destroy VERSION --secret=agentic-sdlc-deploy-key --quiet
-</code></pre>
+<p>It shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
+<p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs — your project may well have been using them before today.</p>
+<aside class="special"><p>Deleting the deploy key is the part that matters most. The agent is only costing you money; the key is granting write access to your repository until it is gone. The script removes it first for that reason.</p>
+</aside>
 <aside class="warning"><p>Do this even if you plan to come back. A deployed agent holds a warm instance and bills for it, and the deploy key stays valid until you delete it.</p>
 </aside>
 <h2 is-upgraded>What you did</h2>
@@ -263,10 +259,9 @@ gcloud secrets versions destroy VERSION --secret=agentic-sdlc-deploy-key --quiet
 <li>Read the trajectory in the console — the tool calls are a record of how it reasoned, and they show where the contract was doing the work</li>
 </ul>
 <h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">agents-cli deploy --list
-gh repo deploy-key list
+<pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
-<p>No <code>coder-agent</code> deployment, and no deploy key. Nothing is billing.</p>
+<p>Run a second time it reports <strong>Already torn down</strong> and changes nothing. That is the check: it is safe to re-run, so there is no doubt about whether it finished.</p>
 
 
       </google-codelab-step>
