@@ -98,20 +98,18 @@ cd workshop-agentic-sdlc-lab
     
       <google-codelab-step label="Start the agent deploying, then walk away" duration="4">
         <p>The agent takes several minutes to build and deploy. Start it now and do the thinking while it works. Waiting at a progress bar teaches nothing.</p>
-<pre><code language="language-bash" class="language-bash">cd coder-agent
-agents-cli deploy \
+<pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy \
   --project &#34;$(gcloud config get-value project)&#34; \
   --region &#34;$AGENT_ENGINE_LOCATION&#34; \
   --agent-identity \
   --update-env-vars GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true,MODEL_LOCATION=global \
-  --no-wait
-cd ..
+  --no-wait)
 </code></pre>
 <p><code>--no-wait</code> returns as soon as the build is submitted. <code>--agent-identity</code> is the part that matters most: it gives the deployment a federated identity of its own rather than borrowing a service account, which is how it will read a secret you have not given it yet.</p>
 <aside class="warning"><p>Budget about seven minutes. A first deploy in a cold project is slower than every later one, because nothing is cached yet.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">agents-cli deploy --status
+<pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
 </code></pre>
 <p>It reports the deployment as in progress. You are not waiting for it. The next four steps happen while it builds.</p>
 
@@ -188,9 +186,9 @@ parsing rules and the scoring rules separately. Do not write an implementation.
     
       <google-codelab-step label="Check the deploy landed" duration="3">
         <p>Your agent should be up by now.</p>
-<pre><code language="language-bash" class="language-bash">agents-cli deploy --status
+<pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
 </code></pre>
-<pre><code language="language-bash" class="language-bash">agents-cli deploy --list
+<pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --list)
 </code></pre>
 <p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so ask the API directly:</p>
 <pre><code language="language-bash" class="language-bash">export API=&#34;https://${AGENT_ENGINE_LOCATION}-aiplatform.googleapis.com/v1&#34;
