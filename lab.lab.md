@@ -239,8 +239,8 @@ nobody has made yet.
 
 ### Verify your work
 
-Write down two things in the spec you could implement in more than one way, and
-that a reviewer would probably wave through. You will find out shortly whether
+Think about two things in the spec you could implement in more than one way,
+and that a reviewer would probably wave through. You will find out shortly whether
 they are the ones that matter.
 
 ## Interrogate the spec
