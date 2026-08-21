@@ -84,6 +84,27 @@ def probe_image() -> str:
     return " | ".join(out)
 
 
+async def start_coding_run(repo: str, sha: str, branch: str) -> str:
+    """Runs the coding agent against a repository, at an exact commit.
+
+    Call this once per dispatch, including a dispatch that resumes earlier
+    work: the previous run's files are gone even though this conversation is
+    not. Prior work is recovered from the branch, not from disk.
+
+    Args:
+        repo: owner/name of the GitHub repository, e.g. "octocat/hello".
+        sha: the exact commit dispatched. Nothing committed after it is visible.
+        branch: the branch to push work to, e.g. "agent/parse".
+
+    Returns:
+        What was checked out, the tool calls the coder made, and its own account
+        of where it got to.
+    """
+    from app import coder_client
+
+    return await coder_client.run(repo=repo, sha=sha, branch=branch)
+
+
 root_agent = Agent(
     name="root_agent",
     model=Gemini(
@@ -91,11 +112,19 @@ root_agent = Agent(
         retry_options=types.HttpRetryOptions(attempts=3),
     ),
     instruction=(
-        "You are a diagnostic probe. When asked to run a probe, call the "
-        "matching tool exactly once and report its raw output verbatim. Never "
-        "summarise, never retry, never invent values."
+        "You dispatch and report on unattended coding runs.\n\n"
+        "When given a repository, a commit and a branch, call "
+        "start_coding_run exactly once and report what it returns verbatim. "
+        "Do not summarise the trajectory and do not soften the result: if the "
+        "coder ran out of time with tests still failing, say so plainly.\n\n"
+        "This conversation may span several dispatches. Earlier turns tell you "
+        "what has already been tried; the code itself lives on the branch, not "
+        "in this container. On a second dispatch, call start_coding_run again "
+        "with the same arguments -- it resumes from the branch.\n\n"
+        "When asked to run a diagnostic probe, call probe_image once and report "
+        "its raw output verbatim. Never invent values."
     ),
-    tools=[probe_image],
+    tools=[start_coding_run, probe_image],
 )
 
 app = App(

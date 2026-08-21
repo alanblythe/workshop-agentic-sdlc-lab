@@ -34,6 +34,14 @@ RUN git config --system user.name  "agentic-sdlc coder agent" \
 
 RUN pip install --no-cache-dir uv==0.8.13
 
+# The coding harness lives in its own interpreter. google-antigravity needs
+# protobuf >= 7.35 at runtime; google-cloud-aiplatform, which serves the
+# reasoning-engine routes :streamQuery dispatches to, caps protobuf below
+# 7.0.0. One venv cannot hold both, and the failure is not a resolution error
+# -- it is a VersionError raised when localharness_pb2 is imported.
+COPY ./coder_runtime /opt/antigravity
+RUN cd /opt/antigravity && uv sync --frozen --no-dev
+
 WORKDIR /code
 
 COPY ./pyproject.toml ./README.md ./uv.lock* ./

@@ -1,0 +1,18 @@
+[project]
+name = "coder-runtime"
+version = "0.1.0"
+description = "The Antigravity SDK coding harness, isolated from the ADK serving environment."
+requires-python = ">=3.12,<3.13"
+
+# This environment exists because google-antigravity needs protobuf >= 7.35 at
+# runtime, while google-cloud-aiplatform -- which the ADK serving surface needs
+# for its reasoning-engine routes -- caps protobuf below 7.0.0. The two cannot
+# share a venv, so they get one each and talk over a pipe.
+#
+# Nothing from the ADK stack belongs in here. Adding it back is what would
+# reintroduce the conflict, silently, at image build time.
+dependencies = [
+    "google-antigravity==0.1.12",
+    "google-cloud-secret-manager>=2.20.0",
+    "protobuf>=7.35",
+]
