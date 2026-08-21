@@ -174,7 +174,7 @@ parsing rules and the scoring rules separately. Do not write an implementation.
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">uv run pytest -q
 </code></pre>
-<p>They should <strong>fail</strong>, and fail for the right reason: there is no implementation yet. A test that passes now is testing nothing.</p>
+<p>You get errors, not failures: <code>ModuleNotFoundError: No module named 'usage'</code>. That is the right result. The contract names a module nobody has written yet, so the tests cannot be imported, let alone pass, and collection stops before the starter tests run. A test that passes now is testing nothing.</p>
 
 
       </google-codelab-step>
