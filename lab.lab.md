@@ -400,26 +400,24 @@ Duration: 4
 The agent costs money while it is deployed. Remove it, and the credential with
 it.
 
-Delete the deployment, using the `ENGINE` you resolved earlier:
+One command removes everything the day created:
 
 ```bash
-curl -sS -X DELETE -H "Authorization: Bearer $(gcloud auth print-access-token)" "${API}/${ENGINE}"
+bash scripts/teardown.sh
 ```
 
-Then revoke the key. Deleting it from the repository is what actually ends the
-agent's access — the copy in Secret Manager is inert once the key is gone:
+It shows you what it is about to remove and asks before doing it. Use
+`--dry-run` first if you would rather look than trust.
 
-```bash
-gh repo deploy-key list
-gh repo deploy-key delete KEY_ID
-```
+It deletes three things: the deployed agent, the Secret Manager secret, and the
+deploy key on your fork. Your branches and the agent's commits are left alone,
+and so are the APIs — your project may well have been using them before today.
 
-Finally, disable the stored key so nothing can read it back:
-
-```bash
-gcloud secrets versions list agentic-sdlc-deploy-key --format='value(name)'
-gcloud secrets versions destroy VERSION --secret=agentic-sdlc-deploy-key --quiet
-```
+> aside positive
+>
+> Deleting the deploy key is the part that matters most. The agent is only
+> costing you money; the key is granting write access to your repository until it
+> is gone. The script removes it first for that reason.
 
 > aside negative
 >
@@ -446,8 +444,8 @@ checkable before you asked anyone, human or otherwise, to do it.
 ### Verify your work
 
 ```bash
-agents-cli deploy --list
-gh repo deploy-key list
+bash scripts/teardown.sh
 ```
 
-No `coder-agent` deployment, and no deploy key. Nothing is billing.
+Run a second time it reports **Already torn down** and changes nothing. That is
+the check: it is safe to re-run, so there is no doubt about whether it finished.
