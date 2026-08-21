@@ -3,7 +3,7 @@
 
 ## Before you begin
 
-<walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
 You are going to take a request written the way requests actually arrive —
 prose, from a stakeholder, with the important parts unsaid — and get working
@@ -28,6 +28,18 @@ build from it independently and their code would fit.
 - The preflight from the setup guide, finished and reporting **ready**
 - `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` still exported in this shell
 - A GitHub account with `gh` logged in
+
+### Restore your Cloud Shell
+
+Cloud Shell hands you a new VM today. `$HOME` came with you — your logins, the
+ADK skills, the `spec-adversary` plugin — but `/usr/bin` did not, so the `agy`
+update you ran during setup is gone.
+
+```bash
+sudo agy update && agy --version
+```
+
+Then check the rest survived:
 
 ```bash
 echo "$MODEL_LOCATION / $AGENT_ENGINE_LOCATION"
