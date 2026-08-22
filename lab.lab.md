@@ -236,7 +236,8 @@ it is in your fork and it needs no installing. A workspace skill is found
 relative to where `agy` starts, so start it from the root of the clone:
 
 ```bash
-cd ~/workshop-agentic-sdlc-lab && agy
+cd ~/cloudshell_open/workshop-agentic-sdlc-lab
+agy
 ```
 
 Then ask it to go to work:
@@ -304,7 +305,8 @@ an agent can be held to.
 Start `agy` again, continuing the same conversation:
 
 ```bash
-cd ~/workshop-agentic-sdlc-lab && agy -c
+cd ~/cloudshell_open/workshop-agentic-sdlc-lab
+agy -c
 ```
 
 Then:
