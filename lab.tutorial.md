@@ -238,6 +238,8 @@ Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 ```
 
+You can use `shift` + `tab` to allow Antigravity to auto-edit files.
+
 ### Read what you just pointed at
 
 Before you answer its first question, open
