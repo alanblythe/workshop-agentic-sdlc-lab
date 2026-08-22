@@ -124,8 +124,6 @@ gh repo edit --enable-issues
 <p>File it, so the work has a number. The agent&#39;s commits will reference it and merging its branch will close it, which is what the number is for:</p>
 <pre><code language="language-bash" class="language-bash">gh issue create --title &#34;Account health scoring&#34; --body-file docs/request.md
 </code></pre>
-<aside class="warning"><p>Use <code>--body-file</code>, not <code>-F</code>. With <code>-F</code> the command stops and asks for a title interactively, which is easy to miss and looks like a hang.</p>
-</aside>
 <p>Someone else has already turned it into a spec. Read <code>docs/spec.md</code> as though you had to implement it this afternoon.</p>
 <pre><code language="language-bash" class="language-bash">cat docs/spec.md
 </code></pre>
