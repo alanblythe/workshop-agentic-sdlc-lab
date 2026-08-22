@@ -174,10 +174,13 @@ fixtures/usage.csv. One ambiguity at a time.
       <google-codelab-step label="Emit the contract" duration="8">
         <p>Decisions in prose are still prose. Now turn them into tests, which is the form an agent can be held to.</p>
 <p>Still in <code>agy</code>:</p>
-<pre><code language="language-text" class="language-text">From the resolved docs/spec.md, write contract tests into tests/. Cover the
-parsing rules and the scoring rules separately. Do not write an implementation.
-Cite the decision id on every assertion that came from one.
+<pre><code language="language-text" class="language-text">Use the contract-writer agent to write contract tests into tests/ from the
+resolved docs/spec.md. Cover the parsing rules and the scoring rules
+separately. Do not write an implementation. Cite the decision id on every
+assertion that came from one.
 </code></pre>
+<aside class="warning"><p>Name the agent, as that prompt does. Describe the job without naming it and the adversary is liable to invent its own writer from the description instead of invoking this one, which comes with none of the rules you are about to read.</p>
+</aside>
 <p>The adversary does not write them. It hands the job to a subagent called <strong>contract-writer</strong>, which you will see spawn: a second persona whose only work is turning resolved decisions into assertions, and which is not allowed to decide anything. If it reports an assertion it could not derive, that is an ambiguity the interrogation missed, and the adversary reopens it rather than letting a guess into a test.</p>
 <p class="image-container"><img alt="The contract-writer subagent launching" src="img/71a410fa60478a16.png"></p>
 <p>Its definition is <code>.agents/agents/contract-writer/agent.md</code>, in your fork beside the skill.</p>
