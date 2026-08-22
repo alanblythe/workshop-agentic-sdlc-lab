@@ -134,6 +134,7 @@ cd workshop-agentic-sdlc-lab
 </code></pre>
 <aside class="warning"><p><strong>This spec was written to be flawed, and you should know that up front.</strong> It reads well, which is the point. The gaps in it are the kind that survive review because nothing about them looks wrong. Finding them is the exercise.</p>
 </aside>
+<p>It already conforms to <code>docs/spec-template.md</code>, the shape a spec has to have here before anyone writes code. Every required section is present, <code>Open questions</code> says none, and it is nowhere near buildable. Sections are cheap. The gate at the end of that template is the part that costs something.</p>
 <p>As you read, keep one question in mind, and only this one:</p>
 <p>Could two people build from this independently, without talking, and would their code fit together?</p>
 <p>Anything that passes is precise enough. Anything that does not is a decision nobody has made yet.</p>
@@ -157,9 +158,15 @@ cd workshop-agentic-sdlc-lab
 <aside class="warning"><p>Resist the urge to fix the spec yourself while you are in there. The value is in the decisions being explicit and attributed, not in the prose being tidy.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">git diff --stat docs/spec.md
+<pre><code language="language-bash" class="language-bash">git diff docs/spec.md
 </code></pre>
-<p><code>docs/spec.md</code> has changed. Read your diff: every hunk should be a decision you made, not a rewording.</p>
+<p>The gate, and you can check it yourself:</p>
+<ul>
+<li><code>Status</code> is <strong>Approved</strong></li>
+<li><code>Open questions</code> is empty</li>
+<li><code>Decisions</code> has a row per question you answered, each naming the case that would have differed</li>
+</ul>
+<p>Every hunk in that diff should be one of those three. A hunk that is a rewording is the adversary editing your spec, which it is not allowed to do.</p>
 
 
       </google-codelab-step>
@@ -169,10 +176,15 @@ cd workshop-agentic-sdlc-lab
 <p>Still in <code>agy</code>:</p>
 <pre><code language="language-text" class="language-text">From the resolved docs/spec.md, write contract tests into tests/. Cover the
 parsing rules and the scoring rules separately. Do not write an implementation.
+Cite the decision id on every assertion that came from one.
 </code></pre>
 <p>The adversary does not write them. It hands the job to a subagent called <strong>contract-writer</strong>, which you will see spawn: a second persona whose only work is turning resolved decisions into assertions, and which is not allowed to decide anything. If it reports an assertion it could not derive, that is an ambiguity the interrogation missed, and the adversary reopens it rather than letting a guess into a test.</p>
 <p>These tests are the contract. They are what &#34;done&#34; means, and they are the only thing standing between you and an agent that writes plausible code which does the wrong thing.</p>
 <h2 is-upgraded>Verify your work</h2>
+<p>First, that the files exist:</p>
+<pre><code language="language-bash" class="language-bash">git status --short tests/
+</code></pre>
+<p>Three new files. If the subagent reported writing them and this prints nothing, it did not write them: what an agent says it did and what is on disk are two different claims, and only one of them is checkable.</p>
 <pre><code language="language-bash" class="language-bash">uv run pytest -q
 </code></pre>
 <p>You get errors, not failures: <code>ModuleNotFoundError: No module named 'usage'</code>. That is the right result. The contract names a module nobody has written yet, so the tests cannot be imported, let alone pass, and collection stops before the starter tests run. A test that passes now is testing nothing.</p>
