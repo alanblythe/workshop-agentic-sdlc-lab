@@ -19,3 +19,4 @@ commands:
 # The contract tests are the only files an agent writes in this lab.
 writes:
   - tests
+  - docs
