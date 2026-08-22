@@ -81,14 +81,11 @@ echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
         <p>The application lives in its own repository. You fork it, because the agent will push to your copy and you will merge its work.</p>
 <pre><code language="language-bash" class="language-bash">gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
 cd workshop-agentic-sdlc-lab
+gh repo set-default &#34;$(git remote get-url origin)&#34;
+gh repo edit --enable-issues
 </code></pre>
-<p>Either way <code>origin</code> now points at your fork and <code>upstream</code> at the original.</p>
-<p>Two remotes means <code>gh</code> will not guess which repository a command means, so tell it. Everything after this files issues and reads state on your fork:</p>
-<pre><code language="language-bash" class="language-bash">gh repo set-default &#34;$(git remote get-url origin)&#34;
-</code></pre>
-<p>Then turn issues on. GitHub ships every new fork with them disabled, and it says so only when you try to file one, two steps from here:</p>
-<pre><code language="language-bash" class="language-bash">gh repo edit &#34;$(git remote get-url origin)&#34; --enable-issues
-</code></pre>
+<p><code>origin</code> now points at your fork and <code>upstream</code> at the original.</p>
+<p>The second line is not housekeeping. Forking sets <code>gh</code>&#39;s default repository to <strong>upstream</strong>, so without it the issue you file lands on the workshop&#39;s copy rather than yours, and nothing tells you. The third turns issues on, which GitHub disables on every new fork, and which you find out about two steps from here when you try to file one.</p>
 <aside class="special"><p>A fork does not copy the issues from the repository it came from either. That is deliberate. You are about to file one, and it should be yours.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
