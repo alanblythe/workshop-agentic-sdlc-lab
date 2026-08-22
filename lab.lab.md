@@ -236,17 +236,19 @@ whether they are the ones that matter.
 Duration: 12
 
 The interrogator is a skill called **spec-adversary**, and it ships in this
-repository, which means it is now in your fork. Install it, then start `agy`:
+repository at `.agents/skills/`, which means it is in your fork and it needs no
+installing. Start `agy` from the root of the clone and it is already there:
 
 ```bash
-agy plugin install .
 agy
 ```
 
 > aside negative
 >
-> Install before you start `agy`, not after. Skills are discovered when it
-> starts, so one added to a running session is not there.
+> From the root of the clone, not from `coder-agent` or your home directory. A
+> workspace skill is found relative to where `agy` starts. Type `/` and you
+> should see **spec-adversary** under *Workspace skills*; if you do not, your
+> `agy` is old, and `agy plugin install .` loads it the other way.
 
 Then ask it to go to work:
 
@@ -257,7 +259,7 @@ Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
 ### Read what you just pointed at
 
 Before you answer its first question, open
-`skills/spec-adversary/SKILL.md` and read it. It is 150 lines and
+`.agents/skills/spec-adversary/SKILL.md` and read it. It is 150 lines and
 it is the whole method: sweep the spec before asking anything, one question at
 a time, and never recommend a reading. Every refusal you are about to meet is
 written down in there, which is the difference between an agent behaving oddly
