@@ -194,11 +194,6 @@ merging its branch will close it, which is what the number is for:
 gh issue create --title "Account health scoring" --body-file docs/request.md
 ```
 
-> aside negative
->
-> Use `--body-file`, not `-F`. With `-F` the command stops and asks for a title
-> interactively, which is easy to miss and looks like a hang.
-
 Someone else has already turned it into a spec. Read `docs/spec.md`
 as though you had to implement it this afternoon.
 
