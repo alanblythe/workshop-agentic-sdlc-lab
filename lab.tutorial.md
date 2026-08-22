@@ -310,6 +310,8 @@ letting a guess into a test.
 
 ![The contract-writer subagent launching](docs/images/contract-writer-spawn.png)
 
+Its definition is <walkthrough-editor-open-file filePath=".gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md">~/.gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md</walkthrough-editor-open-file>.
+
 These tests are the contract. They are what "done" means, and they are the only
 thing standing between you and an agent that writes plausible code which does
 the wrong thing.
