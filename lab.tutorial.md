@@ -274,7 +274,7 @@ longer than people expect, and the questions get better as they get smaller.
 Open the **Source Control** view in the editor and click `spec.md` to see what
 changed.
 
-![The Source Control view, with spec.md listed as changed](cloudshell_open/workshop-agentic-sdlc-lab/docs/images/source-control-spec-diff.png)
+![The Source Control view, with spec.md listed as changed](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/source-control-spec-diff.png)
 
 The gate, and you can check it yourself:
 
@@ -308,7 +308,7 @@ decide anything. If it reports an assertion it could not derive, that is an
 ambiguity the interrogation missed, and the adversary reopens it rather than
 letting a guess into a test.
 
-![The contract-writer subagent launching](cloudshell_open/workshop-agentic-sdlc-lab/docs/images/contract-writer-spawn.png)
+![The contract-writer subagent launching](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/contract-writer-spawn.png)
 
 Its definition is <walkthrough-editor-open-file filePath=".gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md">~/.gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md</walkthrough-editor-open-file>.
 
