@@ -1,5 +1,6 @@
 {
   "lab-commands": {
+    "enabled": false,
     "PreToolUse": [
       {
         "matcher": "run_command",
