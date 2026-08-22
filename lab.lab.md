@@ -253,7 +253,8 @@ agy
 Then ask it to go to work:
 
 ```text
-Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
+Use the spec-adversary skill on docs/spec.md. The sample data is
+fixtures/usage.csv. One ambiguity at a time.
 ```
 
 ### Read what you just pointed at
