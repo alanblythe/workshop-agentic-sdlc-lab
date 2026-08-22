@@ -142,12 +142,18 @@ gh repo edit --enable-issues
       </google-codelab-step>
     
       <google-codelab-step label="Interrogate the spec" duration="12">
-        <p>Preflight installed the workshop plugin, and in it is a skill called <strong>spec-adversary</strong>. It finds ambiguity and makes you decide it. It will not decide anything for you, and it will not write the spec.</p>
-<pre><code language="language-bash" class="language-bash">agy
+        <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository, which means it is now in your fork. Install it, then start <code>agy</code>:</p>
+<pre><code language="language-bash" class="language-bash">agy plugin install .
+agy
 </code></pre>
+<aside class="warning"><p>Install before you start <code>agy</code>, not after. Skills are discovered when it starts, so one added to a running session is not there.</p>
+</aside>
 <p>Then ask it to go to work:</p>
 <pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
 </code></pre>
+<h2 is-upgraded>Read what you just pointed at</h2>
+<p>Before you answer its first question, open <code>skills/spec-adversary/SKILL.md</code> and read it. It is 150 lines and it is the whole method: sweep the spec before asking anything, one question at a time, and never recommend a reading. Every refusal you are about to meet is written down in there, which is the difference between an agent behaving oddly and an agent behaving as specified.</p>
+<p>It is in your fork, so it is yours to change. That is the last step of the workshop, and the reason the file is here rather than somewhere central.</p>
 <p>It puts one ambiguity in front of you at a time: the passage, the two readings, and the case where they disagree. Arrow keys move, enter chooses. There is a write-in option for when neither reading is what you meant. It writes your decision into <code>docs/spec.md</code> and moves to the next one.</p>
 <aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision. It hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
 </aside>
