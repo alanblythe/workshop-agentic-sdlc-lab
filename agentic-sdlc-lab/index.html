@@ -180,7 +180,7 @@ Cite the decision id on every assertion that came from one.
 </code></pre>
 <p>The adversary does not write them. It hands the job to a subagent called <strong>contract-writer</strong>, which you will see spawn: a second persona whose only work is turning resolved decisions into assertions, and which is not allowed to decide anything. If it reports an assertion it could not derive, that is an ambiguity the interrogation missed, and the adversary reopens it rather than letting a guess into a test.</p>
 <p class="image-container"><img alt="The contract-writer subagent launching" src="img/71a410fa60478a16.png"></p>
-<p>Its definition is <code>~/.gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md</code>.</p>
+<p>Its definition is <code>.agents/agents/contract-writer/agent.md</code>, in your fork beside the skill.</p>
 <p>These tests are the contract. They are what &#34;done&#34; means, and they are the only thing standing between you and an agent that writes plausible code which does the wrong thing.</p>
 <h2 is-upgraded>Verify your work</h2>
 <p>First, that the files exist:</p>
