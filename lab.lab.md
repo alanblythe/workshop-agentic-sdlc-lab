@@ -265,6 +265,8 @@ and the case where they disagree. Arrow keys move, enter chooses. There is a
 write-in option for when neither reading is what you meant. It writes your
 decision into `docs/spec.md` and moves to the next one.
 
+The sample data it asks about is `fixtures/usage.csv`.
+
 > aside positive
 >
 > Answer as the person who owns the product, not as the person who has to build

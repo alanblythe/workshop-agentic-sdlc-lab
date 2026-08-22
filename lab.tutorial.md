@@ -257,6 +257,8 @@ and the case where they disagree. Arrow keys move, enter chooses. There is a
 write-in option for when neither reading is what you meant. It writes your
 decision into <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/docs/spec.md">docs/spec.md</walkthrough-editor-open-file> and moves to the next one.
 
+The sample data it asks about is <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/fixtures/usage.csv">fixtures/usage.csv</walkthrough-editor-open-file>.
+
 > **Tip:**
 >
 > Answer as the person who owns the product, not as the person who has to build
