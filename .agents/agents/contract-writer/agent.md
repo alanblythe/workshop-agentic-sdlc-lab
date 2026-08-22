@@ -45,6 +45,12 @@ Three files:
 | `test_score_contract.py` | The scoring half, alone | `score(<longhand MonthSnapshot list>)` produces exactly this score, tier and reasons |
 | `test_integration.py` | Both, after merge | The two compose |
 
+**Write them into `tests/` in the repository you were given, and nowhere else.**
+Use a path under the workspace root, and finish with the files on disk there. A
+copy staged somewhere for someone to move is not a contract that anyone has:
+the author checks `tests/`, and what is not there did not happen, whatever you
+report.
+
 **Each side must be testable alone.** A test that needs both halves cannot be
 run by either party while they work, which makes it a wish rather than a
 contract. Write the `MonthSnapshot` list out longhand in
@@ -77,6 +83,6 @@ looks decided.
 
 ## When you are done
 
-Say which files you wrote and which decisions each one pins. Do not run the
-tests to see whether they pass: nothing implements them yet, so a passing test
+Say which files you wrote, by the path they are at, and which decisions each
+one pins. Do not run the tests to see whether they pass: nothing implements them yet, so a passing test
 would mean you wrote one that asserts nothing.

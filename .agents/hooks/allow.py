@@ -6,7 +6,12 @@ live in allowed.yaml so changing them does not mean editing code.
 
 The tool's arguments differ per tool -- run_command carries CommandLine and
 write_to_file carries TargetFile -- so each is read by name.
+
+Every call is appended to allow.log. A hook that only ever says ask looks the
+same from the prompt as a hook that is not running at all, and the log is what
+tells those apart.
 """
+import datetime
 import json
 import os
 import pathlib
@@ -14,9 +19,21 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 RULES = HERE / "allowed.yaml"
+LOG = HERE / "allow.log"
 # .agents/hooks/allow.py, so the repository is two directories up. Derived from
 # this file rather than from the working directory, which is not the clone.
 REPO = HERE.parent.parent
+
+
+def note(**record):
+    # Logging must never be the reason a tool call fails.
+    try:
+        record["at"] = datetime.datetime.now().isoformat(timespec="seconds")
+        record["cwd"] = os.getcwd()
+        with LOG.open("a") as fh:
+            fh.write(json.dumps(record) + "\n")
+    except Exception:
+        pass
 
 
 def rules():
@@ -43,8 +60,8 @@ def verdict(tool, args, commands, writes):
         command = (args.get("CommandLine") or "").strip()
         for prefix in commands:
             if command == prefix or command.startswith(prefix + " "):
-                return prefix
-        return None
+                return prefix, command
+        return None, command
 
     if tool == "write_to_file":
         # The path arrives as the agent wrote it, which may start with ~ or a
@@ -55,10 +72,10 @@ def verdict(tool, args, commands, writes):
         for directory in writes:
             allowed = (REPO / directory).resolve()
             if allowed == target or allowed in target.parents:
-                return str(directory)
-        return None
+                return str(directory), str(target)
+        return None, str(target)
 
-    return None
+    return None, ""
 
 
 def main():
@@ -67,18 +84,21 @@ def main():
     try:
         payload = json.load(sys.stdin)
         call = payload["toolCall"]
-        matched = verdict(call["name"], call.get("args") or {}, *rules())
-    except Exception:
-        print(json.dumps({"decision": "ask"}))
+        tool = call["name"]
+        matched, subject = verdict(tool, call.get("args") or {}, *rules())
+    except Exception as exc:
+        note(tool="?", error=f"{type(exc).__name__}: {exc}", decision="ask")
+        print(json.dumps({"decision": "ask", "reason": "the lab hook could not read this call"}))
         return
 
     if matched:
-        print(json.dumps({"decision": "allow", "reason": f"{matched} is on the lab allow-list"}))
+        decision = {"decision": "allow", "reason": f"{matched} is on the lab allow-list"}
     else:
-        # The reason is shown with the prompt, so say which list was consulted
-        # and what was compared. A hook that only ever says ask is otherwise
-        # indistinguishable from one that is not running.
-        print(json.dumps({"decision": "ask", "reason": f"not on the lab allow-list in {RULES}"}))
+        # The reason is shown with the prompt, so say which list was consulted.
+        decision = {"decision": "ask", "reason": f"not on the lab allow-list in {RULES}"}
+
+    note(tool=tool, subject=subject, matched=matched, decision=decision["decision"], repo=str(REPO))
+    print(json.dumps(decision))
 
 
 main()

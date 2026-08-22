@@ -5,3 +5,4 @@ __pycache__/
 
 # Authoring-time only.
 node_modules/
+.agents/hooks/allow.log
