@@ -1,0 +1,12 @@
+# Commands the lab's agents may run without stopping to ask.
+#
+# Matched against the start of the command line, so `git status` covers
+# `git status --short tests/`. Anything not listed here gets the normal
+# permission prompt, which is the point: this is what the lab's own steps run,
+# not a blanket yes.
+allow:
+  - pytest
+  - uv run pytest
+  - git status
+  - git diff
+  - ls

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "./.agents/hooks/allow-lab-commands.sh",
+            "command": "./.agents/hooks/allow-lab-commands.py",
             "timeout": 5
           }
         ]
