@@ -140,11 +140,9 @@ gh repo edit --enable-issues
       </google-codelab-step>
     
       <google-codelab-step label="Interrogate the spec" duration="12">
-        <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository at <code>.agents/skills/</code>, which means it is in your fork and it needs no installing. Start <code>agy</code> from the root of the clone and it is already there:</p>
-<pre><code language="language-bash" class="language-bash">agy
+        <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository at <code>.agents/skills/</code>, which means it is in your fork and it needs no installing. A workspace skill is found relative to where <code>agy</code> starts, so start it from the root of the clone:</p>
+<pre><code language="language-bash" class="language-bash">cd ~/workshop-agentic-sdlc-lab &amp;&amp; agy
 </code></pre>
-<aside class="warning"><p>From the root of the clone, not from <code>coder-agent</code> or your home directory. A workspace skill is found relative to where <code>agy</code> starts. Type <code>/</code> and you should see <strong>spec-adversary</strong> under <em>Workspace skills</em>; if you do not, your <code>agy</code> is old, and <code>agy plugin install .</code> loads it the other way.</p>
-</aside>
 <p>Then ask it to go to work:</p>
 <pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
