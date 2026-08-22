@@ -223,9 +223,9 @@ whether they are the ones that matter.
 <walkthrough-tutorial-duration duration="12"></walkthrough-tutorial-duration>
 
 The interrogator is a skill called **spec-adversary**, and it ships in this
-repository at `.agents/skills/`, which means it is in your fork and it needs no
-installing. A workspace skill is found relative to where `agy` starts, so start
-it from the root of the clone:
+repository at <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/.agents/skills/spec-adversary/SKILL.md">.agents/skills/spec-adversary/SKILL.md</walkthrough-editor-open-file>, which means
+it is in your fork and it needs no installing. A workspace skill is found
+relative to where `agy` starts, so start it from the root of the clone:
 
 ```bash
 cd ~/workshop-agentic-sdlc-lab && agy

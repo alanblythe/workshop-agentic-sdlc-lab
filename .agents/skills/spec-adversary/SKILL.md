@@ -139,7 +139,8 @@ third answer anyway, because resolutions expose ambiguity that was not visible
 before. Say how many you currently have open if the author asks, and never as a
 finish line. Stop when the property holds, and say so plainly:
 
-> I can't find a reading of this that would make the two halves disagree.
+> I can't find a reading of this that would send two builders in different
+> directions.
 
 Then stop. Do not carry on into the tests, and do not offer to: ask nothing,
 propose nothing, and wait.
