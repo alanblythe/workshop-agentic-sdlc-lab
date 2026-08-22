@@ -58,24 +58,31 @@ The passage and the differing assertion are the question. The readings are the
 options.
 
 ```
-question:  > "seats_active is the count of seats used that month"
+question:  > "a run counts as failed if it exits non-zero"
 
-           ACME's Feb row is empty. Read as zero, seats fall 40% and ACME
-           scores AT RISK. Read as unknown, February is skipped, January and
-           March are both 5 seats, and ACME scores HEALTHY.
+           Run 4471 was killed by the deploy timeout and never reported an
+           exit code. Read as failed, the nightly goes red and the release is
+           blocked. Read as no result, the nightly is green and it ships.
 
-options:   An empty seats_active means zero. Count that month as 0 seats.
-           An empty seats_active means unknown. Skip that month.
+options:   A missing exit code counts as failed. Block the release.
+           A missing exit code counts as no result. Ignore the run.
 ```
 
 Where there is no `ask_question` tool, write the same three parts out and
 wait. Do not invent a tool to ask with.
 
-The third part is what makes this work. A question alone, *"what does an empty `seats_active` mean?"*, is answerable with a shrug. A
-question with a visible consequence is answerable only with a decision.
+The third part is what makes this work. A question alone, *"what does a
+missing exit code mean?"*, is answerable with a shrug. A question with a
+visible consequence is answerable only with a decision.
 
 **Both readings must be genuinely defensible.** If one is obviously right, it
 is not an ambiguity, it is a typo, fix it silently and move on.
+
+**Take the case from the data, not from memory.** Where you have been pointed
+at sample data, open it and quote a case that is really in it, values and all.
+The example above is a worked shape, not a source of facts. An author who
+checks the file and finds your case is not in it has no way to tell which of
+your questions were real.
 
 ## Never propose-and-approve
 
@@ -99,9 +106,9 @@ and not in a summary.
 
 Write it as **a rule a builder follows**, not as a note about a conversation:
 
-- Bad: *"We decided empty means unknown."*
-- Good: *"An empty `seats_active` means the month was not measured. Skip that
-  month; do not treat it as zero."*
+- Bad: *"We decided a missing exit code means no result."*
+- Good: *"A run with no exit code did not report. Ignore it when colouring the
+  nightly; do not count it as a failure."*
 
 Nothing about the discussion survives into the spec. The spec describes the
 system, not its history.
