@@ -296,10 +296,17 @@ an agent can be held to.
 Still in `agy`:
 
 ```text
-From the resolved docs/spec.md, write contract tests into tests/. Cover the
-parsing rules and the scoring rules separately. Do not write an implementation.
-Cite the decision id on every assertion that came from one.
+Use the contract-writer agent to write contract tests into tests/ from the
+resolved docs/spec.md. Cover the parsing rules and the scoring rules
+separately. Do not write an implementation. Cite the decision id on every
+assertion that came from one.
 ```
+
+> **Careful:**
+>
+> Name the agent, as that prompt does. Describe the job without naming it and the
+> adversary is liable to invent its own writer from the description instead of
+> invoking this one, which comes with none of the rules you are about to read.
 
 The adversary does not write them. It hands the job to a subagent called
 **contract-writer**, which you will see spawn: a second persona whose only work
