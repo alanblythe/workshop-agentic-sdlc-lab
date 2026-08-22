@@ -1,0 +1,16 @@
+{
+  "lab-commands": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "./.agents/hooks/allow-lab-commands.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
