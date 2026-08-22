@@ -274,6 +274,8 @@ longer than people expect, and the questions get better as they get smaller.
 Open the **Source Control** view in the editor and click `spec.md` to see what
 changed.
 
+![The Source Control view, with spec.md listed as changed](docs/images/source-control-spec-diff.png)
+
 The gate, and you can check it yourself:
 
 - `Status` is **Approved**
