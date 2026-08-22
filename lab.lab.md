@@ -276,12 +276,9 @@ The sample data it asks about is `fixtures/usage.csv`.
 Keep going until it stops finding anything consequential. That usually takes
 longer than people expect, and the questions get better as they get smaller.
 
-> aside negative
->
-> Resist the urge to fix the spec yourself while you are in there. The value is in
-> the decisions being explicit and attributed, not in the prose being tidy.
-
 ### Verify your work
+
+Exit `agy` with `ctrl` + `c` twice, so you have a shell back.
 
 ```bash
 git diff docs/spec.md
@@ -304,7 +301,13 @@ Duration: 8
 Decisions in prose are still prose. Now turn them into tests, which is the form
 an agent can be held to.
 
-Still in `agy`:
+Start `agy` again, continuing the same conversation:
+
+```bash
+cd ~/workshop-agentic-sdlc-lab && agy -c
+```
+
+Then:
 
 ```text
 From the resolved docs/spec.md, write contract tests into tests/. Cover the
