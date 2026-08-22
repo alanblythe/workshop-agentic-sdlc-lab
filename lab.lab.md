@@ -113,23 +113,17 @@ push to your copy and you will merge its work.
 ```bash
 gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
 cd workshop-agentic-sdlc-lab
-```
-
-Either way `origin` now points at your fork and `upstream` at the original.
-
-Two remotes means `gh` will not guess which repository a command means, so tell
-it. Everything after this files issues and reads state on your fork:
-
-```bash
 gh repo set-default "$(git remote get-url origin)"
+gh repo edit --enable-issues
 ```
 
-Then turn issues on. GitHub ships every new fork with them disabled, and it
-says so only when you try to file one, two steps from here:
+`origin` now points at your fork and `upstream` at the original.
 
-```bash
-gh repo edit "$(git remote get-url origin)" --enable-issues
-```
+The second line is not housekeeping. Forking sets `gh`'s default repository to
+**upstream**, so without it the issue you file lands on the workshop's copy
+rather than yours, and nothing tells you. The third turns issues on, which
+GitHub disables on every new fork, and which you find out about two steps from
+here when you try to file one.
 
 > aside positive
 >
