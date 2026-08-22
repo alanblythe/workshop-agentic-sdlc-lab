@@ -148,7 +148,8 @@ gh repo edit --enable-issues
 <aside class="warning"><p>From the root of the clone, not from <code>coder-agent</code> or your home directory. A workspace skill is found relative to where <code>agy</code> starts. Type <code>/</code> and you should see <strong>spec-adversary</strong> under <em>Workspace skills</em>; if you do not, your <code>agy</code> is old, and <code>agy plugin install .</code> loads it the other way.</p>
 </aside>
 <p>Then ask it to go to work:</p>
-<pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. One ambiguity at a time.
+<pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. The sample data is
+fixtures/usage.csv. One ambiguity at a time.
 </code></pre>
 <h2 is-upgraded>Read what you just pointed at</h2>
 <p>Before you answer its first question, open <code>.agents/skills/spec-adversary/SKILL.md</code> and read it. It is 150 lines and it is the whole method: sweep the spec before asking anything, one question at a time, and never recommend a reading. Every refusal you are about to meet is written down in there, which is the difference between an agent behaving oddly and an agent behaving as specified.</p>
