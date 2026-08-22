@@ -8,6 +8,7 @@ The tool's arguments differ per tool -- run_command carries CommandLine and
 write_to_file carries TargetFile -- so each is read by name.
 """
 import json
+import os
 import pathlib
 import sys
 
@@ -46,7 +47,11 @@ def verdict(tool, args, commands, writes):
         return None
 
     if tool == "write_to_file":
-        target = pathlib.Path((args.get("TargetFile") or "").strip()).resolve()
+        # The path arrives as the agent wrote it, which may start with ~ or a
+        # variable. resolve() does not expand either -- it would take ~ for a
+        # directory of that name -- so both are expanded first.
+        raw = os.path.expandvars(os.path.expanduser((args.get("TargetFile") or "").strip()))
+        target = pathlib.Path(raw).resolve()
         for directory in writes:
             allowed = (REPO / directory).resolve()
             if allowed == target or allowed in target.parents:
@@ -70,7 +75,10 @@ def main():
     if matched:
         print(json.dumps({"decision": "allow", "reason": f"{matched} is on the lab allow-list"}))
     else:
-        print(json.dumps({"decision": "ask"}))
+        # The reason is shown with the prompt, so say which list was consulted
+        # and what was compared. A hook that only ever says ask is otherwise
+        # indistinguishable from one that is not running.
+        print(json.dumps({"decision": "ask", "reason": f"not on the lab allow-list in {RULES}"}))
 
 
 main()
