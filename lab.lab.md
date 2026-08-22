@@ -237,7 +237,7 @@ relative to where `agy` starts, so start it from the root of the clone:
 
 ```bash
 cd ~/cloudshell_open/workshop-agentic-sdlc-lab
-agy
+agy --mode accept-edits
 ```
 
 Then ask it to go to work:
@@ -247,7 +247,9 @@ Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 ```
 
-You can use `shift` + `tab` to allow Antigravity to auto-edit files.
+`--mode accept-edits` is what stops it queueing behind a prompt for each file
+it writes, including the ones the subagent writes two steps from here. `shift` +
+`tab` cycles the mode if you would rather approve each one.
 
 ### Read what you just pointed at
 
