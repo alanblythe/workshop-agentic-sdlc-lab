@@ -158,9 +158,8 @@ fixtures/usage.csv. One ambiguity at a time.
 </aside>
 <p>Keep going until it stops finding anything consequential. That usually takes longer than people expect, and the questions get better as they get smaller.</p>
 <h2 is-upgraded>Verify your work</h2>
-<p>Exit <code>agy</code> with <code>ctrl</code> + <code>c</code> twice, so you have a shell back.</p>
-<pre><code language="language-bash" class="language-bash">git diff docs/spec.md
-</code></pre>
+<p>Open the <strong>Source Control</strong> view in the editor and click <code>spec.md</code> to see what changed.</p>
+<p class="image-container"><img alt="The Source Control view, with spec.md listed as changed" src="img/931a576b4a01cbad.png"></p>
 <p>The gate, and you can check it yourself:</p>
 <ul>
 <li><code>Status</code> is <strong>Approved</strong></li>
@@ -174,11 +173,7 @@ fixtures/usage.csv. One ambiguity at a time.
     
       <google-codelab-step label="Emit the contract" duration="8">
         <p>Decisions in prose are still prose. Now turn them into tests, which is the form an agent can be held to.</p>
-<p>Start <code>agy</code> again, continuing the same conversation:</p>
-<pre><code language="language-bash" class="language-bash">cd ~/cloudshell_open/workshop-agentic-sdlc-lab
-agy -c
-</code></pre>
-<p>Then:</p>
+<p>Still in <code>agy</code>:</p>
 <pre><code language="language-text" class="language-text">From the resolved docs/spec.md, write contract tests into tests/. Cover the
 parsing rules and the scoring rules separately. Do not write an implementation.
 Cite the decision id on every assertion that came from one.
