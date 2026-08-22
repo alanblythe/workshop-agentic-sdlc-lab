@@ -310,7 +310,7 @@ letting a guess into a test.
 
 ![The contract-writer subagent launching](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/contract-writer-spawn.png)
 
-Its definition is <walkthrough-editor-open-file filePath=".gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md">~/.gemini/config/plugins/agentic-sdlc/agents/contract-writer/agent.md</walkthrough-editor-open-file>.
+Its definition is <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/.agents/agents/contract-writer/agent.md">.agents/agents/contract-writer/agent.md</walkthrough-editor-open-file>, in your fork beside the skill.
 
 These tests are the contract. They are what "done" means, and they are the only
 thing standing between you and an agent that writes plausible code which does
