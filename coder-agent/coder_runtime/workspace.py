@@ -151,11 +151,19 @@ async def prepare(repo: str, sha: str, branch: str) -> tuple[str | None, str]:
         return None, f"FAILED git init: {out}"
     await _run("git", "remote", "add", "origin", url, cwd=tree, env=env)
 
-    # A resumed dispatch continues from what the last one pushed. The branch
-    # descends from the dispatched SHA, so the pin still holds: work carries
-    # forward, but nothing committed to main after dispatch becomes reachable.
+    # A resumed dispatch continues from what the last one pushed, but only when
+    # the branch really descends from the dispatched SHA. A fork inherits every
+    # branch of the repository it was forked from, so a name collision would
+    # otherwise hand the agent somebody else's finished work and silently drop
+    # the pin. Beyond the fetched depth the ancestry cannot be shown, and
+    # unproven counts as false.
     rc, _ = await _run("git", "fetch", "--depth", "50", "origin", branch, cwd=tree, env=env)
     resumed = rc == 0
+    if resumed:
+        rc, _ = await _run(
+            "git", "merge-base", "--is-ancestor", sha, "FETCH_HEAD", cwd=tree, env=env
+        )
+        resumed = rc == 0
     if not resumed:
         # `clone --depth 1` then `checkout <sha>` does NOT work: a depth-1 clone
         # holds only the tip, and by the time the agent runs the dispatched SHA
