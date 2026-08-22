@@ -1,0 +1,5 @@
+{
+  "name": "agentic-sdlc-lab",
+  "description": "The spec adversary: interrogates a spec for ambiguity, one question at a time, until two parties could build from it independently.",
+  "version": "0.1.0"
+}
