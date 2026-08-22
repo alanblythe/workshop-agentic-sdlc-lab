@@ -224,18 +224,12 @@ whether they are the ones that matter.
 
 The interrogator is a skill called **spec-adversary**, and it ships in this
 repository at `.agents/skills/`, which means it is in your fork and it needs no
-installing. Start `agy` from the root of the clone and it is already there:
+installing. A workspace skill is found relative to where `agy` starts, so start
+it from the root of the clone:
 
 ```bash
-agy
+cd ~/workshop-agentic-sdlc-lab && agy
 ```
-
-> **Careful:**
->
-> From the root of the clone, not from `coder-agent` or your home directory. A
-> workspace skill is found relative to where `agy` starts. Type `/` and you
-> should see **spec-adversary** under *Workspace skills*; if you do not, your
-> `agy` is old, and `agy plugin install .` loads it the other way.
 
 Then ask it to go to work:
 
