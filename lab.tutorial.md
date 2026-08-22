@@ -271,11 +271,8 @@ longer than people expect, and the questions get better as they get smaller.
 
 ### Verify your work
 
-Exit `agy` with `ctrl` + `c` twice, so you have a shell back.
-
-```bash
-git diff docs/spec.md
-```
+Open the **Source Control** view in the editor and click `spec.md` to see what
+changed.
 
 The gate, and you can check it yourself:
 
@@ -294,14 +291,7 @@ rewording is the adversary editing your spec, which it is not allowed to do.
 Decisions in prose are still prose. Now turn them into tests, which is the form
 an agent can be held to.
 
-Start `agy` again, continuing the same conversation:
-
-```bash
-cd ~/cloudshell_open/workshop-agentic-sdlc-lab
-agy -c
-```
-
-Then:
+Still in `agy`:
 
 ```text
 From the resolved docs/spec.md, write contract tests into tests/. Cover the
