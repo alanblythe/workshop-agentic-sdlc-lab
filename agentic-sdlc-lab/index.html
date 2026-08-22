@@ -156,9 +156,8 @@ fixtures/usage.csv. One ambiguity at a time.
 <aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision. It hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
 </aside>
 <p>Keep going until it stops finding anything consequential. That usually takes longer than people expect, and the questions get better as they get smaller.</p>
-<aside class="warning"><p>Resist the urge to fix the spec yourself while you are in there. The value is in the decisions being explicit and attributed, not in the prose being tidy.</p>
-</aside>
 <h2 is-upgraded>Verify your work</h2>
+<p>Exit <code>agy</code> with <code>ctrl</code> + <code>c</code> twice, so you have a shell back.</p>
 <pre><code language="language-bash" class="language-bash">git diff docs/spec.md
 </code></pre>
 <p>The gate, and you can check it yourself:</p>
@@ -174,7 +173,10 @@ fixtures/usage.csv. One ambiguity at a time.
     
       <google-codelab-step label="Emit the contract" duration="8">
         <p>Decisions in prose are still prose. Now turn them into tests, which is the form an agent can be held to.</p>
-<p>Still in <code>agy</code>:</p>
+<p>Start <code>agy</code> again, continuing the same conversation:</p>
+<pre><code language="language-bash" class="language-bash">cd ~/workshop-agentic-sdlc-lab &amp;&amp; agy -c
+</code></pre>
+<p>Then:</p>
 <pre><code language="language-text" class="language-text">From the resolved docs/spec.md, write contract tests into tests/. Cover the
 parsing rules and the scoring rules separately. Do not write an implementation.
 Cite the decision id on every assertion that came from one.
