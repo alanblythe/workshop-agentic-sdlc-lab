@@ -218,6 +218,11 @@ cat docs/spec.md
 > reads well, which is the point. The gaps in it are the kind that survive review
 > because nothing about them looks wrong. Finding them is the exercise.
 
+It already conforms to `docs/spec-template.md`, the shape a spec
+has to have here before anyone writes code. Every required section is present,
+`Open questions` says none, and it is nowhere near buildable. Sections are
+cheap. The gate at the end of that template is the part that costs something.
+
 As you read, keep one question in mind, and only this one:
 
 > Could two people build from this independently, without talking, and would
@@ -272,11 +277,18 @@ longer than people expect, and the questions get better as they get smaller.
 ### Verify your work
 
 ```bash
-git diff --stat docs/spec.md
+git diff docs/spec.md
 ```
 
-`docs/spec.md` has changed. Read your diff: every hunk should be
-a decision you made, not a rewording.
+The gate, and you can check it yourself:
+
+- `Status` is **Approved**
+- `Open questions` is empty
+- `Decisions` has a row per question you answered, each naming the case that
+  would have differed
+
+Every hunk in that diff should be one of those three. A hunk that is a
+rewording is the adversary editing your spec, which it is not allowed to do.
 
 ## Emit the contract
 
@@ -290,6 +302,7 @@ Still in `agy`:
 ```text
 From the resolved docs/spec.md, write contract tests into tests/. Cover the
 parsing rules and the scoring rules separately. Do not write an implementation.
+Cite the decision id on every assertion that came from one.
 ```
 
 The adversary does not write them. It hands the job to a subagent called
@@ -304,6 +317,16 @@ thing standing between you and an agent that writes plausible code which does
 the wrong thing.
 
 ### Verify your work
+
+First, that the files exist:
+
+```bash
+git status --short tests/
+```
+
+Three new files. If the subagent reported writing them and this prints nothing,
+it did not write them: what an agent says it did and what is on disk are two
+different claims, and only one of them is checkable.
 
 ```bash
 uv run pytest -q

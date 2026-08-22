@@ -1,5 +1,7 @@
 # Account health scoring
 
+**Status:** Draft
+
 ## What this does
 
 Customer Success needs to know an account is in trouble before the cancellation
@@ -100,3 +102,12 @@ weekly digest is built from that set.
 
 Alerting, the digest itself, and anything that writes back to the CRM. This
 produces the score and nothing else.
+
+## Decisions
+
+| ID | Rule a builder follows | Passage it resolves | Case that would differ |
+| --- | --- | --- | --- |
+
+## Open questions
+
+None.
