@@ -1,6 +1,10 @@
 # What the lab's agents may do without stopping to ask. Anything not listed
 # here gets the normal permission prompt, which is the point: this is what the
 # lab's own steps do, not a blanket yes.
+#
+# hooks.json runs allow.py with the working directory set to the directory
+# holding hooks.json, so its path is ./hooks/allow.py and nothing here assumes
+# where the clone landed.
 
 # Matched against the start of the command line, so `git status` covers
 # `git status --short tests/`.
