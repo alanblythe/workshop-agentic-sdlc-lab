@@ -212,10 +212,18 @@ id on every assertion that came from one.
 <p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so <code>scripts/agent-identity.sh</code> asks the API directly:</p>
 <pre><code language="language-bash" class="language-bash">bash scripts/agent-identity.sh
 </code></pre>
-<aside class="warning"><p>The deploy output prints a <code>gcp-sa-aiplatform-re</code> service account even when <code>--agent-identity</code> worked. It is not the identity your agent runs as. <code>spec.effectiveIdentity</code> is the only field that tells the truth.</p>
+<aside class="warning"><p>The deploy prints a <code>gcp-sa-aiplatform-re</code> service account either way, so it cannot tell you which one you got. <code>spec.effectiveIdentity</code> can.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
-<p><code>effectiveIdentity</code> is a long federated principal containing <code>system.id.goog</code>, ending in your engine&#39;s id. That principal, and not any service account, is what the next step grants access to.</p>
+<p>Its own identity, ending in your engine&#39;s id:</p>
+<ul>
+<li><code>principal://iam.googleapis.com/</code>...<code>system.id.goog/subject/</code><em>ENGINE_ID</em></li>
+</ul>
+<p>A borrowed one, which is the other outcome:</p>
+<ul>
+<li><code>service-</code><em>PROJECT_NUMBER</em><code>@gcp-sa-aiplatform-re.iam.gserviceaccount.com</code></li>
+</ul>
+<p>The first is what the next step grants access to.</p>
 
 
       </google-codelab-step>
@@ -227,6 +235,8 @@ id on every assertion that came from one.
 <p><code>scripts/setup-deploy-key.sh</code> is what does it.</p>
 <p>That generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
 <aside class="special"><p>A deploy key&#39;s blast radius is one repository, by construction. There is no scope matrix to get wrong, and revoking it is deleting one key from one repo.</p>
+</aside>
+<aside class="warning"><p>A fork owned by an <strong>organization</strong> may refuse the key: new organizations have deploy keys switched off for every repository they own. An owner enables them under <em>Settings, Member privileges, Deploy keys</em>. A fork on your own account has them on.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
 <p>The script ends by printing the secret the agent reads and the repository it can push to. It also refuses to finish unless a real clone and a real push succeeded, so reaching the end <em>is</em> the verification.</p>
