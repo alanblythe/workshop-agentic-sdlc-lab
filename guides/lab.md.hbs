@@ -521,18 +521,16 @@ The run ends with the branch name and how to merge it.
 
 Do not merge yet. Read.
 
-```bash
-git fetch origin && git log --oneline origin/agent/parse
-```
+The dispatch ended by printing a link to the branch's diff on GitHub. Open it.
+That page is the whole change, side by side, and the **Compare & pull request**
+button on it is how you would propose this work to a team rather than merge it
+to yourself.
+
+Nothing on that page can tell you whether the contract holds, though: there is
+no CI here, so a green-looking diff is only a diff. Run the contract yourself:
 
 ```bash
-git diff main...origin/agent/parse
-```
-
-Then check it against the contract rather than against your impression of it:
-
-```bash
-git checkout -b review origin/agent/parse && uv run pytest -q
+git fetch origin && git checkout -b review origin/agent/parse && uv run pytest -q
 ```
 
 Everything you watched scroll past during the dispatch is also recorded in the

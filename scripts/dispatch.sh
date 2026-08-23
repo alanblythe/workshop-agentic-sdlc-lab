@@ -239,7 +239,15 @@ while :; do
       info "it is from an earlier run, and nothing this one did has landed"
     fi
     echo
-    echo "  Review it, then merge when you are satisfied:"
+    # The compare page is the diff and the create-a-pull-request button at the
+    # same address, so one link covers reading it and proposing it.
+    case "$ORIGIN" in
+      *github.com*)
+        echo "  Read what it did:"
+        echo "      https://github.com/$REPO/compare/$LOCAL_BRANCH...$BRANCH"
+        echo ;;
+    esac
+    echo "  Then, when you are satisfied:"
     echo "      git fetch origin $BRANCH && git log origin/$BRANCH"
     echo "      git merge origin/$BRANCH && git push"
     exit 0
