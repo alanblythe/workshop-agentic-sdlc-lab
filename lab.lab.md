@@ -512,23 +512,16 @@ Duration: 6
 
 Do not merge yet. Read.
 
-```bash
-git fetch origin && git log --oneline origin/agent/parse
-```
+The dispatch printed a link to the branch's diff. Open it, and click
+**Create pull request**. There is nothing to write: GitHub fills the title and
+the description from the agent's commit, `Closes #1` and all.
+
+Read the diff under **Files changed**. Then run the contract yourself, because
+there is no CI here and a green-looking diff is only a diff:
 
 ```bash
-git diff main...origin/agent/parse
+git fetch origin && git checkout -b review origin/agent/parse && uv run pytest -q
 ```
-
-Then check it against the contract rather than against your impression of it:
-
-```bash
-git checkout -b review origin/agent/parse && uv run pytest -q
-```
-
-You can also watch the whole trajectory, every file it read and every command it
-ran, in the console, because each step was recorded as an event in the agent's
-session.
 
 > aside negative
 >
@@ -542,15 +535,19 @@ The tests pass, and the diff touches the implementation only. If the agent
 edited a test to make it pass, you have learned something about how contracts
 need to be written.
 
-Merge when you are satisfied, and push:
+Merge the pull request. Your issue closes as it lands.
 
-```bash
-git checkout main && git merge origin/agent/parse && git push
-```
+> aside positive
+>
+> Notice who closed it. The agent wrote `Closes #1` and pushed those commits
+> itself, and the issue showed nothing at all — not a link, not a mention. A
+> deploy key has no GitHub identity, so there is no actor to credit a reference
+> to. **You** opening the pull request is the event GitHub acts on. The machine
+> credential moves code; a person still moves the work.
 
-The push is what closes your issue. The agent wrote `Closes #1` into its commit
-messages, and GitHub acts on that when those commits land on your default
-branch, not when they land on a branch.
+Everything you watched scroll past during the dispatch is recorded in the
+console too, as events on the agent's session, replayable long after the
+terminal is gone.
 
 ## Tear it down
 
