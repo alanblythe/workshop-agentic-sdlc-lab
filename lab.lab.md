@@ -312,11 +312,10 @@ separately. Do not write an implementation. Cite the decision id on every
 assertion that came from one.
 ```
 
-> aside negative
+> aside positive
 >
-> Name the agent, as that prompt does. Describe the job without naming it and the
-> adversary is liable to invent its own writer from the description instead of
-> invoking this one, which comes with none of the rules you are about to read.
+> The agent name "contract-writer" is specifically used to ensure Antigravity CLI
+> chooses the configured subagent in `.agents/agents/contract-writer/agent.md`.
 
 The adversary does not write them. It hands the job to a subagent called
 **contract-writer**, which you will see spawn: a second persona whose only work
