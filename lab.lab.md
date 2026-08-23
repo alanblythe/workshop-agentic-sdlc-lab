@@ -337,10 +337,13 @@ the wrong thing.
 
 ### Verify your work
 
+Stay in `agy` for both of these. Type `!` and the shell runs the rest of the
+line, so you can check the agent's work without losing the session that did it.
+
 First, that the files exist:
 
 ```bash
-git status --short scorer/
+! git status --short scorer/
 ```
 
 Three tests and the seam. If the subagent reported writing them and this prints
@@ -348,8 +351,10 @@ nothing, it did not write them: what an agent says it did and what is on disk
 are two different claims, and only one of them is checkable.
 
 ```bash
-uv run pytest -q
+! uv run pytest -q
 ```
+
+![pytest reporting the contract tests failed and the starter tests passed](docs/images/contract-tests-failing.png)
 
 **Failures, not errors, and not passes.** The contract tests fail on
 `NotImplementedError`, and the starter tests pass. That is the whole point of
