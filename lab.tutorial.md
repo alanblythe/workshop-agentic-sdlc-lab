@@ -348,10 +348,14 @@ are two different claims, and only one of them is checkable.
 
 ![pytest reporting the contract tests failed and the starter tests passed](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/contract-tests-failing.png)
 
-**Failures, not errors, and not passes.** The contract tests fail on
-`NotImplementedError`, and the starter tests pass. That is the whole point of
-the seam: a test that cannot import has not run, and a test that has not run
-holds nobody to anything.
+**Failures, not errors, and not passes.** The contract tests fail, because
+nothing implements the seam yet, and the starter tests pass. How many fail and
+what each one says depends on the contract you just had written, so read the
+counts rather than matching them: a suite that ran, a contract that is red, and
+a baseline that is green.
+
+That is what the seam bought. A test that cannot be imported has not run, and a
+test that has not run holds nobody to anything.
 
 > **Careful:**
 >
