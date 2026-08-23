@@ -238,13 +238,13 @@ relative to where `agy` starts, so start it from the root of the clone:
 ```bash
 cd ~/cloudshell_open/workshop-agentic-sdlc-lab
 agy --mode accept-edits
+```
 
 > aside positive
 >
 > `--mode accept-edits` is what stops it queueing behind a prompt for each file
 > it writes, including the ones the subagent writes two steps from here. `shift` +
 > `tab` cycles the mode if you would rather approve each one.
-```
 
 Then ask it to go to work:
 
