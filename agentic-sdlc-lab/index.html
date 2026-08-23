@@ -234,6 +234,7 @@ id on every assertion that came from one.
         <p>The agent has to push. It needs a credential, and it needs one that cannot do anything else.</p>
 <pre><code language="language-bash" class="language-bash">bash scripts/setup-deploy-key.sh
 </code></pre>
+<p class="image-container"><img alt="the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager" src="img/fe96299a43e29aa4.png"></p>
 <p><code>scripts/setup-deploy-key.sh</code> is what does it.</p>
 <p>That generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
 <aside class="special"><p>A deploy key&#39;s blast radius is one repository, by construction. There is no scope matrix to get wrong, and revoking it is deleting one key from one repo.</p>
