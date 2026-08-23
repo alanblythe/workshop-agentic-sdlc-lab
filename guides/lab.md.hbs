@@ -131,6 +131,7 @@ guide. Fork in place, and set the fork up in the same breath:
 gh repo fork --remote
 gh repo set-default "$(git remote get-url origin)"
 gh repo edit --enable-issues
+git push -u origin main
 ```
 {{/walkthrough}}
 {{#codelab}}
@@ -149,6 +150,13 @@ The second line is not housekeeping. Forking sets `gh`'s default repository to
 rather than yours, and nothing tells you. The third turns issues on, which
 GitHub disables on every new fork, and which you find out about two steps from
 here when you try to file one.
+
+{{#walkthrough}}
+The fourth is the one that bites hardest. Forking in place renames your existing
+`origin` to `upstream`, and git moves the branch's tracking with it — so a bare
+`git push` later today aims at the workshop's copy and is rejected. That line
+points `main` back at your fork.
+{{/walkthrough}}
 
 {{#aside "positive"}}
 A fork does not copy the issues from the repository it came from either. That
