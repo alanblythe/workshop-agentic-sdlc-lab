@@ -356,20 +356,12 @@ are two different claims, and only one of them is checkable.
 
 ![pytest reporting the contract tests failed and the starter tests passed](docs/images/contract-tests-failing.png)
 
-**Failures, not errors, and not passes.** The contract tests fail, because
-nothing implements the seam yet, and the starter tests pass. How many fail and
-what each one says depends on the contract you just had written, so read the
-counts rather than matching them: a suite that ran, a contract that is red, and
-a baseline that is green.
+**Failures, not errors.** The contract tests fail, because nothing implements
+the seam yet, and the starter tests pass. A suite that ran, a contract that is
+red, a baseline that is green.
 
 That is what the seam bought. A test that cannot be imported has not run, and a
 test that has not run holds nobody to anything.
-
-> aside negative
->
-> If a contract test **passes**, stop and read `scorer/usage.py`. Nothing implements
-> this yet, so a pass means the agent wrote behaviour it was told not to, and the
-> contract is now measuring the agent instead of whoever implements it.
 
 ## Check the deploy landed
 
