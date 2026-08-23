@@ -521,13 +521,17 @@ The run ends with the branch name and how to merge it.
 
 Do not merge yet. Read.
 
-The dispatch ended by printing a link to the branch's diff on GitHub. Open it.
-That page is the whole change, side by side, and the **Compare & pull request**
-button on it is how you would propose this work to a team rather than merge it
-to yourself.
+The dispatch ended by printing a link to the branch's diff on GitHub. Open it,
+and click **Create pull request**.
 
-Nothing on that page can tell you whether the contract holds, though: there is
-no CI here, so a green-looking diff is only a diff. Run the contract yourself:
+Nothing to write: GitHub fills the title and the description from the agent's
+commit, `Closes #1` and all. The trailer it wrote at dispatch becomes the
+closing keyword on your pull request, and the issue shows the link before you
+have merged anything.
+
+Read the diff there, then come back. Nothing on that page can tell you whether
+the contract holds — there is no CI here, so a green-looking diff is only a
+diff. Run the contract yourself:
 
 ```bash
 git fetch origin && git checkout -b review origin/agent/parse && uv run pytest -q
@@ -549,15 +553,21 @@ The tests pass, and the diff touches the implementation only. If the agent
 edited a test to make it pass, you have learned something about how contracts
 need to be written.
 
-Merge when you are satisfied, and push:
+Merge the pull request when you are satisfied. The issue closes as it lands.
+
+{{#aside "positive"}}
+Notice who closed it. The agent wrote `Closes #1` and pushed those commits
+itself, and the issue showed nothing at all — not a link, not a mention. A
+deploy key has no GitHub identity, so there is no actor to credit a reference
+to. **You** opening the pull request is the event GitHub acts on. The machine
+credential moves code; a person still moves the work.
+{{/aside}}
+
+If you would rather stay in the terminal, the merge is the same one:
 
 ```bash
 git checkout main && git merge origin/agent/parse && git push
 ```
-
-The push is what closes your issue. The agent wrote `Closes #1` into its commit
-messages, and GitHub acts on that when those commits land on your default
-branch, not when they land on a branch.
 
 {{step "Tear it down" 4}}
 
