@@ -279,22 +279,18 @@ id on every assertion that came from one.
     
       <google-codelab-step label="Read what it did" duration="6">
         <p>Do not merge yet. Read.</p>
-<pre><code language="language-bash" class="language-bash">git fetch origin &amp;&amp; git log --oneline origin/agent/parse
+<p>The dispatch printed a link to the branch&#39;s diff. Open it, and click <strong>Create pull request</strong>. There is nothing to write: GitHub fills the title and the description from the agent&#39;s commit, <code>Closes #1</code> and all.</p>
+<p>Read the diff under <strong>Files changed</strong>. Then run the contract yourself, because there is no CI here and a green-looking diff is only a diff:</p>
+<pre><code language="language-bash" class="language-bash">git fetch origin &amp;&amp; git checkout -b review origin/agent/parse &amp;&amp; uv run pytest -q
 </code></pre>
-<pre><code language="language-bash" class="language-bash">git diff main...origin/agent/parse
-</code></pre>
-<p>Then check it against the contract rather than against your impression of it:</p>
-<pre><code language="language-bash" class="language-bash">git checkout -b review origin/agent/parse &amp;&amp; uv run pytest -q
-</code></pre>
-<p>You can also watch the whole trajectory, every file it read and every command it ran, in the console, because each step was recorded as an event in the agent&#39;s session.</p>
 <aside class="warning"><p>Green tests mean it satisfied the contract. They do not mean the contract was right. If the code passes and still does the wrong thing, that is a finding about your spec, and it is the most valuable thing this lab can hand you.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
 <p>The tests pass, and the diff touches the implementation only. If the agent edited a test to make it pass, you have learned something about how contracts need to be written.</p>
-<p>Merge when you are satisfied, and push:</p>
-<pre><code language="language-bash" class="language-bash">git checkout main &amp;&amp; git merge origin/agent/parse &amp;&amp; git push
-</code></pre>
-<p>The push is what closes your issue. The agent wrote <code>Closes #1</code> into its commit messages, and GitHub acts on that when those commits land on your default branch, not when they land on a branch.</p>
+<p>Merge the pull request. Your issue closes as it lands.</p>
+<aside class="special"><p>Notice who closed it. The agent wrote <code>Closes #1</code> and pushed those commits itself, and the issue showed nothing at all — not a link, not a mention. A deploy key has no GitHub identity, so there is no actor to credit a reference to. <strong>You</strong> opening the pull request is the event GitHub acts on. The machine credential moves code; a person still moves the work.</p>
+</aside>
+<p>Everything you watched scroll past during the dispatch is recorded in the console too, as events on the agent&#39;s session, replayable long after the terminal is gone.</p>
 
 
       </google-codelab-step>
