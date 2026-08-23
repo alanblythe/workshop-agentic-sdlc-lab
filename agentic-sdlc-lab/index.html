@@ -238,8 +238,6 @@ id on every assertion that came from one.
 <p>That generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
 <aside class="special"><p>A deploy key&#39;s blast radius is one repository, by construction. There is no scope matrix to get wrong, and revoking it is deleting one key from one repo.</p>
 </aside>
-<aside class="warning"><p>A fork owned by an <strong>organization</strong> may refuse the key: new organizations have deploy keys switched off for every repository they own. An owner enables them under <em>Settings, Member privileges, Deploy keys</em>. A fork on your own account has them on.</p>
-</aside>
 <h2 is-upgraded>Verify your work</h2>
 <p>The script ends by printing the secret the agent reads and the repository it can push to. It also refuses to finish unless a real clone and a real push succeeded, so reaching the end <em>is</em> the verification.</p>
 
