@@ -237,6 +237,13 @@ async def run(
                 final = part.text
                 emit("step", kind="text", at=at, text=part.text)
 
+    # What the model says it did and what is on the branch are two different
+    # claims. It is told when a push is rejected and can carry on regardless, so
+    # the last word belongs to the remote.
+    unlanded = await workspace.verify_pushed()
+    if unlanded:
+        emit("error", text=f"THE WORK DID NOT LAND: {unlanded}")
+
     emit(
         "final",
         text=final,

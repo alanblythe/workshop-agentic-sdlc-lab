@@ -22,11 +22,24 @@ The interesting part is not the agent. It is what you have to make true before
 an agent can be useful: a specification precise enough that two parties could
 build from it independently and their code would fit.
 
+This lab is built on two practices. **Spec-driven development** builds a
+specification for review and agreement before any code is written.
+**Test-driven development** writes the tests before the implementation they
+check. Spec clarity is of utmost importance. This lab uses an adversarial skill
+to ensure a clear spec is authored and approved before coding starts.
+
+The platform is **Gemini Enterprise Agent Platform**. The coding agent deploys
+to Agent Runtime using Agent Identity, after authoring the spec you'll hand off
+to the Agent Runtime hosted coder-agent to write the code.
+
+The lab is deliberately simplified: one request, one spec, one agent, one
+repository, and no CI.
+
 ### What you'll learn
 
 - How to interrogate a specification until the ambiguity is gone, using an
-  agent that refuses to decide anything for you
-- How to turn resolved decisions into contract tests, which are what make an
+  agent skill that refuses to decide anything for you
+- How to turn resolved decisions into acceptance tests, which are what make an
   agent's work checkable
 - How to deploy an agent to Agent Runtime under its own identity, and dispatch
   work to it at a pinned commit
@@ -179,10 +192,10 @@ gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
 
 The owner should be **you**, with `fork=true` and `issues=true`.
 
-{{step "Start the agent deploying, then walk away" 4}}
+{{step "Deploy the coder-agent" 4}}
 
-The agent takes several minutes to build and deploy. Start it now and do the
-thinking while it works. Waiting at a progress bar teaches nothing.
+The agent takes up to 10 minutes to build and deploy. Continue without
+the next steps while it deploys.
 
 ```bash
 (cd coder-agent && agents-cli deploy \
@@ -193,16 +206,12 @@ thinking while it works. Waiting at a progress bar teaches nothing.
   --no-wait)
 ```
 
-`--no-wait` returns as soon as the build is submitted. `--agent-identity` is the
-part that matters most: it gives the deployment a federated identity of its own
-rather than borrowing a service account. That is how it reads a secret you have
-not given it yet.
-
-{{#aside "positive"}}
-The deploy takes about seven minutes, and it runs while you work through the
-next four steps. A first deploy in a cold project is slower than every later one, because
-nothing is cached yet.
-{{/aside}}
+`--no-wait` returns as soon as the build is submitted. `--agent-identity`
+enables Agent Identity: it gives the agent a SPIFFE identity rather than a
+service account. This identity is granted access to Secret Manager by an IAM
+binding that preflight's Terraform put on the secret. That binding names every
+Agent Runtime agent in the project rather than one engine, so it was in place
+before this agent existed.
 
 ### Verify your work
 
@@ -222,51 +231,46 @@ it is the only statement of what anyone actually wants.
 cat docs/request.md
 ```
 
-File it, so the work has a number. The agent's commits will reference it and
-merging its branch will close it, which is what the number is for:
+Create the GitHub issue, the agent's commits will reference it and
+merging its branch will close it:
 
 ```bash
 gh issue create --title "Account health scoring" --body-file docs/request.md
 ```
 
-Someone else has already turned it into a spec. Read {{openFile "docs/spec.md"}}
-as though you had to implement it this afternoon.
+Read {{openFile "docs/spec.md"}}. We'll use an adversarial refinement skill to
+ensure the spec is clear and can be used for creating acceptance tests and
+writing code.
 
 ```bash
 cat docs/spec.md
 ```
 
-{{#aside "negative"}}
-**This spec was written to be flawed, and you should know that up front.** It
-reads well, which is the point. The gaps in it are the kind that survive review
-because nothing about them looks wrong. Finding them is the exercise.
+{{#aside "positive"}}
+**This spec was written to be flawed.** It reads well, but it has subtle
+gaps that would often survive review. After going through the Human in the loop (HITL)
+adversarial review the gaps will become clear.
 {{/aside}}
 
-It already conforms to {{openFile "docs/spec-template.md"}}, the shape a spec
-has to have here before anyone writes code. Every required section is present,
-`Open questions` says none, and it is nowhere near buildable. Sections are
-cheap. The gate at the end of that template is the part that costs something.
+It already conforms to {{openFile "docs/spec-template.md"}}, a representative template
+that may be used as part of a broader SDLC.
 
-As you read, keep one question in mind, and only this one:
+As you read the spec you may ask these questions:
 
-> Could two people build from this independently, without talking, and would
-> their code fit together?
+> Could acceptance tests and code be implemented
+> independently from each other?
+> Are there subtle gaps in the understanding of the data?
 
-Anything that passes is precise enough. Anything that does not is a decision
-nobody has made yet.
+The data the spec is written against is {{openFile "fixtures/usage.csv"}}.
 
 ### Verify your work
-
-Think about two things in the spec you could implement in more than one way,
-and that a reviewer would probably wave through. You will find out shortly
-whether they are the ones that matter.
 
 {{step "Interrogate the spec" 12}}
 
 The interrogator is a skill called **spec-adversary**, and it ships in this
-repository at {{openFile ".agents/skills/spec-adversary/SKILL.md"}}, which means
-it is in your fork and it needs no installing. A workspace skill is found
-relative to where `agy` starts, so start it from the root of the clone:
+repository at {{openFile ".agents/skills/spec-adversary/SKILL.md"}}, Antigravity CLI
+will automatically load it. A workspace skill is found
+relative to where `agy` starts, so start it from the lab repo, workshop-agentic-sdlc-lab:
 
 ```bash
 cd ~/cloudshell_open/workshop-agentic-sdlc-lab
@@ -274,34 +278,28 @@ agy --mode accept-edits
 ```
 
 {{#aside "positive"}}
-`--mode accept-edits` is what stops it queueing behind a prompt for each file
-it writes, including the ones the subagent writes two steps from here. `shift` +
-`tab` cycles the mode if you would rather approve each one.
+`--mode accept-edits` allows auto-editing of files, otherwise you would need 
+to approve every file create/edit, including the ones the subagent writes.  
+`shift` + `tab` cycles the mode if you would rather approve each one.
 {{/aside}}
 
-Then ask it to go to work:
+
+### Use the skill to clarify the spec
+
+Open {{openFile ".agents/skills/spec-adversary/SKILL.md"}} and read it. 
+The skill instructs: 
+- sweep the spec before asking anything
+- one question at a time
+- never recommend a reading. 
+- to give choices allowing simple selection
+- writes decisions into {{openFile "docs/spec.md"}}
+
+Ask Antigravity CLI to use the skill:
 
 ```text
 Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 ```
-
-### Read what you just pointed at
-
-Before you answer its first question, open
-{{openFile ".agents/skills/spec-adversary/SKILL.md"}} and read it. It is 150 lines and
-it is the whole method: sweep the spec before asking anything, one question at
-a time, and never recommend a reading. Every refusal you are about to meet is
-written down in there, which is the difference between an agent behaving oddly
-and an agent behaving as specified.
-
-It is in your fork, so it is yours to change. That is the last step of the
-workshop, and the reason the file is here rather than somewhere central.
-
-It puts one ambiguity in front of you at a time: the passage, the two readings,
-and the case where they disagree. Arrow keys move, enter chooses. There is a
-write-in option for when neither reading is what you meant. It writes your
-decision into {{openFile "docs/spec.md"}} and moves to the next one.
 
 The sample data it asks about is {{openFile "fixtures/usage.csv"}}.
 
@@ -333,13 +331,12 @@ rewording is the adversary editing your spec, which it is not allowed to do.
 
 {{step "Emit the contract" 8}}
 
-Decisions in prose are still prose. Now turn them into tests, which is the form
-an agent can be held to.
+Now codify the spec and decisions into acceptance tests using the contract-writer agent.
 
 Still in `agy`:
 
 ```text
-Use the contract-writer agent to write contract tests into scorer/tests/ from
+Use the contract-writer agent to write acceptance tests into scorer/tests/ from
 the resolved docs/spec.md, and the seam they call into scorer/usage.py. Cover
 the parsing rules and the scoring rules separately. Every function body in
 scorer/usage.py raises NotImplementedError and nothing else. Cite the decision
@@ -351,20 +348,18 @@ The agent name "contract-writer" is specifically used to ensure Antigravity CLI
 chooses the configured subagent in {{openFile ".agents/agents/contract-writer/agent.md"}}.
 {{/aside}}
 
-The adversary does not write them. It hands the job to a subagent called
-**contract-writer**, which you will see spawn: a second persona whose only work
-is turning resolved decisions into assertions, and which is not allowed to
-decide anything. If it reports an assertion it could not derive, that is an
-ambiguity the interrogation missed, and the adversary reopens it rather than
-letting a guess into a test.
+The adversary skill helps you the product manager clarify requirements.
+The **contract-writer** subagent writes the stubbed tests.
+You'll see the agent spawn: turning resolved decisions into assertions, 
+and which is not allowed to decide anything. If it reports an assertion 
+it could not derive, that is an ambiguity the interrogation missed, 
+and the adversary reopens it rather than letting a guess into a test.
 
 {{image "docs/images/contract-writer-spawn.png" "The contract-writer subagent launching"}}
 
-Its definition is {{openFile ".agents/agents/contract-writer/agent.md"}}, in your fork beside the skill.
-
-These tests are the contract. They are what "done" means, and they are the only
-thing standing between you and an agent that writes plausible code which does
-the wrong thing.
+These tests are the contract. They are what "done" means.
+They provide codified assertions to ensure the written code 
+fulfills the spec requirement.
 
 ### Verify your work
 
@@ -372,28 +367,24 @@ Stay in `agy` for these. Type `!` first, then the command: the shell runs the
 rest of the line, so you can check the agent's work without losing the session
 that did it. Type the `!` rather than pasting it, which `agy` warns about.
 
-First, that the files exist:
+First, check what files the subagent created:
 
 ```bash
 git status --short scorer/
 ```
+You should see the three test files authored by the subagent.
 
-Three tests and the seam. If the subagent reported writing them and this prints
-nothing, it did not write them: what an agent says it did and what is on disk
-are two different claims, and only one of them is checkable.
+
+Run the tests:
 
 ```bash
 uv run pytest -q
 ```
 
-{{image "docs/images/contract-tests-failing.png" "pytest reporting the contract tests failed and the starter tests passed"}}
+{{image "docs/images/contract-tests-failing.png" "pytest reporting the acceptance tests failed and the starter tests passed"}}
 
-**Failures, not errors.** The contract tests fail, because nothing implements
-the seam yet, and the starter tests pass. A suite that ran, a contract that is
-red, a baseline that is green.
-
-That is what the seam bought. A test that cannot be imported has not run, and a
-test that has not run holds nobody to anything.
+**Failures, not errors.** The acceptance tests fail, because the implementation
+hasn't been coded yet.
 
 {{step "Check the deploy landed" 3}}
 
@@ -410,32 +401,27 @@ after a typed `!`.
 (cd coder-agent && agents-cli deploy --list)
 ```
 
-Confirm it is running under its own identity rather than a borrowed service
-account. There is no `gcloud` surface for this, so
-{{openFile "scripts/agent-identity.sh"}} asks the API directly:
+Confirm it is running under its own identity rather than a service
+account. `gcloud` lacks this so the script uses the REST API:  
+{{openFile "scripts/agent-identity.sh"}}
 
 ```bash
 bash scripts/agent-identity.sh
 ```
 
-{{#aside "negative"}}
-The deploy prints a `gcp-sa-aiplatform-re` service account either way, so it
-cannot tell you which one you got. `spec.effectiveIdentity` can.
-{{/aside}}
-
 ### Verify your work
 
-Its own identity, ending in your engine's id:
+Agent Identity:
 
 - `principal://iam.googleapis.com/`...`system.id.goog/subject/`*ENGINE_ID*
 
-A borrowed one, which is the other outcome:
+Service accounts:
 
 - `service-`*PROJECT_NUMBER*`@gcp-sa-aiplatform-re.iam.gserviceaccount.com`
 
 The first is what the next step grants access to.
 
-{{step "Tell git who you are" 1}}
+{{step "Ensure git config is correct" 1}}
 
 The commit in two steps needs a git identity, and Cloud Shell often has none.
 Look first:
@@ -459,10 +445,9 @@ once per machine rather than once per session.
 
 The first command again, with both lines back.
 
-{{step "Give the agent a key to your fork" 4}}
+{{step "Give the agent a GitHub deploy key to your fork" 4}}
 
-The agent has to push. It needs a credential, and it needs one that cannot do
-anything else.
+The agent is written to push it's commit to GitHub.
 
 ```bash
 bash scripts/setup-deploy-key.sh
@@ -472,13 +457,13 @@ bash scripts/setup-deploy-key.sh
 
 {{openFile "scripts/setup-deploy-key.sh"}} is what does it.
 
-That generates an SSH key, gives it write access to **this repository only**,
+The script generates an SSH key, gives it write access to **this repository only**,
 proves it works, and puts the private half in the Secret Manager secret preflight
 made. Nothing is left on your machine.
 
 {{#aside "positive"}}
-A deploy key's blast radius is one repository, by construction. There is no
-scope matrix to get wrong, and revoking it is deleting one key from one repo.
+A deploy key is for one repository, by construction. Revoking deploy keys is
+removing it from the repo.
 {{/aside}}
 
 ### Verify your work
@@ -487,38 +472,29 @@ The script ends by printing the secret the agent reads and the repository it can
 push to. It also refuses to finish unless a real clone and a real push
 succeeded, so reaching the end *is* the verification.
 
-{{step "Dispatch" 5}}
+{{step "Dispatch coder-agent" 5}}
 
 Commit the contract and send the work.
 
 ```bash
 git add -A && git commit -m "The contract: the resolved spec and the tests it implies" && git push
 ```
+Start the coder-agent writing code:
 
 ```bash
 bash scripts/dispatch.sh --issue 1
 ```
+{{openFile "scripts/dispatch.sh"}} does quite a few things.
+A POST request to $HOST/reasoningEngines/v1/projects/$PROJECT_NUMBER/locations/$AGENT_ENGINE_LOCATION/reasoningEngines/$ENGINE/api/stream_reasoning_engine is what starts the agents work.
 
-{{openFile "scripts/dispatch.sh"}} is what pins the commit and follows the branch.
-
-The dispatch pins the exact commit you just pushed. The agent fetches that
-commit and nothing else.
-
-`--issue` is the number you filed earlier, which is **1** on a fork whose
-issues you had just turned on. Run `gh issue list` if yours is not. The agent
-writes it into every commit, and dispatch refuses a number that is not an open
-issue.
 
 {{#aside "positive"}}
-That pin is why you cannot rescue a bad contract once the agent is working.
-Anything you commit after this moment is invisible to it, not by agreement but
-because it never fetches anything else. If the contract was wrong, you find out
-the way you would with a colleague who took the brief and went quiet.
+The commit you just pushed is given to the agent, similar to a pull request flow.
 {{/aside}}
 
-The script prints two kinds of line, and they are not the same kind of claim.
+The script prints:
 `>` is the agent narrating itself, every file it reads and command it runs.
-`+` is a commit that actually landed on the branch.
+`+` is a commit.
 
 Watch which files it edits. Only `scorer/usage.py` means it is working inside
 the contract; an `edit` naming a test is the agent changing what "done" means.
@@ -543,7 +519,8 @@ Don't merge yet, review the file diff to see what changes the coder-agent made.
 - Leave the title and the description alone: GitHub fills both from the
   agent's commit, `Closes #1` and all
 
-Read the diff under **Files changed**. Then run the tests yourself. To keep things simple no CI is part of this lab.
+Read the diff under **Files changed**. Then run the tests yourself. To keep
+things simple, no CI is part of this lab.
 
 ```bash
 git fetch origin && git checkout -b review origin/agent/parse && uv run pytest -q
@@ -560,21 +537,13 @@ need to be written.
 Merge the pull request. Your issue closes as it lands.
 
 {{#aside "positive"}}
-Notice who closed it. The agent wrote `Closes #1` and pushed those commits
-itself, and the issue showed nothing at all — not a link, not a mention. A
-deploy key has no GitHub identity, so there is no actor to credit a reference
-to. **You** opening the pull request is the event GitHub acts on. The machine
-credential moves code; a person still moves the work.
+The agent wrote `Closes #1` and pushed the commit. **You** opening 
+the pull request is the event GitHub acts on. When you merge the pull
+request Issue 1 will be closed.
 {{/aside}}
 
-Everything you watched scroll past during the dispatch is recorded in the
-console too, as events on the agent's session, replayable long after the
-terminal is gone.
 
 {{step "Tear it down" 4}}
-
-The agent costs money while it is deployed. Remove it, and the credential with
-it.
 
 One command removes everything the day created:
 
@@ -589,39 +558,64 @@ It deletes three things: the deployed agent, the Secret Manager secret, and the
 deploy key on your fork. Your branches and the agent's commits are left alone,
 and so are the APIs — your project may have been using them before today.
 
-{{#aside "positive"}}
-Deleting the deploy key is the part that matters most. The agent is only
-costing you money; the key is granting write access to your repository until it
-is gone, so the script removes it first.
-{{/aside}}
-
-{{#aside "negative"}}
-Do this even if you plan to come back. A deployed agent holds a warm instance
-and bills for it, and the deploy key stays valid until you delete it.
-{{/aside}}
-
 ### What you did
 
-You took prose from a stakeholder and produced merged, tested code without
-writing any of it. The agent was the least interesting part: it did what the
-contract said, because by then the contract said something.
+- Improved a spec using an adversarial review skill, which lives in your fork
+  at {{openFile ".agents/skills/spec-adversary/SKILL.md"}}
+- Used [Antigravity CLI](https://antigravity.google/docs/cli/overview) to turn
+  the resolved decisions into acceptance tests
+- Deployed a coding agent to Agent Runtime on
+  [Gemini Enterprise Agent Platform](https://docs.cloud.google.com/gemini-enterprise-agent-platform),
+  under an identity of its own
+- Dispatched work to it at a pinned commit, and merged what it pushed
 
-The work that mattered was refusing to let the ambiguity through, and the
-reason the agent could be trusted with the rest is that you had made "done"
-checkable before you asked anyone, human or otherwise, to do it.
+Completed a simplified scenario using TDD and Spec-driven development.
+The next evolution to this scenario could be agent teams that act as your teammates
+within a chat group. You could chat with them as their respective roles e.g. 
+product owner, software engineer, peer reviewer, etc.
+
 
 ### What's next
 
+Two things to try with what is already in your fork:
+
 - Run it again with a spec you actually own, and see how far the interrogation
   gets before you have to make a decision you were avoiding
-- Read the trajectory in the console. The tool calls are a record of how it
-  reasoned, and they show where the contract was doing the work
+- Change what the adversary refuses to decide for you. It is a skill in your
+  fork, and [skills and plugins](https://antigravity.google/docs/cli/plugins/)
+  is how they are written
 
-### Verify your work
+**Codelabs that pick up where this one stops**
 
-```bash
-bash scripts/teardown.sh
-```
+- [Stateful Data Science Agent on Agent Engine](https://codelabs.developers.google.com/next26/adk-deploy-scale)
+  — Sessions and Memory Bank, the state this lab never keeps
+- [Personalized agents with ADK, MCP and Memory Bank](https://codelabs.developers.google.com/codelabs/christmas-card/instructions)
+  — memory and tools together
+- [Multi-agent systems with ADK, Agent Runtime and A2A](https://codelabs.developers.google.com/codelabs/create-multi-agents-adk-a2a)
+  — agents calling agents, rather than one agent doing a job
+- [Spec-driven development with Antigravity CLI](https://codelabs.developers.google.com/sdd-agy-cli)
+  — the same practice against live data, without the contract or a remote agent
+- [Automated UI testing with Antigravity CLI and BrowserMCP](https://codelabs.developers.google.com/agentic-ui-automation-with-antigravity)
+  — skills and a multimodal MCP server
+- [Deploy to Cloud Run from Antigravity using an MCP server](https://codelabs.developers.google.com/deploy-to-cloud-run-using-oss-mcp-server)
+- [Developer Knowledge MCP](https://codelabs.developers.google.com/developer-knowledge-mcp-antigravity)
+  and [Workspace MCP](https://codelabs.developers.google.com/google-workspace-mcp-antigravity)
+  in Antigravity
 
-Run it a second time and it reports **Already torn down**, changing nothing.
-Safe to re-run means no doubt about whether it finished.
+**Documentation**
+
+- [Gemini Enterprise Agent Platform](https://docs.cloud.google.com/gemini-enterprise-agent-platform)
+  — and [Agent Runtime](https://docs.cloud.google.com/gemini-enterprise-agent-platform/overview),
+  for what else it hosts
+- [ADK on Agent Platform](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk),
+  [ADK documentation](https://google.github.io/adk-docs/) and
+  [google/adk-python](https://github.com/google/adk-python)
+- [Antigravity CLI](https://antigravity.google/docs/cli/overview)
+
+**Keeping up**
+
+- [The Antigravity blog](https://antigravity.google/blog) and
+  [@antigravity](https://x.com/antigravity)
+- [Google Developers Blog](https://developers.googleblog.com/) and the
+  [Google Cloud AI blog](https://cloud.google.com/blog/products/ai-machine-learning)
+

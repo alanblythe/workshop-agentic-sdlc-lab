@@ -243,10 +243,47 @@ async def commit_and_push(message: str) -> str:
     if rc:
         return (
             f"FAILED to push: {out}\n"
-            "'marked as read only' means the deploy key has no write access."
+            "'marked as read only' means the deploy key has no write access. "
+            "'non-fast-forward' means the branch already holds work this run "
+            "cannot build on, and nothing you do here will land until it is "
+            "deleted. Either way your work is NOT saved: say so plainly and do "
+            "not report the job as done."
         )
     _, head = await _run("git", "rev-parse", "--short", "HEAD", cwd=str(tree), env=env)
     return f"pushed {head.strip()} to {branch}. {seconds_left():.0f}s remain."
+
+
+async def verify_pushed() -> str | None:
+    """Check the branch on origin really holds this run's work.
+
+    Not a tool. The model is told when a push fails and can carry on regardless,
+    so the run is checked against the remote rather than against what it said.
+
+    Returns:
+        None when the branch is at this run's HEAD, or why it is not.
+    """
+    tree = _state.get("tree")
+    if not tree:
+        return None  # nothing was ever prepared; the failure is already reported
+    env: dict[str, str] = _state["env"]  # type: ignore[assignment]
+    branch = str(_state["branch"])
+
+    _, head = await _run("git", "rev-parse", "HEAD", cwd=str(tree), env=env)
+    head = head.strip()
+    rc, listed = await _run(
+        "git", "ls-remote", "origin", f"refs/heads/{branch}", cwd=str(tree), env=env
+    )
+    if rc:
+        return f"could not read {branch} from origin: {listed.strip()}"
+    if not listed.strip():
+        return f"{branch} does not exist on origin -- nothing was pushed."
+    remote = listed.split()[0]
+    if remote != head:
+        return (
+            f"origin/{branch} is at {remote[:12]}, not this run's {head[:12]}. "
+            "The push was rejected, so none of this work has landed."
+        )
+    return None
 
 
 async def time_remaining() -> str:
