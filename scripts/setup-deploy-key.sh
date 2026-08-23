@@ -124,9 +124,20 @@ for id in $OLD; do
   gh repo deploy-key delete "$id" --repo "$REPO" >/dev/null 2>&1 && info "revoked the previous key (id $id)"
 done
 
-gh repo deploy-key add "$KEY.pub" --title "$KEY_TITLE" --allow-write --repo "$REPO" >/dev/null \
-  || die "could not add the deploy key to $REPO" \
-    "gh repo deploy-key add $KEY.pub --title '$KEY_TITLE' --allow-write --repo $REPO"
+ADD_ERR=$(gh repo deploy-key add "$KEY.pub" --title "$KEY_TITLE" --allow-write --repo "$REPO" 2>&1 >/dev/null)
+if [ -n "$ADD_ERR" ]; then
+  # An organization can switch deploy keys off for every repository it owns,
+  # and new organizations have them off by default. The repository setting the
+  # message names cannot be changed from the repository.
+  case "$ADD_ERR" in
+    *"Deploy keys are disabled"*)
+      die "$(echo "$REPO" | cut -d/ -f1) has deploy keys switched off for every repository it owns" \
+        "enable them at https://github.com/organizations/$(echo "$REPO" | cut -d/ -f1)/settings/member_privileges, or fork to your own account instead" ;;
+    *)
+      die "could not add the deploy key to $REPO: $ADD_ERR" \
+        "gh repo deploy-key add $KEY.pub --title '$KEY_TITLE' --allow-write --repo $REPO" ;;
+  esac
+fi
 ok "added with write access"
 
 # --- 6. prove it works -----------------------------------------------------

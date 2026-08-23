@@ -383,15 +383,20 @@ bash scripts/agent-identity.sh
 
 > **Careful:**
 >
-> The deploy output prints a `gcp-sa-aiplatform-re` service account even when
-> `--agent-identity` worked. It is not the identity your agent runs as.
-> `spec.effectiveIdentity` is the only field that tells the truth.
+> The deploy prints a `gcp-sa-aiplatform-re` service account either way, so it
+> cannot tell you which one you got. `spec.effectiveIdentity` can.
 
 ### Verify your work
 
-`effectiveIdentity` is a long federated principal containing
-`system.id.goog`, ending in your engine's id. That principal, and not any
-service account, is what the next step grants access to.
+Its own identity, ending in your engine's id:
+
+- `principal://iam.googleapis.com/`...`system.id.goog/subject/`*ENGINE_ID*
+
+A borrowed one, which is the other outcome:
+
+- `service-`*PROJECT_NUMBER*`@gcp-sa-aiplatform-re.iam.gserviceaccount.com`
+
+The first is what the next step grants access to.
 
 ## Give the agent a key to your fork
 
@@ -414,6 +419,13 @@ made. Nothing is left on your machine.
 >
 > A deploy key's blast radius is one repository, by construction. There is no
 > scope matrix to get wrong, and revoking it is deleting one key from one repo.
+
+> **Careful:**
+>
+> A fork owned by an **organization** may refuse the key: new organizations have
+> deploy keys switched off for every repository they own. An owner enables them
+> under *Settings, Member privileges, Deploy keys*. A fork on your own account
+> has them on.
 
 ### Verify your work
 
