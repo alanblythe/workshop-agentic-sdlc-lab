@@ -283,6 +283,7 @@ id on every assertion that came from one.
 <p>Read the diff under <strong>Files changed</strong>. Then run the contract yourself, because there is no CI here and a green-looking diff is only a diff:</p>
 <pre><code language="language-bash" class="language-bash">git fetch origin &amp;&amp; git checkout -b review origin/agent/parse &amp;&amp; uv run pytest -q
 </code></pre>
+<p class="image-container"><img alt="pytest reporting every test passed on the agent&amp;rsquo;s branch" src="img/28dec38968cf58b9.png"></p>
 <aside class="warning"><p>Green tests mean it satisfied the contract. They do not mean the contract was right. If the code passes and still does the wrong thing, that is a finding about your spec, and it is the most valuable thing this lab can hand you.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
