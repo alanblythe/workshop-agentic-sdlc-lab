@@ -13,23 +13,23 @@ feedback link: https://github.com/alanblythe/workshop-agentic-sdlc/issues
 
 Duration: 4
 
-You are going to take a request written the way requests actually arrive:
-prose, from a stakeholder, with the important parts unsaid, and get working
-code out of the other end. A coding agent writes the code. You never do.
+This lab simulates the common scenario for feature requests that provide 
+detailed information, though lack to cover edge and boundary conditions.
 
-The interesting part is not the agent. It is what you have to make true before
-an agent can be useful: a specification precise enough that two parties could
-build from it independently and their code would fit.
+In this lab you'll:
+- Use Antigravity CLI with skills, subagents, and a MCP server
+- Deploy an agent to Gemini Enterprise Agent Platform
+- Use an adversarial skill to refine a spec
+- Interfact with a code-agent deployed to Agent Platform. You'll instruct this
+agent to write the implementation code starting from your GitHub commit hash
 
 This lab is built on two practices. **Spec-driven development** builds a
 specification for review and agreement before any code is written.
-**Test-driven development** writes the tests before the implementation they
+**Test-driven development, TDD** writes the tests before the implementation they
 check. Spec clarity is of utmost importance. This lab uses an adversarial skill
 to ensure a clear spec is authored and approved before coding starts.
 
-The platform is **Gemini Enterprise Agent Platform**. The coding agent deploys
-to Agent Runtime using Agent Identity, after authoring the spec you'll hand off
-to the Agent Runtime hosted coder-agent to write the code.
+The **Agent Platform** agent is deployed using Agent Identity.
 
 The lab is deliberately simplified: one request, one spec, one agent, one
 repository, and no CI.
@@ -42,7 +42,7 @@ repository, and no CI.
   agent's work checkable
 - How to deploy an agent to Agent Runtime under its own identity, and dispatch
   work to it at a pinned commit
-- Why the commit is pinned, and what that buys you
+- How to author and use Antigravity CLI skills, subagents, and MCP servers
 
 ### What you'll need
 
@@ -468,35 +468,63 @@ Commit the contract and send the work.
 ```bash
 git add -A && git commit -m "The contract: the resolved spec and the tests it implies" && git push
 ```
-Start the coder-agent writing code:
+
+> aside negative
+>
+> **Push before you dispatch.** The agent clones your fork from GitHub, so a
+> commit you have not pushed does not exist as far as it is concerned, and it
+> will work from the commit before yours without saying so.
+
+The agent runs on Agent Platform, not on this machine. You reach it through
+`geap-mcp`, the plugin you installed during setup, from inside `agy`:
 
 ```bash
-bash scripts/dispatch.sh --issue 1
+agy
 ```
-`scripts/dispatch.sh` does quite a few things.
-A POST request to $HOST/reasoningEngines/v1/projects/$PROJECT_NUMBER/locations/$AGENT_ENGINE_LOCATION/reasoningEngines/$ENGINE/api/stream_reasoning_engine is what starts the agents work.
+
+Paste this:
+
+```text
+Use the geap tools. Run list_agents to find coder-agent in this project, then
+start_query on it. The message is a JSON string:
+
+  {"repo": "<owner>/<fork>", "sha": "<HEAD>", "branch": "agent/parse", "issue": "1"}
+
+Get repo and sha by running git here: the fork's owner/name from the origin
+remote, and the sha that origin/main points at.
+
+Then follow the run: call read_query in a loop, passing the next_cursor it
+returns, until state is no longer "running". Print any new lines after each
+call, before you wait.
+```
 
 > aside positive
 >
-> The commit you just pushed is given to the agent, similar to a pull request flow.
+> **Approve the tool calls.** MCP calls ask every time, whatever permission mode
+> you started in. A run that looks stuck is usually a prompt waiting behind the
+> narration.
 
-The script prints:
-`>` is the agent narrating itself, every file it reads and command it runs.
-`+` is a commit.
+The lines you see are the agent narrating itself: every file it reads, every
+command it runs, and each commit it pushes.
 
 Watch which files it edits. Only `scorer/usage.py` means it is working inside
-the contract; an `edit` naming a test is the agent changing what "done" means.
+the contract; an edit naming a test is the agent changing what "done" means.
 
-Closing the script does not stop the agent.
+Leaving `agy` does not stop the agent. It runs on Agent Platform and keeps
+going; `read_query` picks the trajectory back up from any cursor.
 
 ### Verify your work
 
-You should see the agent's branch appear and at least one commit arrive on it.
-The run ends with a link to the diff.
+The agent's branch appears on your fork and at least one commit lands on it.
+Ask for the compare page when the run reports it is done:
 
-Narration stopping does not mean the agent stopped. The stream is one
-connection and can end early; the branch keeps moving, which is why the script
-follows the branch and not the stream.
+```bash
+echo "https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/compare/main...agent/parse"
+```
+
+Narration going quiet is not the agent stopping. `read_query` returning no new
+lines with a state of "running" means it is working, which is why the branch,
+not the narration, is what tells you it landed.
 
 ## Read what it did
 
@@ -504,7 +532,7 @@ Duration: 6
 
 Don't merge yet, review the file diff to see what changes the coder-agent made.
 
-- Open the link the dispatch printed, to the branch's diff on GitHub
+- Open the compare page you printed above, the branch's diff on GitHub
 - Click **Create pull request**
 - Leave the title and the description alone: GitHub fills both from the
   agent's commit, `Closes #1` and all
