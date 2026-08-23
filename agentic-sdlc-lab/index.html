@@ -231,13 +231,15 @@ id on every assertion that came from one.
       </google-codelab-step>
     
       <google-codelab-step label="Tell git who you are" duration="1">
-        <p>Cloud Shell starts without a git identity, and the commit in two steps needs one. Use the address on your GitHub account, because it is what the commits will be attributed to.</p>
-<pre><code language="language-bash" class="language-bash">git config --global user.name &#34;Your Name&#34; &amp;&amp; git config --global user.email &#34;you@example.com&#34;
-</code></pre>
-<h2 is-upgraded>Verify your work</h2>
+        <p>The commit in two steps needs a git identity, and Cloud Shell often has none. Look first:</p>
 <pre><code language="language-bash" class="language-bash">git config --global --get-regexp &#39;^user\.&#39;
 </code></pre>
-<p>Both lines come back. <code>--global</code> writes to <code>$HOME</code>, which Cloud Shell keeps, so this is once per machine rather than once per session.</p>
+<p>Two lines back and you are done. Nothing back means it is unset:</p>
+<pre><code language="language-bash" class="language-bash">git config --global user.name &#34;Your Name&#34; &amp;&amp; git config --global user.email &#34;you@example.com&#34;
+</code></pre>
+<p>Use the address on your GitHub account, which is what the commits are attributed to. <code>--global</code> writes to <code>$HOME</code>, which Cloud Shell keeps, so this is once per machine rather than once per session.</p>
+<h2 is-upgraded>Verify your work</h2>
+<p>The first command again, with both lines back.</p>
 
 
       </google-codelab-step>
