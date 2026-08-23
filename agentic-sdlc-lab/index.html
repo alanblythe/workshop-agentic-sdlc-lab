@@ -209,14 +209,8 @@ id on every assertion that came from one.
 <p class="image-container"><img alt="agents-cli reporting the deployment succeeded, with the agent card URL and runtime id" src="img/492dec40e1922746.png"></p>
 <pre><code language="language-bash" class="language-bash">! (cd coder-agent &amp;&amp; agents-cli deploy --list)
 </code></pre>
-<p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so ask the API directly, in a terminal: the block sets variables that the next line reads, and each <code>!</code> is its own shell.</p>
-<pre><code language="language-bash" class="language-bash">export API=&#34;https://${AGENT_ENGINE_LOCATION}-aiplatform.googleapis.com/v1&#34;
-export BASE=&#34;${API}/projects/$(gcloud config get-value project)/locations/${AGENT_ENGINE_LOCATION}/reasoningEngines&#34;
-export ENGINE=$(curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;$BASE&#34; \
-  | python3 -c &#34;import json,sys; print(next(e[&#39;name&#39;] for e in json.load(sys.stdin)[&#39;reasoningEngines&#39;] if e.get(&#39;displayName&#39;)==&#39;coder-agent&#39;))&#34;)
-
-curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;${API}/${ENGINE}&#34; \
-  | python3 -c &#34;import json,sys; print(json.load(sys.stdin)[&#39;spec&#39;][&#39;effectiveIdentity&#39;])&#34;
+<p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so <code>scripts/agent-identity.sh</code> asks the API directly:</p>
+<pre><code language="language-bash" class="language-bash">! bash scripts/agent-identity.sh
 </code></pre>
 <aside class="warning"><p>The deploy output prints a <code>gcp-sa-aiplatform-re</code> service account even when <code>--agent-identity</code> worked. It is not the identity your agent runs as. <code>spec.effectiveIdentity</code> is the only field that tells the truth.</p>
 </aside>
@@ -228,8 +222,9 @@ curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#
     
       <google-codelab-step label="Give the agent a key to your fork" duration="4">
         <p>The agent has to push. It needs a credential, and it needs one that cannot do anything else.</p>
-<pre><code language="language-bash" class="language-bash">bash scripts/setup-deploy-key.sh
+<pre><code language="language-bash" class="language-bash">! bash scripts/setup-deploy-key.sh
 </code></pre>
+<p><code>scripts/setup-deploy-key.sh</code> is what does it.</p>
 <p>That generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
 <aside class="special"><p>A deploy key&#39;s blast radius is one repository, by construction. There is no scope matrix to get wrong, and revoking it is deleting one key from one repo.</p>
 </aside>
@@ -241,11 +236,11 @@ curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#
     
       <google-codelab-step label="Dispatch" duration="5">
         <p>Commit the contract and send the work.</p>
-<pre><code language="language-bash" class="language-bash">git add -A
-git commit -m &#34;The contract: resolved spec and the tests it implies&#34;
-git push
-bash scripts/dispatch.sh --issue 1
+<pre><code language="language-bash" class="language-bash">! git add -A &amp;&amp; git commit -m &#34;The contract: the resolved spec and the tests it implies&#34; &amp;&amp; git push
 </code></pre>
+<pre><code language="language-bash" class="language-bash">! bash scripts/dispatch.sh --issue 1
+</code></pre>
+<p><code>scripts/dispatch.sh</code> is what pins the commit and follows the branch.</p>
 <p>The dispatch pins the exact commit you just pushed. The agent fetches that commit and nothing else.</p>
 <p><code>--issue</code> is the number you filed earlier, which is <strong>1</strong> on a fork whose issues you had just turned on. Run <code>gh issue list</code> if yours is not. The agent writes it into every commit it pushes, and dispatch refuses a number that is not an open issue rather than let a wrong one reach the commits.</p>
 <aside class="special"><p>That pin is why you cannot rescue a bad contract once the agent is working. Anything you commit after this moment is invisible to it, not by agreement but because it never fetches anything else. If the contract was wrong, you find out the way you would with a colleague who took the brief and went quiet.</p>
@@ -259,13 +254,12 @@ bash scripts/dispatch.sh --issue 1
     
       <google-codelab-step label="Read what it did" duration="6">
         <p>Do not merge yet. Read.</p>
-<pre><code language="language-bash" class="language-bash">git fetch origin
-git log --oneline origin/agent/parse
-git diff main...origin/agent/parse
+<pre><code language="language-bash" class="language-bash">! git fetch origin &amp;&amp; git log --oneline origin/agent/parse
+</code></pre>
+<pre><code language="language-bash" class="language-bash">! git diff main...origin/agent/parse
 </code></pre>
 <p>Then check it against the contract rather than against your impression of it:</p>
-<pre><code language="language-bash" class="language-bash">git checkout -b review origin/agent/parse
-uv run pytest -q
+<pre><code language="language-bash" class="language-bash">! git checkout -b review origin/agent/parse &amp;&amp; uv run pytest -q
 </code></pre>
 <p>You can also watch the whole trajectory, every file it read and every command it ran, in the console, because each step was recorded as an event in the agent&#39;s session.</p>
 <aside class="warning"><p>Green tests mean it satisfied the contract. They do not mean the contract was right. If the code passes and still does the wrong thing, that is a finding about your spec, and it is the most valuable thing this lab can hand you.</p>
@@ -273,9 +267,7 @@ uv run pytest -q
 <h2 is-upgraded>Verify your work</h2>
 <p>The tests pass, and the diff touches the implementation only. If the agent edited a test to make it pass, you have learned something about how contracts need to be written.</p>
 <p>Merge when you are satisfied, and push:</p>
-<pre><code language="language-bash" class="language-bash">git checkout main
-git merge origin/agent/parse
-git push
+<pre><code language="language-bash" class="language-bash">! git checkout main &amp;&amp; git merge origin/agent/parse &amp;&amp; git push
 </code></pre>
 <p>The push is what closes your issue. The agent wrote <code>Closes #1</code> into its commit messages, and GitHub acts on that when those commits land on your default branch, not when they land on a branch.</p>
 
@@ -285,9 +277,9 @@ git push
       <google-codelab-step label="Tear it down" duration="4">
         <p>The agent costs money while it is deployed. Remove it, and the credential with it.</p>
 <p>One command removes everything the day created:</p>
-<pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
+<pre><code language="language-bash" class="language-bash">! bash scripts/teardown.sh
 </code></pre>
-<p>It shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
+<p><code>scripts/teardown.sh</code> shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
 <p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs. Your project may well have been using them before today.</p>
 <aside class="special"><p>Deleting the deploy key is the part that matters most. The agent is only costing you money; the key is granting write access to your repository until it is gone. The script removes it first for that reason.</p>
 </aside>
@@ -302,7 +294,7 @@ git push
 <li>Read the trajectory in the console. The tool calls are a record of how it reasoned, and they show where the contract was doing the work</li>
 </ul>
 <h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
+<pre><code language="language-bash" class="language-bash">! bash scripts/teardown.sh
 </code></pre>
 <p>Run a second time it reports <strong>Already torn down</strong> and changes nothing. That is the check: it is safe to re-run, so there is no doubt about whether it finished.</p>
 
