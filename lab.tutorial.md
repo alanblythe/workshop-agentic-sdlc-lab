@@ -329,13 +329,14 @@ the wrong thing.
 
 ### Verify your work
 
-Stay in `agy` for both of these. Type `!` and the shell runs the rest of the
-line, so you can check the agent's work without losing the session that did it.
+Stay in `agy` for these. Type `!` first, then the command: the shell runs the
+rest of the line, so you can check the agent's work without losing the session
+that did it. Type the `!` rather than pasting it, which `agy` warns about.
 
 First, that the files exist:
 
 ```bash
-! git status --short scorer/
+git status --short scorer/
 ```
 
 Three tests and the seam. If the subagent reported writing them and this prints
@@ -343,7 +344,7 @@ nothing, it did not write them: what an agent says it did and what is on disk
 are two different claims, and only one of them is checkable.
 
 ```bash
-! uv run pytest -q
+uv run pytest -q
 ```
 
 ![pytest reporting the contract tests failed and the starter tests passed](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/contract-tests-failing.png)
@@ -359,16 +360,17 @@ test that has not run holds nobody to anything.
 
 <walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
-Your agent should be up by now. Still in `agy`, so still behind a `!`:
+Your agent should be up by now. Still in `agy`, so each of these still goes
+after a typed `!`.
 
 ```bash
-! (cd coder-agent && agents-cli deploy --status)
+(cd coder-agent && agents-cli deploy --status)
 ```
 
 ![agents-cli reporting the deployment succeeded, with the agent card URL and runtime id](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/deploy-status.png)
 
 ```bash
-! (cd coder-agent && agents-cli deploy --list)
+(cd coder-agent && agents-cli deploy --list)
 ```
 
 Confirm it is running under its own identity rather than a borrowed service
@@ -376,7 +378,7 @@ account. There is no `gcloud` surface for this, so
 <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/agent-identity.sh">scripts/agent-identity.sh</walkthrough-editor-open-file> asks the API directly:
 
 ```bash
-! bash scripts/agent-identity.sh
+bash scripts/agent-identity.sh
 ```
 
 > **Careful:**
@@ -399,7 +401,7 @@ The agent has to push. It needs a credential, and it needs one that cannot do
 anything else.
 
 ```bash
-! bash scripts/setup-deploy-key.sh
+bash scripts/setup-deploy-key.sh
 ```
 
 <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/setup-deploy-key.sh">scripts/setup-deploy-key.sh</walkthrough-editor-open-file> is what does it.
@@ -426,11 +428,11 @@ succeeded, so reaching the end *is* the verification.
 Commit the contract and send the work.
 
 ```bash
-! git add -A && git commit -m "The contract: the resolved spec and the tests it implies" && git push
+git add -A && git commit -m "The contract: the resolved spec and the tests it implies" && git push
 ```
 
 ```bash
-! bash scripts/dispatch.sh --issue 1
+bash scripts/dispatch.sh --issue 1
 ```
 
 <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/dispatch.sh">scripts/dispatch.sh</walkthrough-editor-open-file> is what pins the commit and follows the branch.
@@ -465,17 +467,17 @@ The run ends with the branch name and how to merge it.
 Do not merge yet. Read.
 
 ```bash
-! git fetch origin && git log --oneline origin/agent/parse
+git fetch origin && git log --oneline origin/agent/parse
 ```
 
 ```bash
-! git diff main...origin/agent/parse
+git diff main...origin/agent/parse
 ```
 
 Then check it against the contract rather than against your impression of it:
 
 ```bash
-! git checkout -b review origin/agent/parse && uv run pytest -q
+git checkout -b review origin/agent/parse && uv run pytest -q
 ```
 
 You can also watch the whole trajectory, every file it read and every command it
@@ -497,7 +499,7 @@ need to be written.
 Merge when you are satisfied, and push:
 
 ```bash
-! git checkout main && git merge origin/agent/parse && git push
+git checkout main && git merge origin/agent/parse && git push
 ```
 
 The push is what closes your issue. The agent wrote `Closes #1` into its commit
@@ -514,7 +516,7 @@ it.
 One command removes everything the day created:
 
 ```bash
-! bash scripts/teardown.sh
+bash scripts/teardown.sh
 ```
 
 <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/teardown.sh">scripts/teardown.sh</walkthrough-editor-open-file> shows you what it is about to remove and asks
@@ -556,7 +558,7 @@ checkable before you asked anyone, human or otherwise, to do it.
 ### Verify your work
 
 ```bash
-! bash scripts/teardown.sh
+bash scripts/teardown.sh
 ```
 
 Run a second time it reports **Already torn down** and changes nothing. That is
