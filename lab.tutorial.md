@@ -372,18 +372,11 @@ Your agent should be up by now. Still in `agy`, so still behind a `!`:
 ```
 
 Confirm it is running under its own identity rather than a borrowed service
-account. There is no `gcloud` surface for this, so ask the API directly, in a
-terminal: the block sets variables that the next line reads, and each `!` is its
-own shell.
+account. There is no `gcloud` surface for this, so
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/agent-identity.sh">scripts/agent-identity.sh</walkthrough-editor-open-file> asks the API directly:
 
 ```bash
-export API="https://${AGENT_ENGINE_LOCATION}-aiplatform.googleapis.com/v1"
-export BASE="${API}/projects/$(gcloud config get-value project)/locations/${AGENT_ENGINE_LOCATION}/reasoningEngines"
-export ENGINE=$(curl -sS -H "Authorization: Bearer $(gcloud auth print-access-token)" "$BASE" \
-  | python3 -c "import json,sys; print(next(e['name'] for e in json.load(sys.stdin)['reasoningEngines'] if e.get('displayName')=='coder-agent'))")
-
-curl -sS -H "Authorization: Bearer $(gcloud auth print-access-token)" "${API}/${ENGINE}" \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['spec']['effectiveIdentity'])"
+! bash scripts/agent-identity.sh
 ```
 
 > **Careful:**
@@ -406,8 +399,10 @@ The agent has to push. It needs a credential, and it needs one that cannot do
 anything else.
 
 ```bash
-bash scripts/setup-deploy-key.sh
+! bash scripts/setup-deploy-key.sh
 ```
+
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/setup-deploy-key.sh">scripts/setup-deploy-key.sh</walkthrough-editor-open-file> is what does it.
 
 That generates an SSH key, gives it write access to **this repository only**,
 proves it works, and puts the private half in the Secret Manager secret preflight
@@ -431,11 +426,14 @@ succeeded, so reaching the end *is* the verification.
 Commit the contract and send the work.
 
 ```bash
-git add -A
-git commit -m "The contract: resolved spec and the tests it implies"
-git push
-bash scripts/dispatch.sh --issue 1
+! git add -A && git commit -m "The contract: the resolved spec and the tests it implies" && git push
 ```
+
+```bash
+! bash scripts/dispatch.sh --issue 1
+```
+
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/dispatch.sh">scripts/dispatch.sh</walkthrough-editor-open-file> is what pins the commit and follows the branch.
 
 The dispatch pins the exact commit you just pushed. The agent fetches that
 commit and nothing else.
@@ -467,16 +465,17 @@ The run ends with the branch name and how to merge it.
 Do not merge yet. Read.
 
 ```bash
-git fetch origin
-git log --oneline origin/agent/parse
-git diff main...origin/agent/parse
+! git fetch origin && git log --oneline origin/agent/parse
+```
+
+```bash
+! git diff main...origin/agent/parse
 ```
 
 Then check it against the contract rather than against your impression of it:
 
 ```bash
-git checkout -b review origin/agent/parse
-uv run pytest -q
+! git checkout -b review origin/agent/parse && uv run pytest -q
 ```
 
 You can also watch the whole trajectory, every file it read and every command it
@@ -498,9 +497,7 @@ need to be written.
 Merge when you are satisfied, and push:
 
 ```bash
-git checkout main
-git merge origin/agent/parse
-git push
+! git checkout main && git merge origin/agent/parse && git push
 ```
 
 The push is what closes your issue. The agent wrote `Closes #1` into its commit
@@ -517,10 +514,11 @@ it.
 One command removes everything the day created:
 
 ```bash
-bash scripts/teardown.sh
+! bash scripts/teardown.sh
 ```
 
-It shows you what it is about to remove and asks before doing it. Use
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/teardown.sh">scripts/teardown.sh</walkthrough-editor-open-file> shows you what it is about to remove and asks
+before doing it. Use
 `--dry-run` first if you would rather look than trust.
 
 It deletes three things: the deployed agent, the Secret Manager secret, and the
@@ -558,7 +556,7 @@ checkable before you asked anyone, human or otherwise, to do it.
 ### Verify your work
 
 ```bash
-bash scripts/teardown.sh
+! bash scripts/teardown.sh
 ```
 
 Run a second time it reports **Already torn down** and changes nothing. That is
