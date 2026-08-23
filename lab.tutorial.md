@@ -415,6 +415,8 @@ anything else.
 bash scripts/setup-deploy-key.sh
 ```
 
+![the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/deploy-key-verified.png)
+
 <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/setup-deploy-key.sh">scripts/setup-deploy-key.sh</walkthrough-editor-open-file> is what does it.
 
 That generates an SSH key, gives it write access to **this repository only**,

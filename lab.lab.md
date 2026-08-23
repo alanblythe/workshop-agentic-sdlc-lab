@@ -423,6 +423,8 @@ anything else.
 bash scripts/setup-deploy-key.sh
 ```
 
+![the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager](docs/images/deploy-key-verified.png)
+
 `scripts/setup-deploy-key.sh` is what does it.
 
 That generates an SSH key, gives it write access to **this repository only**,
