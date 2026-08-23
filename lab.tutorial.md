@@ -299,9 +299,10 @@ Still in `agy`:
 
 ```text
 Use the contract-writer agent to write contract tests into tests/ from the
-resolved docs/spec.md. Cover the parsing rules and the scoring rules
-separately. Do not write an implementation. Cite the decision id on every
-assertion that came from one.
+resolved docs/spec.md, and the seam they call into usage.py. Cover the parsing
+rules and the scoring rules separately. Every function body in usage.py raises
+NotImplementedError and nothing else. Cite the decision id on every assertion
+that came from one.
 ```
 
 > **Tip:**
@@ -329,21 +330,27 @@ the wrong thing.
 First, that the files exist:
 
 ```bash
-git status --short tests/
+git status --short tests/ usage.py
 ```
 
-Three new files. If the subagent reported writing them and this prints nothing,
-it did not write them: what an agent says it did and what is on disk are two
-different claims, and only one of them is checkable.
+Three tests and the seam. If the subagent reported writing them and this prints
+nothing, it did not write them: what an agent says it did and what is on disk
+are two different claims, and only one of them is checkable.
 
 ```bash
 uv run pytest -q
 ```
 
-You get errors, not failures: `ModuleNotFoundError: No module named 'usage'`.
-That is the right result. The contract names a module nobody has written yet,
-so the tests cannot be imported, let alone pass, and collection stops before
-the starter tests run. A test that passes now is testing nothing.
+**Failures, not errors, and not passes.** The contract tests fail on
+`NotImplementedError`, and the starter tests pass. That is the whole point of
+the seam: a test that cannot import has not run, and a test that has not run
+holds nobody to anything.
+
+> **Careful:**
+>
+> If a contract test **passes**, stop and read `usage.py`. Nothing implements
+> this yet, so a pass means the agent wrote behaviour it was told not to, and the
+> contract is now measuring the agent instead of whoever implements it.
 
 ## Check the deploy landed
 

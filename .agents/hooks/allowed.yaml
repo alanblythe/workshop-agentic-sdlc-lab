@@ -15,8 +15,11 @@ commands:
   - git diff
   - ls
 
-# Directories, relative to the repository root, that a file may be created in.
-# The contract tests are the only files an agent writes in this lab.
+# Paths, relative to the repository root, that a file may be created at. A
+# directory covers anything under it; a filename matches only itself. The
+# contract is all an agent writes here: the tests, the seam they call, and the
+# decisions the adversary records in the spec.
 writes:
   - tests
   - docs
+  - usage.py
