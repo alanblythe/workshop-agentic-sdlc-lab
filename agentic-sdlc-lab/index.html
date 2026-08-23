@@ -188,12 +188,14 @@ id on every assertion that came from one.
 <p>Its definition is <code>.agents/agents/contract-writer/agent.md</code>, in your fork beside the skill.</p>
 <p>These tests are the contract. They are what &#34;done&#34; means, and they are the only thing standing between you and an agent that writes plausible code which does the wrong thing.</p>
 <h2 is-upgraded>Verify your work</h2>
+<p>Stay in <code>agy</code> for both of these. Type <code>!</code> and the shell runs the rest of the line, so you can check the agent&#39;s work without losing the session that did it.</p>
 <p>First, that the files exist:</p>
-<pre><code language="language-bash" class="language-bash">git status --short scorer/
+<pre><code language="language-bash" class="language-bash">! git status --short scorer/
 </code></pre>
 <p>Three tests and the seam. If the subagent reported writing them and this prints nothing, it did not write them: what an agent says it did and what is on disk are two different claims, and only one of them is checkable.</p>
-<pre><code language="language-bash" class="language-bash">uv run pytest -q
+<pre><code language="language-bash" class="language-bash">! uv run pytest -q
 </code></pre>
+<p class="image-container"><img alt="pytest reporting the contract tests failed and the starter tests passed" src="img/324f3f9f3f74d1e.png"></p>
 <p><strong>Failures, not errors, and not passes.</strong> The contract tests fail on <code>NotImplementedError</code>, and the starter tests pass. That is the whole point of the seam: a test that cannot import has not run, and a test that has not run holds nobody to anything.</p>
 <aside class="warning"><p>If a contract test <strong>passes</strong>, stop and read <code>scorer/usage.py</code>. Nothing implements this yet, so a pass means the agent wrote behaviour it was told not to, and the contract is now measuring the agent instead of whoever implements it.</p>
 </aside>
