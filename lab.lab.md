@@ -416,22 +416,26 @@ The first is what the next step grants access to.
 
 Duration: 1
 
-Cloud Shell starts without a git identity, and the commit in two steps needs
-one. Use the address on your GitHub account, because it is what the commits
-will be attributed to.
-
-```bash
-git config --global user.name "Your Name" && git config --global user.email "you@example.com"
-```
-
-### Verify your work
+The commit in two steps needs a git identity, and Cloud Shell often has none.
+Look first:
 
 ```bash
 git config --global --get-regexp '^user\.'
 ```
 
-Both lines come back. `--global` writes to `$HOME`, which Cloud Shell keeps, so
-this is once per machine rather than once per session.
+Two lines back and you are done. Nothing back means it is unset:
+
+```bash
+git config --global user.name "Your Name" && git config --global user.email "you@example.com"
+```
+
+Use the address on your GitHub account, which is what the commits are
+attributed to. `--global` writes to `$HOME`, which Cloud Shell keeps, so this is
+once per machine rather than once per session.
+
+### Verify your work
+
+The first command again, with both lines back.
 
 ## Give the agent a key to your fork
 
