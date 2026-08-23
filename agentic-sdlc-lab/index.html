@@ -203,12 +203,13 @@ id on every assertion that came from one.
       </google-codelab-step>
     
       <google-codelab-step label="Check the deploy landed" duration="3">
-        <p>Your agent should be up by now.</p>
-<pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
+        <p>Your agent should be up by now. Still in <code>agy</code>, so still behind a <code>!</code>:</p>
+<pre><code language="language-bash" class="language-bash">! (cd coder-agent &amp;&amp; agents-cli deploy --status)
 </code></pre>
-<pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --list)
+<p class="image-container"><img alt="agents-cli reporting the deployment succeeded, with the agent card URL and runtime id" src="img/492dec40e1922746.png"></p>
+<pre><code language="language-bash" class="language-bash">! (cd coder-agent &amp;&amp; agents-cli deploy --list)
 </code></pre>
-<p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so ask the API directly:</p>
+<p>Confirm it is running under its own identity rather than a borrowed service account. There is no <code>gcloud</code> surface for this, so ask the API directly, in a terminal: the block sets variables that the next line reads, and each <code>!</code> is its own shell.</p>
 <pre><code language="language-bash" class="language-bash">export API=&#34;https://${AGENT_ENGINE_LOCATION}-aiplatform.googleapis.com/v1&#34;
 export BASE=&#34;${API}/projects/$(gcloud config get-value project)/locations/${AGENT_ENGINE_LOCATION}/reasoningEngines&#34;
 export ENGINE=$(curl -sS -H &#34;Authorization: Bearer $(gcloud auth print-access-token)&#34; &#34;$BASE&#34; \
