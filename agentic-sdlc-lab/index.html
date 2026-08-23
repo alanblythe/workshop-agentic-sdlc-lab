@@ -143,12 +143,17 @@ gh repo edit --enable-issues
         <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository at <code>.agents/skills/spec-adversary/SKILL.md</code>, which means it is in your fork and it needs no installing. A workspace skill is found relative to where <code>agy</code> starts, so start it from the root of the clone:</p>
 <pre><code language="language-bash" class="language-bash">cd ~/cloudshell_open/workshop-agentic-sdlc-lab
 agy --mode accept-edits
+
+&gt; aside positive
+&gt;
+&gt; `--mode accept-edits` is what stops it queueing behind a prompt for each file
+&gt; it writes, including the ones the subagent writes two steps from here. `shift` +
+&gt; `tab` cycles the mode if you would rather approve each one.
 </code></pre>
 <p>Then ask it to go to work:</p>
 <pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 </code></pre>
-<p><code>--mode accept-edits</code> is what stops it queueing behind a prompt for each file it writes, including the ones the subagent writes two steps from here. <code>shift</code> + <code>tab</code> cycles the mode if you would rather approve each one.</p>
 <h2 is-upgraded>Read what you just pointed at</h2>
 <p>Before you answer its first question, open <code>.agents/skills/spec-adversary/SKILL.md</code> and read it. It is 150 lines and it is the whole method: sweep the spec before asking anything, one question at a time, and never recommend a reading. Every refusal you are about to meet is written down in there, which is the difference between an agent behaving oddly and an agent behaving as specified.</p>
 <p>It is in your fork, so it is yours to change. That is the last step of the workshop, and the reason the file is here rather than somewhere central.</p>
@@ -174,11 +179,11 @@ fixtures/usage.csv. One ambiguity at a time.
       <google-codelab-step label="Emit the contract" duration="8">
         <p>Decisions in prose are still prose. Now turn them into tests, which is the form an agent can be held to.</p>
 <p>Still in <code>agy</code>:</p>
-<pre><code language="language-text" class="language-text">Use the contract-writer agent to write contract tests into tests/ from the
-resolved docs/spec.md, and the seam they call into usage.py. Cover the parsing
-rules and the scoring rules separately. Every function body in usage.py raises
-NotImplementedError and nothing else. Cite the decision id on every assertion
-that came from one.
+<pre><code language="language-text" class="language-text">Use the contract-writer agent to write contract tests into scorer/tests/ from
+the resolved docs/spec.md, and the seam they call into scorer/usage.py. Cover
+the parsing rules and the scoring rules separately. Every function body in
+scorer/usage.py raises NotImplementedError and nothing else. Cite the decision
+id on every assertion that came from one.
 </code></pre>
 <aside class="special"><p>The agent name &#34;contract-writer&#34; is specifically used to ensure Antigravity CLI chooses the configured subagent in <code>.agents/agents/contract-writer/agent.md</code>.</p>
 </aside>
@@ -188,13 +193,13 @@ that came from one.
 <p>These tests are the contract. They are what &#34;done&#34; means, and they are the only thing standing between you and an agent that writes plausible code which does the wrong thing.</p>
 <h2 is-upgraded>Verify your work</h2>
 <p>First, that the files exist:</p>
-<pre><code language="language-bash" class="language-bash">git status --short tests/ usage.py
+<pre><code language="language-bash" class="language-bash">git status --short scorer/
 </code></pre>
 <p>Three tests and the seam. If the subagent reported writing them and this prints nothing, it did not write them: what an agent says it did and what is on disk are two different claims, and only one of them is checkable.</p>
 <pre><code language="language-bash" class="language-bash">uv run pytest -q
 </code></pre>
 <p><strong>Failures, not errors, and not passes.</strong> The contract tests fail on <code>NotImplementedError</code>, and the starter tests pass. That is the whole point of the seam: a test that cannot import has not run, and a test that has not run holds nobody to anything.</p>
-<aside class="warning"><p>If a contract test <strong>passes</strong>, stop and read <code>usage.py</code>. Nothing implements this yet, so a pass means the agent wrote behaviour it was told not to, and the contract is now measuring the agent instead of whoever implements it.</p>
+<aside class="warning"><p>If a contract test <strong>passes</strong>, stop and read <code>scorer/usage.py</code>. Nothing implements this yet, so a pass means the agent wrote behaviour it was told not to, and the contract is now measuring the agent instead of whoever implements it.</p>
 </aside>
 
 
