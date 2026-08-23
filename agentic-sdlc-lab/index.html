@@ -143,13 +143,9 @@ gh repo edit --enable-issues
         <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository at <code>.agents/skills/spec-adversary/SKILL.md</code>, which means it is in your fork and it needs no installing. A workspace skill is found relative to where <code>agy</code> starts, so start it from the root of the clone:</p>
 <pre><code language="language-bash" class="language-bash">cd ~/cloudshell_open/workshop-agentic-sdlc-lab
 agy --mode accept-edits
-
-&gt; aside positive
-&gt;
-&gt; `--mode accept-edits` is what stops it queueing behind a prompt for each file
-&gt; it writes, including the ones the subagent writes two steps from here. `shift` +
-&gt; `tab` cycles the mode if you would rather approve each one.
 </code></pre>
+<aside class="special"><p><code>--mode accept-edits</code> is what stops it queueing behind a prompt for each file it writes, including the ones the subagent writes two steps from here. <code>shift</code> + <code>tab</code> cycles the mode if you would rather approve each one.</p>
+</aside>
 <p>Then ask it to go to work:</p>
 <pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
