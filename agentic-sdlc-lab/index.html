@@ -29,17 +29,23 @@
                   feedback-link="https://github.com/alanblythe/workshop-agentic-sdlc/issues">
     
       <google-codelab-step label="Before you begin" duration="4">
-        <p>You are going to take a request written the way requests actually arrive: prose, from a stakeholder, with the important parts unsaid, and get working code out of the other end. A coding agent writes the code. You never do.</p>
-<p>The interesting part is not the agent. It is what you have to make true before an agent can be useful: a specification precise enough that two parties could build from it independently and their code would fit.</p>
-<p>This lab is built on two practices. <strong>Spec-driven development</strong> builds a specification for review and agreement before any code is written. <strong>Test-driven development</strong> writes the tests before the implementation they check. Spec clarity is of utmost importance. This lab uses an adversarial skill to ensure a clear spec is authored and approved before coding starts.</p>
-<p>The platform is <strong>Gemini Enterprise Agent Platform</strong>. The coding agent deploys to Agent Runtime using Agent Identity, after authoring the spec you&#39;ll hand off to the Agent Runtime hosted coder-agent to write the code.</p>
+        <p>This lab simulates the common scenario for feature requests that provide detailed information, though lack to cover edge and boundary conditions.</p>
+<p>In this lab you&#39;ll:</p>
+<ul>
+<li>Use Antigravity CLI with skills, subagents, and a MCP server</li>
+<li>Deploy an agent to Gemini Enterprise Agent Platform</li>
+<li>Use an adversarial skill to refine a spec</li>
+<li>Interfact with a code-agent deployed to Agent Platform. You&#39;ll instruct this agent to write the implementation code starting from your GitHub commit hash</li>
+</ul>
+<p>This lab is built on two practices. <strong>Spec-driven development</strong> builds a specification for review and agreement before any code is written. <strong>Test-driven development, TDD</strong> writes the tests before the implementation they check. Spec clarity is of utmost importance. This lab uses an adversarial skill to ensure a clear spec is authored and approved before coding starts.</p>
+<p>The <strong>Agent Platform</strong> agent is deployed using Agent Identity.</p>
 <p>The lab is deliberately simplified: one request, one spec, one agent, one repository, and no CI.</p>
 <h2 class="checklist" is-upgraded>What you&#39;ll learn</h2>
 <ul class="checklist">
 <li>How to interrogate a specification until the ambiguity is gone, using an agent skill that refuses to decide anything for you</li>
 <li>How to turn resolved decisions into acceptance tests, which are what make an agent&#39;s work checkable</li>
 <li>How to deploy an agent to Agent Runtime under its own identity, and dispatch work to it at a pinned commit</li>
-<li>Why the commit is pinned, and what that buys you</li>
+<li>How to author and use Antigravity CLI skills, subagents, and MCP servers</li>
 </ul>
 <h2 is-upgraded>What you&#39;ll need</h2>
 <ul>
@@ -278,18 +284,34 @@ id on every assertion that came from one.
         <p>Commit the contract and send the work.</p>
 <pre><code language="language-bash" class="language-bash">git add -A &amp;&amp; git commit -m &#34;The contract: the resolved spec and the tests it implies&#34; &amp;&amp; git push
 </code></pre>
-<p>Start the coder-agent writing code:</p>
-<pre><code language="language-bash" class="language-bash">bash scripts/dispatch.sh --issue 1
-</code></pre>
-<p><code>scripts/dispatch.sh</code> does quite a few things. A POST request to $HOST/reasoningEngines/v1/projects/$PROJECT_NUMBER/locations/$AGENT_ENGINE_LOCATION/reasoningEngines/$ENGINE/api/stream_reasoning_engine is what starts the agents work.</p>
-<aside class="special"><p>The commit you just pushed is given to the agent, similar to a pull request flow.</p>
+<aside class="warning"><p><strong>Push before you dispatch.</strong> The agent clones your fork from GitHub, so a commit you have not pushed does not exist as far as it is concerned, and it will work from the commit before yours without saying so.</p>
 </aside>
-<p>The script prints: <code>></code> is the agent narrating itself, every file it reads and command it runs. <code>+</code> is a commit.</p>
-<p>Watch which files it edits. Only <code>scorer/usage.py</code> means it is working inside the contract; an <code>edit</code> naming a test is the agent changing what &#34;done&#34; means.</p>
-<p>Closing the script does not stop the agent.</p>
+<p>The agent runs on Agent Platform, not on this machine. You reach it through <code>geap-mcp</code>, the plugin you installed during setup, from inside <code>agy</code>:</p>
+<pre><code language="language-bash" class="language-bash">agy
+</code></pre>
+<p>Paste this:</p>
+<pre><code language="language-text" class="language-text">Use the geap tools. Run list_agents to find coder-agent in this project, then
+start_query on it. The message is a JSON string:
+
+  {&#34;repo&#34;: &#34;&lt;owner&gt;/&lt;fork&gt;&#34;, &#34;sha&#34;: &#34;&lt;HEAD&gt;&#34;, &#34;branch&#34;: &#34;agent/parse&#34;, &#34;issue&#34;: &#34;1&#34;}
+
+Get repo and sha by running git here: the fork&#39;s owner/name from the origin
+remote, and the sha that origin/main points at.
+
+Then follow the run: call read_query in a loop, passing the next_cursor it
+returns, until state is no longer &#34;running&#34;. Print any new lines after each
+call, before you wait.
+</code></pre>
+<aside class="special"><p><strong>Approve the tool calls.</strong> MCP calls ask every time, whatever permission mode you started in. A run that looks stuck is usually a prompt waiting behind the narration.</p>
+</aside>
+<p>The lines you see are the agent narrating itself: every file it reads, every command it runs, and each commit it pushes.</p>
+<p>Watch which files it edits. Only <code>scorer/usage.py</code> means it is working inside the contract; an edit naming a test is the agent changing what &#34;done&#34; means.</p>
+<p>Leaving <code>agy</code> does not stop the agent. It runs on Agent Platform and keeps going; <code>read_query</code> picks the trajectory back up from any cursor.</p>
 <h2 is-upgraded>Verify your work</h2>
-<p>You should see the agent&#39;s branch appear and at least one commit arrive on it. The run ends with a link to the diff.</p>
-<p>Narration stopping does not mean the agent stopped. The stream is one connection and can end early; the branch keeps moving, which is why the script follows the branch and not the stream.</p>
+<p>The agent&#39;s branch appears on your fork and at least one commit lands on it. Ask for the compare page when the run reports it is done:</p>
+<pre><code language="language-bash" class="language-bash">echo &#34;https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/compare/main...agent/parse&#34;
+</code></pre>
+<p>Narration going quiet is not the agent stopping. <code>read_query</code> returning no new lines with a state of &#34;running&#34; means it is working, which is why the branch, not the narration, is what tells you it landed.</p>
 
 
       </google-codelab-step>
@@ -297,7 +319,7 @@ id on every assertion that came from one.
       <google-codelab-step label="Read what it did" duration="6">
         <p>Don&#39;t merge yet, review the file diff to see what changes the coder-agent made.</p>
 <ul>
-<li>Open the link the dispatch printed, to the branch&#39;s diff on GitHub</li>
+<li>Open the compare page you printed above, the branch&#39;s diff on GitHub</li>
 <li>Click <strong>Create pull request</strong></li>
 <li>Leave the title and the description alone: GitHub fills both from the agent&#39;s commit, <code>Closes #1</code> and all</li>
 </ul>
