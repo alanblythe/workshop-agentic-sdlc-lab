@@ -523,6 +523,8 @@ there is no CI here and a green-looking diff is only a diff:
 git fetch origin && git checkout -b review origin/agent/parse && uv run pytest -q
 ```
 
+![pytest reporting every test passed on the agent's branch](docs/images/contract-tests-passing.png)
+
 > aside negative
 >
 > Green tests mean it satisfied the contract. They do not mean the contract was
