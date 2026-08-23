@@ -12,6 +12,7 @@
 #   --branch NAME   where the agent pushes (default: agent/parse)
 #   --issue N       the issue the agent's commits close
 #   --engine ID     override engine discovery
+#   --quiet         follow the branch without narrating the agent's actions
 #   --help          this text
 #
 # The commit is pinned at dispatch. The agent physically cannot see anything
@@ -25,6 +26,7 @@ ISSUE=""
 ENGINE=""
 FOLLOW=1
 DISPATCH=1
+NARRATE=1
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -32,6 +34,7 @@ while [ $# -gt 0 ]; do
     --issue)       ISSUE="${2:-}"; shift 2 ;;
     --engine)      ENGINE="${2:-}"; shift 2 ;;
     --no-follow)   FOLLOW=0; shift ;;
+    --quiet)       NARRATE=0; shift ;;
     --follow-only) DISPATCH=0; shift ;;
     --help|-h)     sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *)             echo "unknown argument: $1 (try --help)" >&2; exit 2 ;;
@@ -113,6 +116,18 @@ if [ "$DISPATCH" -eq 1 ]; then
   [ "$SHA" = "$REMOTE_SHA" ] || die "HEAD ($(echo "$SHA" | cut -c1-12)) is not what origin/$LOCAL_BRANCH points at. The agent clones from GitHub, so an unpushed commit does not exist as far as it is concerned." \
     "git push origin $LOCAL_BRANCH"
   ok "$REPO at $(echo "$SHA" | cut -c1-12), pushed"
+
+  # A branch left from an earlier run is not a fast-forward from this commit,
+  # so every push the agent makes is rejected and the run ends having landed
+  # nothing -- while still reporting itself complete. Caught here rather than
+  # ninety seconds later as silence.
+  EXISTING=$(git ls-remote origin "refs/heads/$BRANCH" 2>/dev/null | cut -f1)
+  if [ -n "$EXISTING" ]; then
+    git fetch -q origin "$BRANCH" 2>/dev/null
+    git merge-base --is-ancestor "$EXISTING" "$SHA" 2>/dev/null ||
+      die "$BRANCH already exists at $(echo "$EXISTING" | cut -c1-12), which is not an ancestor of $(echo "$SHA" | cut -c1-12). The agent would be pushing a branch that cannot fast-forward, every push would be rejected, and it would tell you it was done." \
+        "git push origin --delete $BRANCH"
+  fi
   ok "the agent will push to $BRANCH"
 
   # Checked, not guessed. A number that names a closed or missing issue would
@@ -167,10 +182,29 @@ print(json.dumps({
 fi
 
 # --- 4. follow the branch --------------------------------------------------
-# The branch, not the stream. The agent pushes every iteration, so this shows
-# real progress and survives losing the connection -- which the stream does not.
+# Two displays of two different things. The narration is what the agent says
+# it is doing, and it stops when the connection does. The branch is what it
+# actually pushed, and it survives.
+RENDER="$(dirname "${BASH_SOURCE[0]}")/trajectory.py"
+[ -r "$RENDER" ] && have python3 || NARRATE=0
+SEEN=0
+# --follow-only meets a log from a run already over. Start at its end rather
+# than replaying it.
+[ "$DISPATCH" -eq 1 ] || SEEN=$(wc -l < "$LOG" 2>/dev/null | tr -d ' ')
+SEEN=${SEEN:-0}
+
+narrate() {
+  [ "$NARRATE" -eq 1 ] || return 0
+  NOW=$(wc -l < "$LOG" 2>/dev/null | tr -d ' ')
+  NOW=${NOW:-0}
+  [ "$NOW" -gt "$SEEN" ] || return 0
+  sed -n "$((SEEN + 1)),${NOW}p" "$LOG" | python3 "$RENDER"
+  SEEN=$NOW
+}
+
 step "following $BRANCH"
 info "polling every 10s; ctrl-c stops watching, not the agent"
+[ "$NARRATE" -eq 1 ] && info "> is what it says it is doing; + is what it pushed"
 
 LAST=""
 IDLE=0
@@ -191,6 +225,7 @@ while :; do
   fi
 
   if [ "${DISPATCH_PID:-}" != "" ] && ! kill -0 "$DISPATCH_PID" 2>/dev/null; then
+    narrate
     step "the run has ended"
     if grep -q '"error"' "$LOG" 2>/dev/null; then
       printf '  %sthe invocation reported an error%s\n' "$RED" "$R"
@@ -198,11 +233,18 @@ while :; do
       info "whatever was pushed before it stopped is on $BRANCH -- that is why the agent pushes every iteration"
     fi
     [ -n "$LAST" ] && ok "$BRANCH is at $(echo "$LAST" | cut -c1-12)" || info "$BRANCH was never created"
+    # The branch moving is not the same as this run's work landing on it.
+    if [ -n "$LAST" ] && ! git merge-base --is-ancestor "$SHA" "$LAST" 2>/dev/null; then
+      printf '  %sthat branch does not contain the commit you dispatched%s\n' "$RED" "$R"
+      info "it is from an earlier run, and nothing this one did has landed"
+    fi
     echo
     echo "  Review it, then merge when you are satisfied:"
     echo "      git fetch origin $BRANCH && git log origin/$BRANCH"
     echo "      git merge origin/$BRANCH && git push"
     exit 0
   fi
-  sleep 10
+  # Narration is worth watching live; the branch is not, so the poll stays at
+  # ten seconds and the stream is drained five times inside it.
+  for _ in 1 2 3 4 5; do narrate; sleep 2; done
 done

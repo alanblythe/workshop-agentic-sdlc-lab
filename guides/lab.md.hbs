@@ -535,9 +535,9 @@ Then check it against the contract rather than against your impression of it:
 git checkout -b review origin/agent/parse && uv run pytest -q
 ```
 
-You can also watch the whole trajectory, every file it read and every command it
-ran, in the console, because each step was recorded as an event in the agent's
-session.
+Everything you watched scroll past during the dispatch is also recorded in the
+console, as events on the agent's session, replayable long after the terminal
+is gone.
 
 {{#aside "negative"}}
 Green tests mean it satisfied the contract. They do not mean the contract was
