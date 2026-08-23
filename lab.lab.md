@@ -434,13 +434,6 @@ made. Nothing is left on your machine.
 > A deploy key's blast radius is one repository, by construction. There is no
 > scope matrix to get wrong, and revoking it is deleting one key from one repo.
 
-> aside negative
->
-> A fork owned by an **organization** may refuse the key: new organizations have
-> deploy keys switched off for every repository they own. An owner enables them
-> under *Settings, Member privileges, Deploy keys*. A fork on your own account
-> has them on.
-
 ### Verify your work
 
 The script ends by printing the secret the agent reads and the repository it can
