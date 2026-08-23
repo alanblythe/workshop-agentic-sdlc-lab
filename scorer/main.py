@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-FIXTURE = Path(__file__).parent / "fixtures" / "usage.csv"
+FIXTURE = Path(__file__).parent.parent / "fixtures" / "usage.csv"
 
 
 def load_export(path: Path | str = FIXTURE) -> str:
@@ -25,7 +25,7 @@ def main() -> None:
         from usage import parse_usage, score
     except ImportError:
         print(f"{len(rows)} rows, {len(accounts)} accounts: {', '.join(accounts)}")
-        print("No scorer yet. Implement parse_usage and score in usage.py.")
+        print("No scorer yet. Implement parse_usage and score in scorer/usage.py.")
         return
 
     for account, months in sorted(parse_usage(text).items()):

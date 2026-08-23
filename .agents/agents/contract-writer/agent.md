@@ -43,10 +43,11 @@ Three files:
 | `test_score_contract.py` | The scoring half, alone | `score(<longhand MonthSnapshot list>)` produces exactly this score, tier and reasons |
 | `test_integration.py` | Both, after merge | The two compose |
 
-**Write them into `tests/` in the repository you were given, and nowhere else.**
+**Write them into `scorer/tests/` in the repository you were given, and nowhere
+else.**
 Use a path under the workspace root, and finish with the files on disk there. A
 copy staged somewhere for someone to move is not a contract that anyone has:
-the author checks `tests/`, and what is not there did not happen, whatever you
+the author checks `scorer/tests/`, and what is not there did not happen, whatever you
 report.
 
 **Each side must be testable alone.** A test that needs both halves cannot be
@@ -59,7 +60,7 @@ and failing is what it is for.
 
 ## The seam, so that the tests can fail
 
-Write `usage.py` at the repository root as well: the types and the function
+Write `scorer/usage.py` as well: the types and the function
 signatures the spec's own seam section names, and every body
 
 ```python

@@ -251,6 +251,12 @@ relative to where `agy` starts, so start it from the root of the clone:
 ```bash
 cd ~/cloudshell_open/workshop-agentic-sdlc-lab
 agy --mode accept-edits
+
+{{#aside "positive"}}
+`--mode accept-edits` is what stops it queueing behind a prompt for each file
+it writes, including the ones the subagent writes two steps from here. `shift` +
+`tab` cycles the mode if you would rather approve each one.
+{{/aside}}
 ```
 
 Then ask it to go to work:
@@ -259,10 +265,6 @@ Then ask it to go to work:
 Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 ```
-
-`--mode accept-edits` is what stops it queueing behind a prompt for each file
-it writes, including the ones the subagent writes two steps from here. `shift` +
-`tab` cycles the mode if you would rather approve each one.
 
 ### Read what you just pointed at
 
@@ -317,11 +319,11 @@ an agent can be held to.
 Still in `agy`:
 
 ```text
-Use the contract-writer agent to write contract tests into tests/ from the
-resolved docs/spec.md, and the seam they call into usage.py. Cover the parsing
-rules and the scoring rules separately. Every function body in usage.py raises
-NotImplementedError and nothing else. Cite the decision id on every assertion
-that came from one.
+Use the contract-writer agent to write contract tests into scorer/tests/ from
+the resolved docs/spec.md, and the seam they call into scorer/usage.py. Cover
+the parsing rules and the scoring rules separately. Every function body in
+scorer/usage.py raises NotImplementedError and nothing else. Cite the decision
+id on every assertion that came from one.
 ```
 
 {{#aside "positive"}}
@@ -349,7 +351,7 @@ the wrong thing.
 First, that the files exist:
 
 ```bash
-git status --short tests/ usage.py
+git status --short scorer/
 ```
 
 Three tests and the seam. If the subagent reported writing them and this prints
@@ -366,7 +368,7 @@ the seam: a test that cannot import has not run, and a test that has not run
 holds nobody to anything.
 
 {{#aside "negative"}}
-If a contract test **passes**, stop and read `usage.py`. Nothing implements
+If a contract test **passes**, stop and read `scorer/usage.py`. Nothing implements
 this yet, so a pass means the agent wrote behaviour it was told not to, and the
 contract is now measuring the agent instead of whoever implements it.
 {{/aside}}

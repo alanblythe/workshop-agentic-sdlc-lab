@@ -64,7 +64,7 @@ class Result:
     reasons: list[str]
 ```
 
-`main.py` opens the file and hands its contents to `parse_usage`. Neither half
+`scorer/main.py` opens the file and hands its contents to `parse_usage`. Neither half
 touches the filesystem, so both stay pure functions over their inputs.
 
 ## Scoring

@@ -7,7 +7,7 @@
 # where the clone landed.
 
 # Matched against the start of the command line, so `git status` covers
-# `git status --short tests/`.
+# `git status --short scorer/tests/`.
 commands:
   - pytest
   - uv run pytest
@@ -16,10 +16,11 @@ commands:
   - ls
 
 # Paths, relative to the repository root, that a file may be created at. A
-# directory covers anything under it; a filename matches only itself. The
-# contract is all an agent writes here: the tests, the seam they call, and the
-# decisions the adversary records in the spec.
+# directory covers anything under it; a filename matches only itself.
+#
+# Two rules, and they are the whole blast radius: the agents write the code
+# under scorer/, and record decisions in the spec under docs/. Everything else
+# in the repository asks.
 writes:
-  - tests
+  - scorer
   - docs
-  - usage.py
