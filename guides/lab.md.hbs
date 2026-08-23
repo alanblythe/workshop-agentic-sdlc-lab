@@ -39,8 +39,7 @@ build from it independently and their code would fit.
 
 {{#aside "negative"}}
 Fork to your own account, not to an organization. The agent pushes with a
-deploy key, and an organization has those switched off for every repository it
-owns unless an owner has turned them on.
+deploy key, and organizations default to off.
 {{/aside}}
 
 {{#codelab}}
@@ -196,13 +195,12 @@ thinking while it works. Waiting at a progress bar teaches nothing.
 
 `--no-wait` returns as soon as the build is submitted. `--agent-identity` is the
 part that matters most: it gives the deployment a federated identity of its own
-rather than borrowing a service account, which is how it will read a secret you
-have not given it yet.
+rather than borrowing a service account. That is how it reads a secret you have
+not given it yet.
 
 {{#aside "positive"}}
 The deploy takes about seven minutes, and it runs while you work through the
-next four steps. The minutes on this step are the ones you spend starting it.
-A first deploy in a cold project is slower than every later one, because
+next four steps. A first deploy in a cold project is slower than every later one, because
 nothing is cached yet.
 {{/aside}}
 
@@ -508,8 +506,8 @@ commit and nothing else.
 
 `--issue` is the number you filed earlier, which is **1** on a fork whose
 issues you had just turned on. Run `gh issue list` if yours is not. The agent
-writes it into every commit it pushes, and dispatch refuses a number that is
-not an open issue rather than let a wrong one reach the commits.
+writes it into every commit, and dispatch refuses a number that is not an open
+issue.
 
 {{#aside "positive"}}
 That pin is why you cannot rescue a bad contract once the agent is working.
@@ -518,13 +516,23 @@ because it never fetches anything else. If the contract was wrong, you find out
 the way you would with a colleague who took the brief and went quiet.
 {{/aside}}
 
-The script follows your branch and prints each commit as it lands. Closing it
-does not stop the agent.
+The script prints two kinds of line, and they are not the same kind of claim.
+`>` is the agent narrating itself, every file it reads and command it runs.
+`+` is a commit that actually landed on the branch.
+
+Watch which files it edits. Only `scorer/usage.py` means it is working inside
+the contract; an `edit` naming a test is the agent changing what "done" means.
+
+Closing the script does not stop the agent.
 
 ### Verify your work
 
 You should see the agent's branch appear and at least one commit arrive on it.
-The run ends with the branch name and how to merge it.
+The run ends with a link to the diff.
+
+Narration stopping does not mean the agent stopped. The stream is one
+connection and can end early; the branch keeps moving, which is why the script
+follows the branch and not the stream.
 
 {{step "Read what it did" 6}}
 
@@ -575,17 +583,16 @@ bash scripts/teardown.sh
 ```
 
 {{openFile "scripts/teardown.sh"}} shows you what it is about to remove and asks
-before doing it. Use
-`--dry-run` first if you would rather look than trust.
+before doing it. Use `--dry-run` first if you would rather look than trust.
 
 It deletes three things: the deployed agent, the Secret Manager secret, and the
 deploy key on your fork. Your branches and the agent's commits are left alone,
-and so are the APIs. Your project may well have been using them before today.
+and so are the APIs — your project may have been using them before today.
 
 {{#aside "positive"}}
 Deleting the deploy key is the part that matters most. The agent is only
 costing you money; the key is granting write access to your repository until it
-is gone. The script removes it first for that reason.
+is gone, so the script removes it first.
 {{/aside}}
 
 {{#aside "negative"}}
@@ -616,5 +623,5 @@ checkable before you asked anyone, human or otherwise, to do it.
 bash scripts/teardown.sh
 ```
 
-Run a second time it reports **Already torn down** and changes nothing. That is
-the check: it is safe to re-run, so there is no doubt about whether it finished.
+Run it a second time and it reports **Already torn down**, changing nothing.
+Safe to re-run means no doubt about whether it finished.
