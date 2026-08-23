@@ -359,18 +359,22 @@ test that has not run holds nobody to anything.
 
 <walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
-Your agent should be up by now.
+Your agent should be up by now. Still in `agy`, so still behind a `!`:
 
 ```bash
-(cd coder-agent && agents-cli deploy --status)
+! (cd coder-agent && agents-cli deploy --status)
 ```
 
+![agents-cli reporting the deployment succeeded, with the agent card URL and runtime id](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/deploy-status.png)
+
 ```bash
-(cd coder-agent && agents-cli deploy --list)
+! (cd coder-agent && agents-cli deploy --list)
 ```
 
 Confirm it is running under its own identity rather than a borrowed service
-account. There is no `gcloud` surface for this, so ask the API directly:
+account. There is no `gcloud` surface for this, so ask the API directly, in a
+terminal: the block sets variables that the next line reads, and each `!` is its
+own shell.
 
 ```bash
 export API="https://${AGENT_ENGINE_LOCATION}-aiplatform.googleapis.com/v1"
