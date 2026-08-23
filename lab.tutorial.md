@@ -28,7 +28,13 @@ build from it independently and their code would fit.
 ### What you'll need
 
 - The [preflight from the setup guide](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/), finished and reporting **ready**
-- A GitHub account with `gh` logged in
+- A GitHub account with `gh` logged in, forking to **your own account**
+
+> **Careful:**
+>
+> Fork to your own account, not to an organization. The agent pushes with a
+> deploy key, and an organization has those switched off for every repository it
+> owns unless an owner has turned them on.
 
 ### Restore your Cloud Shell
 
