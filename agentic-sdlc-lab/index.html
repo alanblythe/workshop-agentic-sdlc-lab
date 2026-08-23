@@ -43,13 +43,20 @@
 <li>The <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/" target="_blank">preflight from the setup guide</a>, finished and reporting <strong>ready</strong></li>
 <li>A GitHub account with <code>gh</code> logged in, forking to <strong>your own account</strong></li>
 </ul>
-<aside class="warning"><p>Fork to your own account, not to an organization. The agent pushes with a deploy key, and an organization has those switched off for every repository it owns unless an owner has turned them on.</p>
+<aside class="warning"><p>Fork to your own account, not to an organization. The agent pushes with a deploy key, and organizations default to off.</p>
 </aside>
 <p>Open this in Cloud Shell and the guide comes with you, in a panel beside the terminal you are typing into:</p>
 <p><a href="https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md" target="_blank"><paper-button class="colored" raised>Open in Cloud Shell</paper-button></a></p>
 <p>That clones the lab repository. You fork it in the next step, from inside that same clone.</p>
 <h2 is-upgraded>Restore your Cloud Shell</h2>
-<p>Update <code>agy</code>. It lives on the VM rather than in <code>$HOME</code>, so a new session may have an older one. No harm if you are already current.</p>
+<p>Cloud Shell keeps your <code>$HOME</code> and forgets the rest. Four things have to be true before you start:</p>
+<ul>
+<li><code>agy</code> is current, and still logged in</li>
+<li><code>gcloud</code> is pointed at your project</li>
+<li><code>MODEL_LOCATION</code> and <code>AGENT_ENGINE_LOCATION</code> are set</li>
+<li><code>gh</code> is still authenticated</li>
+</ul>
+<p>Update <code>agy</code> first. It lives on the VM rather than in <code>$HOME</code>, so a new session may have an older one. No harm if you are already current.</p>
 <pre><code language="language-bash" class="language-bash">sudo agy update &amp;&amp; agy --version
 </code></pre>
 <p>Check your <code>agy</code> login:</p>
@@ -66,7 +73,7 @@ export AGENT_ENGINE_LOCATION=$(gcloud secrets describe agentic-sdlc-deploy-key \
   --format=&#39;value(replication.userManaged.replicas[0].location)&#39;)
 echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 </code></pre>
-<p>Then check your GitHub login survived, which it should have:</p>
+<p>Then the last one, your GitHub login, which should have survived:</p>
 <pre><code language="language-bash" class="language-bash">gh auth status
 </code></pre>
 <aside class="warning"><p>Setting those two to the same value produces a 404 that names the model and reads like a typo in the model name rather than a wrong location.</p>
@@ -86,8 +93,11 @@ cd workshop-agentic-sdlc-lab
 gh repo set-default &#34;$(git remote get-url origin)&#34;
 gh repo edit --enable-issues
 </code></pre>
-<p><code>origin</code> now points at your fork and <code>upstream</code> at the original.</p>
-<p>The second line is not housekeeping. Forking sets <code>gh</code>&#39;s default repository to <strong>upstream</strong>, so without it the issue you file lands on the workshop&#39;s copy rather than yours, and nothing tells you. The third turns issues on, which GitHub disables on every new fork, and which you find out about two steps from here when you try to file one.</p>
+<p><code>origin</code> now points at your fork and <code>upstream</code> at the original. The rest is not housekeeping:</p>
+<ul>
+<li><code>gh repo set-default</code> — forking points <code>gh</code> at <strong>upstream</strong>, so without it the issue you file lands on the workshop&#39;s copy rather than yours, and nothing tells you</li>
+<li><code>gh repo edit --enable-issues</code> — GitHub disables issues on every new fork, which you would otherwise discover two steps from here, when you try to file one</li>
+</ul>
 <aside class="special"><p>A fork does not copy the issues from the repository it came from either. That is deliberate. You are about to file one, and it should be yours.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
@@ -108,8 +118,8 @@ gh repo edit --enable-issues
   --update-env-vars GOOGLE_CLOUD_AGENT_ENGINE_ENABLE_TELEMETRY=true,MODEL_LOCATION=global \
   --no-wait)
 </code></pre>
-<p><code>--no-wait</code> returns as soon as the build is submitted. <code>--agent-identity</code> is the part that matters most: it gives the deployment a federated identity of its own rather than borrowing a service account, which is how it will read a secret you have not given it yet.</p>
-<aside class="special"><p>The deploy takes about seven minutes, and it runs while you work through the next four steps. The minutes on this step are the ones you spend starting it. A first deploy in a cold project is slower than every later one, because nothing is cached yet.</p>
+<p><code>--no-wait</code> returns as soon as the build is submitted. <code>--agent-identity</code> is the part that matters most: it gives the deployment a federated identity of its own rather than borrowing a service account. That is how it reads a secret you have not given it yet.</p>
+<aside class="special"><p>The deploy takes about seven minutes, and it runs while you work through the next four steps. A first deploy in a cold project is slower than every later one, because nothing is cached yet.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
@@ -234,7 +244,10 @@ id on every assertion that came from one.
         <p>The commit in two steps needs a git identity, and Cloud Shell often has none. Look first:</p>
 <pre><code language="language-bash" class="language-bash">git config --global --get-regexp &#39;^user\.&#39;
 </code></pre>
-<p>Two lines back and you are done. Nothing back means it is unset:</p>
+<ul>
+<li><strong>Two lines back</strong> — you already have one, move on</li>
+<li><strong>Nothing back</strong> — it is unset, so set it:</li>
+</ul>
 <pre><code language="language-bash" class="language-bash">git config --global user.name &#34;Your Name&#34; &amp;&amp; git config --global user.email &#34;you@example.com&#34;
 </code></pre>
 <p>Use the address on your GitHub account, which is what the commits are attributed to. <code>--global</code> writes to <code>$HOME</code>, which Cloud Shell keeps, so this is once per machine rather than once per session.</p>
@@ -267,25 +280,30 @@ id on every assertion that came from one.
 </code></pre>
 <p><code>scripts/dispatch.sh</code> is what pins the commit and follows the branch.</p>
 <p>The dispatch pins the exact commit you just pushed. The agent fetches that commit and nothing else.</p>
-<p><code>--issue</code> is the number you filed earlier, which is <strong>1</strong> on a fork whose issues you had just turned on. Run <code>gh issue list</code> if yours is not. The agent writes it into every commit it pushes, and dispatch refuses a number that is not an open issue rather than let a wrong one reach the commits.</p>
+<p><code>--issue</code> is the number you filed earlier, which is <strong>1</strong> on a fork whose issues you had just turned on. Run <code>gh issue list</code> if yours is not. The agent writes it into every commit, and dispatch refuses a number that is not an open issue.</p>
 <aside class="special"><p>That pin is why you cannot rescue a bad contract once the agent is working. Anything you commit after this moment is invisible to it, not by agreement but because it never fetches anything else. If the contract was wrong, you find out the way you would with a colleague who took the brief and went quiet.</p>
 </aside>
-<p>The script follows your branch and prints each commit as it lands. Closing it does not stop the agent.</p>
+<p>The script prints two kinds of line, and they are not the same kind of claim. <code>></code> is the agent narrating itself, every file it reads and command it runs. <code>+</code> is a commit that actually landed on the branch.</p>
+<p>Watch which files it edits. Only <code>scorer/usage.py</code> means it is working inside the contract; an <code>edit</code> naming a test is the agent changing what &#34;done&#34; means.</p>
+<p>Closing the script does not stop the agent.</p>
 <h2 is-upgraded>Verify your work</h2>
-<p>You should see the agent&#39;s branch appear and at least one commit arrive on it. The run ends with the branch name and how to merge it.</p>
+<p>You should see the agent&#39;s branch appear and at least one commit arrive on it. The run ends with a link to the diff.</p>
+<p>Narration stopping does not mean the agent stopped. The stream is one connection and can end early; the branch keeps moving, which is why the script follows the branch and not the stream.</p>
 
 
       </google-codelab-step>
     
       <google-codelab-step label="Read what it did" duration="6">
-        <p>Do not merge yet. Read.</p>
-<p>The dispatch printed a link to the branch&#39;s diff. Open it, and click <strong>Create pull request</strong>. There is nothing to write: GitHub fills the title and the description from the agent&#39;s commit, <code>Closes #1</code> and all.</p>
-<p>Read the diff under <strong>Files changed</strong>. Then run the contract yourself, because there is no CI here and a green-looking diff is only a diff:</p>
+        <p>Don&#39;t merge yet, review the file diff to see what changes the coder-agent made.</p>
+<ul>
+<li>Open the link the dispatch printed, to the branch&#39;s diff on GitHub</li>
+<li>Click <strong>Create pull request</strong></li>
+<li>Leave the title and the description alone: GitHub fills both from the agent&#39;s commit, <code>Closes #1</code> and all</li>
+</ul>
+<p>Read the diff under <strong>Files changed</strong>. Then run the tests yourself. To keep things simple no CI is part of this lab.</p>
 <pre><code language="language-bash" class="language-bash">git fetch origin &amp;&amp; git checkout -b review origin/agent/parse &amp;&amp; uv run pytest -q
 </code></pre>
 <p class="image-container"><img alt="pytest reporting every test passed on the agent&amp;rsquo;s branch" src="img/28dec38968cf58b9.png"></p>
-<aside class="warning"><p>Green tests mean it satisfied the contract. They do not mean the contract was right. If the code passes and still does the wrong thing, that is a finding about your spec, and it is the most valuable thing this lab can hand you.</p>
-</aside>
 <h2 is-upgraded>Verify your work</h2>
 <p>The tests pass, and the diff touches the implementation only. If the agent edited a test to make it pass, you have learned something about how contracts need to be written.</p>
 <p>Merge the pull request. Your issue closes as it lands.</p>
@@ -302,8 +320,8 @@ id on every assertion that came from one.
 <pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
 <p><code>scripts/teardown.sh</code> shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
-<p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs. Your project may well have been using them before today.</p>
-<aside class="special"><p>Deleting the deploy key is the part that matters most. The agent is only costing you money; the key is granting write access to your repository until it is gone. The script removes it first for that reason.</p>
+<p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs — your project may have been using them before today.</p>
+<aside class="special"><p>Deleting the deploy key is the part that matters most. The agent is only costing you money; the key is granting write access to your repository until it is gone, so the script removes it first.</p>
 </aside>
 <aside class="warning"><p>Do this even if you plan to come back. A deployed agent holds a warm instance and bills for it, and the deploy key stays valid until you delete it.</p>
 </aside>
@@ -318,7 +336,7 @@ id on every assertion that came from one.
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
-<p>Run a second time it reports <strong>Already torn down</strong> and changes nothing. That is the check: it is safe to re-run, so there is no doubt about whether it finished.</p>
+<p>Run it a second time and it reports <strong>Already torn down</strong>, changing nothing. Safe to re-run means no doubt about whether it finished.</p>
 
 
       </google-codelab-step>
