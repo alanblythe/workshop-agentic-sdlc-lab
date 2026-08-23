@@ -38,8 +38,16 @@ build from it independently and their code would fit.
 
 ### Restore your Cloud Shell
 
-Update `agy`. It lives on the VM rather than in `$HOME`, so a new session may
-have an older one. No harm if you are already current.
+Cloud Shell keeps your `$HOME` and forgets the rest. Four things have to be
+true before you start:
+
+- `agy` is current, and still logged in
+- `gcloud` is pointed at your project
+- `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` are set
+- `gh` is still authenticated
+
+Update `agy` first. It lives on the VM rather than in `$HOME`, so a new session
+may have an older one. No harm if you are already current.
 
 ```bash
 sudo agy update && agy --version
@@ -79,7 +87,7 @@ export AGENT_ENGINE_LOCATION=$(gcloud secrets describe agentic-sdlc-deploy-key \
 echo "$MODEL_LOCATION / $AGENT_ENGINE_LOCATION"
 ```
 
-Then check your GitHub login survived, which it should have:
+Then the last one, your GitHub login, which should have survived:
 
 ```bash
 gh auth status
@@ -116,18 +124,18 @@ gh repo edit --enable-issues
 git push -u origin main
 ```
 
-`origin` now points at your fork and `upstream` at the original.
+`origin` now points at your fork and `upstream` at the original. The rest is
+not housekeeping:
 
-The second line is not housekeeping. Forking sets `gh`'s default repository to
-**upstream**, so without it the issue you file lands on the workshop's copy
-rather than yours, and nothing tells you. The third turns issues on, which
-GitHub disables on every new fork, and which you find out about two steps from
-here when you try to file one.
-
-The fourth is the one that bites hardest. Forking in place renames your existing
-`origin` to `upstream`, and git moves the branch's tracking with it — so a bare
-`git push` later today aims at the workshop's copy and is rejected. That line
-points `main` back at your fork.
+- `gh repo set-default` — forking points `gh` at **upstream**, so without it
+  the issue you file lands on the workshop's copy rather than yours, and
+  nothing tells you
+- `gh repo edit --enable-issues` — GitHub disables issues on every new fork,
+  which you would otherwise discover two steps from here, when you try to file
+  one
+- `git push -u origin main` — forking in place renamed your `origin` to
+  `upstream` and took the branch's tracking with it, so a bare `git push` later
+  today would aim at the workshop's copy and be rejected
 
 > **Tip:**
 >
@@ -421,7 +429,8 @@ Look first:
 git config --global --get-regexp '^user\.'
 ```
 
-Two lines back and you are done. Nothing back means it is unset:
+- **Two lines back** — you already have one, move on
+- **Nothing back** — it is unset, so set it:
 
 ```bash
 git config --global user.name "Your Name" && git config --global user.email "you@example.com"
@@ -508,26 +517,20 @@ The run ends with the branch name and how to merge it.
 
 <walkthrough-tutorial-duration duration="6"></walkthrough-tutorial-duration>
 
-Do not merge yet. Read.
+Don't merge yet, review the file diff to see what changes the coder-agent made.
 
-The dispatch printed a link to the branch's diff. Open it, and click
-**Create pull request**. There is nothing to write: GitHub fills the title and
-the description from the agent's commit, `Closes #1` and all.
+- Open the link the dispatch printed, to the branch's diff on GitHub
+- Click **Create pull request**
+- Leave the title and the description alone: GitHub fills both from the
+  agent's commit, `Closes #1` and all
 
-Read the diff under **Files changed**. Then run the contract yourself, because
-there is no CI here and a green-looking diff is only a diff:
+Read the diff under **Files changed**. Then run the tests yourself. To keep things simple no CI is part of this lab.
 
 ```bash
 git fetch origin && git checkout -b review origin/agent/parse && uv run pytest -q
 ```
 
 ![pytest reporting every test passed on the agent's branch](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/contract-tests-passing.png)
-
-> **Careful:**
->
-> Green tests mean it satisfied the contract. They do not mean the contract was
-> right. If the code passes and still does the wrong thing, that is a finding
-> about your spec, and it is the most valuable thing this lab can hand you.
 
 ### Verify your work
 
