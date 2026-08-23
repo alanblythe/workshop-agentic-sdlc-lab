@@ -175,9 +175,10 @@ fixtures/usage.csv. One ambiguity at a time.
         <p>Decisions in prose are still prose. Now turn them into tests, which is the form an agent can be held to.</p>
 <p>Still in <code>agy</code>:</p>
 <pre><code language="language-text" class="language-text">Use the contract-writer agent to write contract tests into tests/ from the
-resolved docs/spec.md. Cover the parsing rules and the scoring rules
-separately. Do not write an implementation. Cite the decision id on every
-assertion that came from one.
+resolved docs/spec.md, and the seam they call into usage.py. Cover the parsing
+rules and the scoring rules separately. Every function body in usage.py raises
+NotImplementedError and nothing else. Cite the decision id on every assertion
+that came from one.
 </code></pre>
 <aside class="special"><p>The agent name &#34;contract-writer&#34; is specifically used to ensure Antigravity CLI chooses the configured subagent in <code>.agents/agents/contract-writer/agent.md</code>.</p>
 </aside>
@@ -187,12 +188,14 @@ assertion that came from one.
 <p>These tests are the contract. They are what &#34;done&#34; means, and they are the only thing standing between you and an agent that writes plausible code which does the wrong thing.</p>
 <h2 is-upgraded>Verify your work</h2>
 <p>First, that the files exist:</p>
-<pre><code language="language-bash" class="language-bash">git status --short tests/
+<pre><code language="language-bash" class="language-bash">git status --short tests/ usage.py
 </code></pre>
-<p>Three new files. If the subagent reported writing them and this prints nothing, it did not write them: what an agent says it did and what is on disk are two different claims, and only one of them is checkable.</p>
+<p>Three tests and the seam. If the subagent reported writing them and this prints nothing, it did not write them: what an agent says it did and what is on disk are two different claims, and only one of them is checkable.</p>
 <pre><code language="language-bash" class="language-bash">uv run pytest -q
 </code></pre>
-<p>You get errors, not failures: <code>ModuleNotFoundError: No module named 'usage'</code>. That is the right result. The contract names a module nobody has written yet, so the tests cannot be imported, let alone pass, and collection stops before the starter tests run. A test that passes now is testing nothing.</p>
+<p><strong>Failures, not errors, and not passes.</strong> The contract tests fail on <code>NotImplementedError</code>, and the starter tests pass. That is the whole point of the seam: a test that cannot import has not run, and a test that has not run holds nobody to anything.</p>
+<aside class="warning"><p>If a contract test <strong>passes</strong>, stop and read <code>usage.py</code>. Nothing implements this yet, so a pass means the agent wrote behaviour it was told not to, and the contract is now measuring the agent instead of whoever implements it.</p>
+</aside>
 
 
       </google-codelab-step>
