@@ -1,7 +1,7 @@
 <!-- Generated from guides/lab.md.hbs by the presenter repo. Do not edit. -->
 # The agentic SDLC lab
 
-<walkthrough-tutorial-duration duration="59"></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="60"></walkthrough-tutorial-duration>
 
 ## Before you begin
 
@@ -403,6 +403,27 @@ A borrowed one, which is the other outcome:
 - `service-`*PROJECT_NUMBER*`@gcp-sa-aiplatform-re.iam.gserviceaccount.com`
 
 The first is what the next step grants access to.
+
+## Tell git who you are
+
+<walkthrough-tutorial-duration duration="1"></walkthrough-tutorial-duration>
+
+Cloud Shell starts without a git identity, and the commit in two steps needs
+one. Use the address on your GitHub account, because it is what the commits
+will be attributed to.
+
+```bash
+git config --global user.name "Your Name" && git config --global user.email "you@example.com"
+```
+
+### Verify your work
+
+```bash
+git config --global --get-regexp '^user\.'
+```
+
+Both lines come back. `--global` writes to `$HOME`, which Cloud Shell keeps, so
+this is once per machine rather than once per session.
 
 ## Give the agent a key to your fork
 
