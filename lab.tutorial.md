@@ -380,9 +380,15 @@ after a typed `!`.
 (cd coder-agent && agents-cli deploy --list)
 ```
 
-Confirm it is running under its own identity rather than a service
-account. `gcloud` lacks this so the script uses the REST API:  
-<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/agent-identity.sh">scripts/agent-identity.sh</walkthrough-editor-open-file>
+Confirm it is running under its own identity rather than a service account.
+`gcloud` has no surface for that field, so <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/agent-identity.sh">scripts/agent-identity.sh</walkthrough-editor-open-file>
+asks the REST API.
+
+**It only reads:**
+
+- Finds your `coder-agent` engine
+- Reads `spec.effectiveIdentity` over REST
+- Prints what it found, changes nothing
 
 ```bash
 bash scripts/agent-identity.sh
@@ -430,7 +436,23 @@ The first command again, with both lines back.
 
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
-The agent is written to push it's commit to GitHub.
+The agent is written to push its commit to GitHub, so it needs a key of its
+own. <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/setup-deploy-key.sh">scripts/setup-deploy-key.sh</walkthrough-editor-open-file> is what does it.
+
+**What it checks, changing nothing:**
+
+- `gh`, `gcloud`, `git`, `ssh-keygen` present
+- You have admin on the fork
+- Preflight's secret exists
+
+**What it changes:**
+
+- Revokes any previous deploy key
+- Generates an ed25519 key pair
+- Adds it, write access, this repository
+- Proves a push works, `--dry-run`
+- Private half into Secret Manager
+- Disables older secret versions
 
 ```bash
 bash scripts/setup-deploy-key.sh
@@ -438,11 +460,8 @@ bash scripts/setup-deploy-key.sh
 
 ![the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/deploy-key-verified.png)
 
-<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/setup-deploy-key.sh">scripts/setup-deploy-key.sh</walkthrough-editor-open-file> is what does it.
-
-The script generates an SSH key, gives it write access to **this repository only**,
-proves it works, and puts the private half in the Secret Manager secret preflight
-made. Nothing is left on your machine.
+The push it makes to prove the key works is a `--dry-run`, so it is a real
+authorization check that leaves no ref behind. Nothing is left on your machine.
 
 > **Tip:**
 >
@@ -561,17 +580,27 @@ Merge the pull request. Your issue closes as it lands.
 <walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
 
 One command removes everything the day created:
+<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/teardown.sh">scripts/teardown.sh</walkthrough-editor-open-file>.
+
+**What it removes:**
+
+- The deployed `coder-agent` and sessions
+- The `agentic-sdlc-deploy-key` secret
+- The deploy key on your fork
+
+**What it leaves:**
+
+- Your branches and the agent's commits
+- The APIs, still enabled
 
 ```bash
 bash scripts/teardown.sh
 ```
 
-<walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/scripts/teardown.sh">scripts/teardown.sh</walkthrough-editor-open-file> shows you what it is about to remove and asks
-before doing it. Use `--dry-run` first if you would rather look than trust.
-
-It deletes three things: the deployed agent, the Secret Manager secret, and the
-deploy key on your fork. Your branches and the agent's commits are left alone,
-and so are the APIs — your project may have been using them before today.
+It prints that list for your project, then asks before doing any of it. Use
+`--dry-run` first if you would rather look than trust. The APIs stay on because
+your project may have been using them before today, and turning them off is not
+this script's call.
 
 ### What you did
 

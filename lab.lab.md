@@ -384,9 +384,15 @@ after a typed `!`.
 (cd coder-agent && agents-cli deploy --list)
 ```
 
-Confirm it is running under its own identity rather than a service
-account. `gcloud` lacks this so the script uses the REST API:  
-[`scripts/agent-identity.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh)
+Confirm it is running under its own identity rather than a service account.
+`gcloud` has no surface for that field, so [`scripts/agent-identity.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh)
+asks the REST API.
+
+**It only reads:**
+
+- Finds your `coder-agent` engine
+- Reads `spec.effectiveIdentity` over REST
+- Prints what it found, changes nothing
 
 ```bash
 bash scripts/agent-identity.sh
@@ -434,7 +440,23 @@ The first command again, with both lines back.
 
 Duration: 4
 
-The agent is written to push it's commit to GitHub.
+The agent is written to push its commit to GitHub, so it needs a key of its
+own. [`scripts/setup-deploy-key.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/setup-deploy-key.sh) is what does it.
+
+**What it checks, changing nothing:**
+
+- `gh`, `gcloud`, `git`, `ssh-keygen` present
+- You have admin on the fork
+- Preflight's secret exists
+
+**What it changes:**
+
+- Revokes any previous deploy key
+- Generates an ed25519 key pair
+- Adds it, write access, this repository
+- Proves a push works, `--dry-run`
+- Private half into Secret Manager
+- Disables older secret versions
 
 ```bash
 bash scripts/setup-deploy-key.sh
@@ -442,11 +464,8 @@ bash scripts/setup-deploy-key.sh
 
 ![the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager](docs/images/deploy-key-verified.png)
 
-[`scripts/setup-deploy-key.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/setup-deploy-key.sh) is what does it.
-
-The script generates an SSH key, gives it write access to **this repository only**,
-proves it works, and puts the private half in the Secret Manager secret preflight
-made. Nothing is left on your machine.
+The push it makes to prove the key works is a `--dry-run`, so it is a real
+authorization check that leaves no ref behind. Nothing is left on your machine.
 
 > aside positive
 >
@@ -565,17 +584,27 @@ Merge the pull request. Your issue closes as it lands.
 Duration: 4
 
 One command removes everything the day created:
+[`scripts/teardown.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/teardown.sh).
+
+**What it removes:**
+
+- The deployed `coder-agent` and sessions
+- The `agentic-sdlc-deploy-key` secret
+- The deploy key on your fork
+
+**What it leaves:**
+
+- Your branches and the agent's commits
+- The APIs, still enabled
 
 ```bash
 bash scripts/teardown.sh
 ```
 
-[`scripts/teardown.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/teardown.sh) shows you what it is about to remove and asks
-before doing it. Use `--dry-run` first if you would rather look than trust.
-
-It deletes three things: the deployed agent, the Secret Manager secret, and the
-deploy key on your fork. Your branches and the agent's commits are left alone,
-and so are the APIs — your project may have been using them before today.
+It prints that list for your project, then asks before doing any of it. Use
+`--dry-run` first if you would rather look than trust. The APIs stay on because
+your project may have been using them before today, and turning them off is not
+this script's call.
 
 ### What you did
 
