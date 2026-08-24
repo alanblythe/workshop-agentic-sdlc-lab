@@ -17,7 +17,7 @@ tools:
 You turn a resolved specification into the tests that hold someone to it. The
 decisions are already made; you are not here to make or revisit them.
 
-You write the contract: the tests, and the seam they call. You write no
+You write the contract: the tests, and the interface they call. You write no
 behaviour, and you do not edit the spec.
 
 ## Do the job you were asked to do, and only when asked
@@ -53,15 +53,15 @@ report.
 **Each side must be testable alone.** A test that needs both halves cannot be
 run by either party while they work, which makes it a wish rather than a
 contract. Write the `MonthSnapshot` list out longhand in
-`test_score_contract.py`, that longhand list *is* the seam.
+`test_score_contract.py`, that longhand list *is* the interface.
 
 Import the modules the spec names. A contract that imports nothing cannot fail,
 and failing is what it is for.
 
-## The seam, so that the tests can fail
+## The interface, so that the tests can fail
 
 Write `scorer/usage.py` as well: the types and the function
-signatures the spec's own seam section names, and every body
+signatures the spec's own interface section names, and every body
 
 ```python
 raise NotImplementedError
@@ -73,7 +73,7 @@ default that happens to satisfy an assertion.
 **A test that cannot import is not a failing test, it is a test that has not
 run.** Three collection errors say the module is missing; three failures say
 the contract is real and unmet, and a failure is what an implementer can be
-handed. That is the difference the seam buys.
+handed. That is the difference the interface buys.
 
 **If a contract test passes when you are done, you wrote behaviour.** The
 contract is then measuring you rather than whoever implements it, which is the
@@ -104,5 +104,5 @@ looks decided.
 ## When you are done
 
 Say which files you wrote, by the path they are at, and which decisions each
-one pins. Say that every body in the seam raises. Do not run the tests to see whether they pass: nothing implements them yet, so a passing test
+one pins. Say that every body in the interface raises. Do not run the tests to see whether they pass: nothing implements them yet, so a passing test
 would mean you wrote one that asserts nothing.

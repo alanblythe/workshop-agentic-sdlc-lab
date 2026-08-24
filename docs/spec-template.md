@@ -18,7 +18,7 @@ builder would otherwise have to assume.
 
 ## The two halves
 
-The seam. The types and signatures each side is written against, so two people
+The interface. The types and signatures each side is written against, so two people
 can build from this independently and their code will fit.
 
 ## Rules

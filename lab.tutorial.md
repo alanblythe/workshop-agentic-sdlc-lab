@@ -360,9 +360,11 @@ fulfills the spec requirement.
 
 ### Verify your work
 
-Stay in `agy` for these. Type `!` first, then the command: the shell runs the
-rest of the line, so you can check the agent's work without losing the session
-that did it. Type the `!` rather than pasting it, which `agy` warns about.
+Leave `agy` first, so these run in the shell:
+
+```text
+/exit
+```
 
 First, check what files the subagent created:
 
@@ -386,8 +388,7 @@ hasn't been coded yet.
 
 <walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
-Your agent should be up by now. Still in `agy`, so each of these still goes
-after a typed `!`.
+Your agent should be up by now, and you are back in the shell.
 
 ```bash
 (cd coder-agent && agents-cli deploy --status)
@@ -550,7 +551,11 @@ going; `read_query` picks the trajectory back up from any cursor.
 ### Verify your work
 
 The agent's branch appears on your fork and at least one commit lands on it.
-Ask for the compare page when the run reports it is done:
+When the run reports it is done, leave `agy` and ask for the compare page:
+
+```text
+/exit
+```
 
 ```bash
 echo "https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/compare/main...agent/parse"
