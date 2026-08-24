@@ -149,10 +149,23 @@ gh repo edit --enable-issues
 <aside class="special"><p><strong>This spec was written to be flawed.</strong> It reads well, but it has subtle gaps that would often survive review. After going through the Human in the loop (HITL) adversarial review the gaps will become clear.</p>
 </aside>
 <p>It already conforms to <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec-template.md" target="_blank"><code>docs/spec-template.md</code></a>, a representative template that may be used as part of a broader SDLC.</p>
+<aside class="special"><p><strong>A typical production spec carries more than this one.</strong> The template folds design into <em>The two halves</em> and decision records into <em>Decisions</em>, and leaves out what a 60-minute lab has no room for:</p>
+<ul>
+<li>Non-functional requirements — limits, latency, error handling</li>
+<li>Architecture beyond a single interface: components, dependencies, data flow</li>
+<li>Data model, persistence and retention</li>
+<li>Architectural Design Records: Decision records with the alternatives that were rejected</li>
+<li>Security, privacy and data classification</li>
+<li>Rollout, migration and backwards compatibility</li>
+<li>Observability — what it logs, and what you can alert on</li>
+<li>Risks, considered or mitigated</li>
+</ul>
+</aside>
+<aside class="special"><p>LLMs are inherently non-deterministic. Trajectories and Evals were used in the construction of this lab. The spec was purposely simplified to reduce the effort the lab taker must undergo to arrive at a valid spec.</p>
+</aside>
 <p>As you read the spec you may ask these questions:</p>
 <p>Could acceptance tests and code be implemented independently from each other? Are there subtle gaps in the understanding of the data?</p>
 <p>The data the spec is written against is <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/fixtures/usage.csv" target="_blank"><code>fixtures/usage.csv</code></a>.</p>
-<h2 is-upgraded>Verify your work</h2>
 
 
       </google-codelab-step>
@@ -199,7 +212,7 @@ fixtures/usage.csv. One ambiguity at a time.
         <p>Now codify the spec and decisions into acceptance tests using the contract-writer agent.</p>
 <p>Still in <code>agy</code>:</p>
 <pre><code language="language-text" class="language-text">Use the contract-writer agent to write acceptance tests into scorer/tests/ from
-the resolved docs/spec.md, and the seam they call into scorer/usage.py. Cover
+the resolved docs/spec.md, and the interface they call into scorer/usage.py. Cover
 the parsing rules and the scoring rules separately. Every function body in
 scorer/usage.py raises NotImplementedError and nothing else. Cite the decision
 id on every assertion that came from one.
