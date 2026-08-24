@@ -244,6 +244,7 @@ id on every assertion that came from one.
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
 </code></pre>
 <p class="image-container"><img alt="agents-cli reporting the deployment succeeded, with the agent card URL and runtime id" src="img/492dec40e1922746.png"></p>
+<p>If there is no pending deploy operation, list the deployed agents:</p>
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --list)
 </code></pre>
 <p>Confirm it is running under its own identity rather than a service account. <code>gcloud</code> has no surface for that field, so <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh" target="_blank"><code>scripts/agent-identity.sh</code></a> asks the REST API.</p>
