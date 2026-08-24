@@ -11,7 +11,7 @@ feedback link: https://github.com/alanblythe/workshop-agentic-sdlc/issues
 
 ## Before you begin
 
-Duration: 4
+Duration: 2
 
 This lab simulates the common scenario for feature requests that provide 
 detailed information, though lack to cover edge and boundary conditions.
@@ -62,10 +62,51 @@ terminal you are typing into:
 That clones the lab repository. You fork it in the next step, from inside that
 same clone.
 
-### Restore your Cloud Shell
+## Fork the lab repository
 
-Cloud Shell keeps your `$HOME` and forgets the rest. Four things have to be
-true before you start:
+Duration: 3
+
+The application lives in its own repository. You fork it, because the agent will
+push to your copy and you will merge its work.
+
+```bash
+gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
+cd workshop-agentic-sdlc-lab
+gh repo set-default "$(git remote get-url origin)"
+gh repo edit --enable-issues
+```
+
+`origin` now points at your fork and `upstream` at the original. The rest is
+not housekeeping:
+
+- `gh repo set-default` — forking points `gh` at **upstream**, so without it
+  the issue you file lands on the workshop's copy rather than yours, and
+  nothing tells you
+- `gh repo edit --enable-issues` — GitHub disables issues on every new fork,
+  which you would otherwise discover two steps from here, when you try to file
+  one
+
+> aside positive
+>
+> A fork does not copy the issues from the repository it came from either. That
+> is deliberate. You are about to file one, and it should be yours.
+
+### Verify your work
+
+```bash
+gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
+  --jq '.nameWithOwner + " fork=" + (.isFork|tostring) + " issues=" + (.hasIssuesEnabled|tostring)'
+```
+
+The owner should be **you**, with `fork=true` and `issues=true`.
+
+## Restore your Cloud Shell
+
+Duration: 2
+
+Cloud Shell keeps your `$HOME` and forgets the rest, so a session opened today
+has none of setup's environment. Four things have to be true before anything
+below will work:
 
 - `agy` is current, and still logged in
 - `gcloud` is pointed at your project
@@ -128,44 +169,6 @@ gcloud secrets describe agentic-sdlc-deploy-key --format='value(name)'
 
 It should print the secret's resource name. That secret is empty. Preflight
 created the container, and you will put a key in it later today.
-
-## Fork the lab repository
-
-Duration: 3
-
-The application lives in its own repository. You fork it, because the agent will
-push to your copy and you will merge its work.
-
-```bash
-gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
-cd workshop-agentic-sdlc-lab
-gh repo set-default "$(git remote get-url origin)"
-gh repo edit --enable-issues
-```
-
-`origin` now points at your fork and `upstream` at the original. The rest is
-not housekeeping:
-
-- `gh repo set-default` — forking points `gh` at **upstream**, so without it
-  the issue you file lands on the workshop's copy rather than yours, and
-  nothing tells you
-- `gh repo edit --enable-issues` — GitHub disables issues on every new fork,
-  which you would otherwise discover two steps from here, when you try to file
-  one
-
-> aside positive
->
-> A fork does not copy the issues from the repository it came from either. That
-> is deliberate. You are about to file one, and it should be yours.
-
-### Verify your work
-
-```bash
-gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
-  --jq '.nameWithOwner + " fork=" + (.isFork|tostring) + " issues=" + (.hasIssuesEnabled|tostring)'
-```
-
-The owner should be **you**, with `fork=true` and `issues=true`.
 
 ## Deploy the coder-agent
 

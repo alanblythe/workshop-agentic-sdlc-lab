@@ -5,7 +5,7 @@
 
 ## Before you begin
 
-<walkthrough-tutorial-duration duration="4"></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="2"></walkthrough-tutorial-duration>
 
 This lab simulates the common scenario for feature requests that provide 
 detailed information, though lack to cover edge and boundary conditions.
@@ -48,10 +48,57 @@ repository, and no CI.
 > Fork to your own account, not to an organization. The agent pushes with a
 > deploy key, and organizations default to off.
 
-### Restore your Cloud Shell
+## Fork the lab repository
 
-Cloud Shell keeps your `$HOME` and forgets the rest. Four things have to be
-true before you start:
+<walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
+
+The application lives in its own repository. You fork it, because the agent will
+push to your copy and you will merge its work.
+
+You are already in a clone of it, the one Cloud Shell made when you opened this
+guide. Fork in place, and set the fork up in the same breath:
+
+```bash
+gh repo fork --remote
+gh repo set-default "$(git remote get-url origin)"
+gh repo edit --enable-issues
+git push -u origin main
+```
+
+`origin` now points at your fork and `upstream` at the original. The rest is
+not housekeeping:
+
+- `gh repo set-default` — forking points `gh` at **upstream**, so without it
+  the issue you file lands on the workshop's copy rather than yours, and
+  nothing tells you
+- `gh repo edit --enable-issues` — GitHub disables issues on every new fork,
+  which you would otherwise discover two steps from here, when you try to file
+  one
+- `git push -u origin main` — forking in place renamed your `origin` to
+  `upstream` and took the branch's tracking with it, so a bare `git push` later
+  today would aim at the workshop's copy and be rejected
+
+> **Tip:**
+>
+> A fork does not copy the issues from the repository it came from either. That
+> is deliberate. You are about to file one, and it should be yours.
+
+### Verify your work
+
+```bash
+gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
+  --jq '.nameWithOwner + " fork=" + (.isFork|tostring) + " issues=" + (.hasIssuesEnabled|tostring)'
+```
+
+The owner should be **you**, with `fork=true` and `issues=true`.
+
+## Restore your Cloud Shell
+
+<walkthrough-tutorial-duration duration="2"></walkthrough-tutorial-duration>
+
+Cloud Shell keeps your `$HOME` and forgets the rest, so a session opened today
+has none of setup's environment. Four things have to be true before anything
+below will work:
 
 - `agy` is current, and still logged in
 - `gcloud` is pointed at your project
@@ -118,50 +165,6 @@ gcloud secrets describe agentic-sdlc-deploy-key --format='value(name)'
 
 It should print the secret's resource name. That secret is empty. Preflight
 created the container, and you will put a key in it later today.
-
-## Fork the lab repository
-
-<walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
-
-The application lives in its own repository. You fork it, because the agent will
-push to your copy and you will merge its work.
-
-You are already in a clone of it, the one Cloud Shell made when you opened this
-guide. Fork in place, and set the fork up in the same breath:
-
-```bash
-gh repo fork --remote
-gh repo set-default "$(git remote get-url origin)"
-gh repo edit --enable-issues
-git push -u origin main
-```
-
-`origin` now points at your fork and `upstream` at the original. The rest is
-not housekeeping:
-
-- `gh repo set-default` — forking points `gh` at **upstream**, so without it
-  the issue you file lands on the workshop's copy rather than yours, and
-  nothing tells you
-- `gh repo edit --enable-issues` — GitHub disables issues on every new fork,
-  which you would otherwise discover two steps from here, when you try to file
-  one
-- `git push -u origin main` — forking in place renamed your `origin` to
-  `upstream` and took the branch's tracking with it, so a bare `git push` later
-  today would aim at the workshop's copy and be rejected
-
-> **Tip:**
->
-> A fork does not copy the issues from the repository it came from either. That
-> is deliberate. You are about to file one, and it should be yours.
-
-### Verify your work
-
-```bash
-gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
-  --jq '.nameWithOwner + " fork=" + (.isFork|tostring) + " issues=" + (.hasIssuesEnabled|tostring)'
-```
-
-The owner should be **you**, with `fork=true` and `issues=true`.
 
 ## Deploy the coder-agent
 
