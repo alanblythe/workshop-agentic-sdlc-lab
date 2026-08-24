@@ -396,6 +396,8 @@ Your agent should be up by now, and you are back in the shell.
 
 ![agents-cli reporting the deployment succeeded, with the agent card URL and runtime id](https://raw.githubusercontent.com/alanblythe/workshop-agentic-sdlc-lab/main/docs/images/deploy-status.png)
 
+If there is no pending deploy operation, list the deployed agents:
+
 ```bash
 (cd coder-agent && agents-cli deploy --list)
 ```
