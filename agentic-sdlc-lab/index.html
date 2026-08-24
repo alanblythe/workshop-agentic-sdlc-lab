@@ -333,8 +333,9 @@ id on every assertion that came from one.
 </code></pre>
 <aside class="warning"><p><strong>Push before you dispatch.</strong> The agent clones your fork from GitHub, so a commit you have not pushed does not exist as far as it is concerned, and it will work from the commit before yours without saying so.</p>
 </aside>
-<p>The agent runs on Agent Platform, not on this machine. You reach it through <code>geap</code>, the MCP server registered during setup, from inside <code>agy</code>:</p>
-<pre><code language="language-bash" class="language-bash">agy
+<p>The agent runs on Agent Platform, not on this machine. You reach it through <code>geap</code>, the MCP server registered during setup, from inside <code>agy</code>.</p>
+<p>Start it <strong>from your fork&#39;s clone</strong>, not from the setup repository — the prompt below reads the repository out of the working directory:</p>
+<pre><code language="language-bash" class="language-bash">cd ~/cloudshell_open/workshop-agentic-sdlc-lab &amp;&amp; agy
 </code></pre>
 <p>Paste this:</p>
 <pre><code language="language-text" class="language-text">Use the geap tools. Run list_agents to find coder-agent in this project, then
@@ -343,7 +344,8 @@ start_query on it. The message is a JSON string:
   {&#34;repo&#34;: &#34;&lt;owner&gt;/&lt;fork&gt;&#34;, &#34;sha&#34;: &#34;&lt;HEAD&gt;&#34;, &#34;branch&#34;: &#34;agent/parse&#34;, &#34;issue&#34;: &#34;1&#34;}
 
 Get repo and sha by running git here: the fork&#39;s owner/name from the origin
-remote, and the sha that origin/main points at.
+remote, and the sha that origin/main points at. The repository name must end
+in -lab; if it does not, stop and tell me, because I am in the wrong clone.
 
 Then follow the run: call read_query in a loop, passing the next_cursor it
 returns, until state is no longer &#34;running&#34;. Print any new lines after each
