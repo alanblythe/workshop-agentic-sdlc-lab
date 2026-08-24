@@ -536,10 +536,13 @@ git add -A && git commit -m "The contract: the resolved spec and the tests it im
 > will work from the commit before yours without saying so.
 
 The agent runs on Agent Platform, not on this machine. You reach it through
-`geap`, the MCP server registered during setup, from inside `agy`:
+`geap`, the MCP server registered during setup, from inside `agy`.
+
+Start it **from your fork's clone**, not from the setup repository — the prompt
+below reads the repository out of the working directory:
 
 ```bash
-agy
+cd ~/cloudshell_open/workshop-agentic-sdlc-lab && agy
 ```
 
 Paste this:
@@ -551,7 +554,8 @@ start_query on it. The message is a JSON string:
   {"repo": "<owner>/<fork>", "sha": "<HEAD>", "branch": "agent/parse", "issue": "1"}
 
 Get repo and sha by running git here: the fork's owner/name from the origin
-remote, and the sha that origin/main points at.
+remote, and the sha that origin/main points at. The repository name must end
+in -lab; if it does not, stop and tell me, because I am in the wrong clone.
 
 Then follow the run: call read_query in a loop, passing the next_cursor it
 returns, until state is no longer "running". Print any new lines after each
