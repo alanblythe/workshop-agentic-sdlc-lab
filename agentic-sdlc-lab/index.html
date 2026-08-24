@@ -57,12 +57,18 @@
 <p>Open this in Cloud Shell and the guide comes with you, in a panel beside the terminal you are typing into:</p>
 <p><a href="https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md" target="_blank"><paper-button class="colored" raised>Open in Cloud Shell</paper-button></a></p>
 <p>That clones the lab repository. You fork it in the next step, from inside that same clone.</p>
+<aside class="warning"><p><strong>Tick Trust repo when Cloud Shell asks.</strong> This is a different repository from the one you ran setup in, so the answer you gave then does not carry over. Decline it and you get an ephemeral session with a throwaway home directory, which has none of what setup installed: no <code>geap</code>, no <code>agents-cli</code>, no ADK skills, no credentials.</p>
+</aside>
 
 
       </google-codelab-step>
     
       <google-codelab-step label="Fork the lab repository" duration="3">
         <p>The application lives in its own repository. You fork it, because the agent will push to your copy and you will merge its work.</p>
+<p>Both of the commands below go through <code>gh</code>, so check your GitHub login first. It is kept in <code>$HOME</code> and should have survived setup, however long ago that was:</p>
+<pre><code language="language-bash" class="language-bash">gh auth status
+</code></pre>
+<p>If it reports you are not logged in, <code>gh auth login</code> — GitHub.com, HTTPS, authenticate with a browser — and then carry on here.</p>
 <pre><code language="language-bash" class="language-bash">gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
 cd workshop-agentic-sdlc-lab
 gh repo set-default &#34;$(git remote get-url origin)&#34;
@@ -88,10 +94,10 @@ gh repo edit --enable-issues
         <p>Cloud Shell keeps your <code>$HOME</code> and forgets the rest, so a session opened today has none of setup&#39;s environment. Five things have to be true before anything below will work:</p>
 <ul>
 <li><code>agy</code> is current, and still logged in</li>
+<li>What setup installed into <code>$HOME</code> is still there</li>
 <li><code>gcloud</code> is logged in, <strong>and so is ADC</strong></li>
 <li><code>gcloud</code> is pointed at your project</li>
 <li><code>MODEL_LOCATION</code> and <code>AGENT_ENGINE_LOCATION</code> are set</li>
-<li><code>gh</code> is still authenticated</li>
 </ul>
 <p>Update <code>agy</code> first. It lives on the VM rather than in <code>$HOME</code>, so a new session may have an older one. No harm if you are already current.</p>
 <pre><code language="language-bash" class="language-bash">sudo agy update &amp;&amp; agy --version
@@ -99,7 +105,15 @@ gh repo edit --enable-issues
 <p>Check your <code>agy</code> login:</p>
 <pre><code language="language-bash" class="language-bash">agy -p &#34;Reply with exactly: authenticated&#34;
 </code></pre>
-<p>If it asks you to open a URL instead of answering, the grant has lapsed. Log in again with <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7" target="_blank">Authenticate agy</a> from the setup guide, then come back.</p>
+<p>If it asks you to open a URL instead of answering, the grant has lapsed. Log in again with <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#9" target="_blank">Authenticate agy</a> from the setup guide, then come back.</p>
+<p>Now the three things setup left in <code>$HOME</code>. <code>agents-cli</code> deploys the agent in the next step, and <code>geap</code> is not touched until the dispatch, eight steps from here — a long way to walk before finding out it is missing:</p>
+<pre><code language="language-bash" class="language-bash">agy mcp list | grep -q geap &amp;&amp; echo &#34;geap registered&#34;
+agents-cli --version
+ls ~/.gemini/config/skills ~/.gemini/antigravity-cli/skills 2&gt;/dev/null | head -3
+</code></pre>
+<p>You want a line for each: <code>geap registered</code>, a version, and some skill names.</p>
+<aside class="warning"><p><strong>Nothing prints? You are not in the home directory setup ran in.</strong> An ephemeral Cloud Shell session, a reset home, or a different Google account all look like this, and none of them announce themselves. Fix it now rather than at the dispatch, with the agent already deployed and billing: re-run <code>bash scripts/preflight.sh</code> from your setup clone. It reinstalls all three and changes nothing that is already correct. It also needs a real <code>terraform</code>, and that one lives on the VM, so redo <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#5" target="_blank">Install terraform</a> first if preflight refuses.</p>
+</aside>
 <p>Now your two Google grants, before anything that calls <code>gcloud</code>. The <code>gcloud</code> login and Application Default Credentials are separate, and <code>--update-adc</code> does both in one command:</p>
 <pre><code language="language-bash" class="language-bash">gcloud auth login --update-adc
 </code></pre>
@@ -117,9 +131,6 @@ echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 </code></pre>
 <aside class="warning"><p>Setting those two to the same value produces a 404 that names the model and reads like a typo in the model name rather than a wrong location.</p>
 </aside>
-<p>Then your GitHub login, which should have survived:</p>
-<pre><code language="language-bash" class="language-bash">gh auth status
-</code></pre>
 <h2 is-upgraded>Verify your work</h2>
 <pre><code language="language-bash" class="language-bash">gcloud auth application-default print-access-token &gt;/dev/null &amp;&amp; echo &#34;ADC ok&#34;
 gcloud secrets describe agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
