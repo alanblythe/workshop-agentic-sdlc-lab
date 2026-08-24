@@ -122,7 +122,9 @@ If it asks you to open a URL instead of answering, the grant has lapsed. Log in
 again with [Authenticate agy](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7)
 from the setup guide, then come back.
 
-Pick the project you set up with:
+Select the project you ran preflight against. **Ignore the offer to create a
+new one** — that link belongs to the picker, and a fresh project has none of
+the APIs, the service account or the secret this lab needs.
 
 <walkthrough-project-setup></walkthrough-project-setup>
 
