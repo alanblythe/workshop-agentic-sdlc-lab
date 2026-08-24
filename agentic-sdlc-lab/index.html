@@ -85,9 +85,10 @@ gh repo edit --enable-issues
       </google-codelab-step>
     
       <google-codelab-step label="Restore your Cloud Shell" duration="2">
-        <p>Cloud Shell keeps your <code>$HOME</code> and forgets the rest, so a session opened today has none of setup&#39;s environment. Four things have to be true before anything below will work:</p>
+        <p>Cloud Shell keeps your <code>$HOME</code> and forgets the rest, so a session opened today has none of setup&#39;s environment. Five things have to be true before anything below will work:</p>
 <ul>
 <li><code>agy</code> is current, and still logged in</li>
+<li><code>gcloud</code> is logged in, <strong>and so is ADC</strong></li>
 <li><code>gcloud</code> is pointed at your project</li>
 <li><code>MODEL_LOCATION</code> and <code>AGENT_ENGINE_LOCATION</code> are set</li>
 <li><code>gh</code> is still authenticated</li>
@@ -99,6 +100,11 @@ gh repo edit --enable-issues
 <pre><code language="language-bash" class="language-bash">agy -p &#34;Reply with exactly: authenticated&#34;
 </code></pre>
 <p>If it asks you to open a URL instead of answering, the grant has lapsed. Log in again with <a href="https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7" target="_blank">Authenticate agy</a> from the setup guide, then come back.</p>
+<p>Now your two Google grants, before anything that calls <code>gcloud</code>. The <code>gcloud</code> login and Application Default Credentials are separate, and <code>--update-adc</code> does both in one command:</p>
+<pre><code language="language-bash" class="language-bash">gcloud auth login --update-adc
+</code></pre>
+<aside class="warning"><p><strong>ADC is the one that goes missing.</strong> It is a different file from your <code>gcloud</code> login, and it is what <code>agents-cli</code> and the <code>geap</code> tools read. Without it the deploy fails on credentials rather than on anything it was asked to do.</p>
+</aside>
 <p>Point <code>gcloud</code> at it. A new session has no project set, and every <code>gcloud</code> command below needs one:</p>
 <pre><code language="language-bash" class="language-bash">gcloud config set project YOUR_PROJECT_ID
 gcloud config get-value project
@@ -109,15 +115,16 @@ export AGENT_ENGINE_LOCATION=$(gcloud secrets describe agentic-sdlc-deploy-key \
   --format=&#39;value(replication.userManaged.replicas[0].location)&#39;)
 echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 </code></pre>
-<p>Then the last one, your GitHub login, which should have survived:</p>
-<pre><code language="language-bash" class="language-bash">gh auth status
-</code></pre>
 <aside class="warning"><p>Setting those two to the same value produces a 404 that names the model and reads like a typo in the model name rather than a wrong location.</p>
 </aside>
-<h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">gcloud secrets describe agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
+<p>Then your GitHub login, which should have survived:</p>
+<pre><code language="language-bash" class="language-bash">gh auth status
 </code></pre>
-<p>It should print the secret&#39;s resource name. That secret is empty. Preflight created the container, and you will put a key in it later today.</p>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">gcloud auth application-default print-access-token &gt;/dev/null &amp;&amp; echo &#34;ADC ok&#34;
+gcloud secrets describe agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
+</code></pre>
+<p>The first prints <code>ADC ok</code> — minting a token is what proves the credential is live rather than merely present on disk. The second prints the secret&#39;s resource name. That secret is empty: preflight created the container, and you put a key in it later today.</p>
 
 
       </google-codelab-step>
