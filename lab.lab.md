@@ -657,7 +657,12 @@ Two things to try with what is already in your fork:
 - [ADK on Agent Platform](https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/adk),
   [ADK documentation](https://google.github.io/adk-docs/) and
   [google/adk-python](https://github.com/google/adk-python)
+- [agents-cli](https://google.github.io/agents-cli/) and
+  [google/agents-cli](https://github.com/google/agents-cli) — what deployed the
+  agent here, and what installed the ADK skills during setup
 - [Antigravity CLI](https://antigravity.google/docs/cli/overview)
+- [geap-mcp](https://github.com/alanblythe/geap-mcp) — the MCP server you
+  dispatched through, and its four tools
 
 **Keeping up**
 
