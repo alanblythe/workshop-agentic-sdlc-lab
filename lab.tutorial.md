@@ -230,6 +230,27 @@ cat docs/spec.md
 It already conforms to <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/docs/spec-template.md">docs/spec-template.md</walkthrough-editor-open-file>, a representative template
 that may be used as part of a broader SDLC.
 
+> **Tip:**
+>
+> **A typical production spec carries more than this one.** The template folds 
+> design into *The two halves* and decision records into *Decisions*, and leaves out
+> what a 60-minute lab has no room for:
+>
+> - Non-functional requirements — limits, latency, error handling
+> - Architecture beyond a single interface: components, dependencies, data flow
+> - Data model, persistence and retention
+> - Architectural Design Records: Decision records with the alternatives that were rejected
+> - Security, privacy and data classification
+> - Rollout, migration and backwards compatibility
+> - Observability — what it logs, and what you can alert on
+> - Risks, considered or mitigated
+
+> **Tip:**
+>
+> LLMs are inherently non-deterministic. Trajectories and Evals were used in the
+> construction of this lab. The spec was purposely simplified to reduce the effort
+> the lab taker must undergo to arrive at a valid spec.
+
 As you read the spec you may ask these questions:
 
 > Could acceptance tests and code be implemented
@@ -315,7 +336,7 @@ Still in `agy`:
 
 ```text
 Use the contract-writer agent to write acceptance tests into scorer/tests/ from
-the resolved docs/spec.md, and the seam they call into scorer/usage.py. Cover
+the resolved docs/spec.md, and the interface they call into scorer/usage.py. Cover
 the parsing rules and the scoring rules separately. Every function body in
 scorer/usage.py raises NotImplementedError and nothing else. Cite the decision
 id on every assertion that came from one.
