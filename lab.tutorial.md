@@ -622,6 +622,12 @@ need to be written.
 
 Merge the pull request. Your issue closes as it lands.
 
+Ask `agy` where to watch that happen, rather than hunting for the tab:
+
+```text
+Get the gh issue link for me
+```
+
 > **Tip:**
 >
 > The agent wrote `Closes #1` and pushed the commit. **You** opening 
