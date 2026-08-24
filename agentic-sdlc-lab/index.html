@@ -231,7 +231,13 @@ id on every assertion that came from one.
 <p class="image-container"><img alt="agents-cli reporting the deployment succeeded, with the agent card URL and runtime id" src="img/492dec40e1922746.png"></p>
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --list)
 </code></pre>
-<p>Confirm it is running under its own identity rather than a service account. <code>gcloud</code> lacks this so the script uses the REST API:<br><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh" target="_blank"><code>scripts/agent-identity.sh</code></a></p>
+<p>Confirm it is running under its own identity rather than a service account. <code>gcloud</code> has no surface for that field, so <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh" target="_blank"><code>scripts/agent-identity.sh</code></a> asks the REST API.</p>
+<p><strong>It only reads:</strong></p>
+<ul>
+<li>Finds your <code>coder-agent</code> engine</li>
+<li>Reads <code>spec.effectiveIdentity</code> over REST</li>
+<li>Prints what it found, changes nothing</li>
+</ul>
 <pre><code language="language-bash" class="language-bash">bash scripts/agent-identity.sh
 </code></pre>
 <h2 is-upgraded>Verify your work</h2>
@@ -266,12 +272,26 @@ id on every assertion that came from one.
       </google-codelab-step>
     
       <google-codelab-step label="Give the agent a GitHub deploy key to your fork" duration="4">
-        <p>The agent is written to push it&#39;s commit to GitHub.</p>
+        <p>The agent is written to push its commit to GitHub, so it needs a key of its own. <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/setup-deploy-key.sh" target="_blank"><code>scripts/setup-deploy-key.sh</code></a> is what does it.</p>
+<p><strong>What it checks, changing nothing:</strong></p>
+<ul>
+<li><code>gh</code>, <code>gcloud</code>, <code>git</code>, <code>ssh-keygen</code> present</li>
+<li>You have admin on the fork</li>
+<li>Preflight&#39;s secret exists</li>
+</ul>
+<p><strong>What it changes:</strong></p>
+<ul>
+<li>Revokes any previous deploy key</li>
+<li>Generates an ed25519 key pair</li>
+<li>Adds it, write access, this repository</li>
+<li>Proves a push works, <code>--dry-run</code></li>
+<li>Private half into Secret Manager</li>
+<li>Disables older secret versions</li>
+</ul>
 <pre><code language="language-bash" class="language-bash">bash scripts/setup-deploy-key.sh
 </code></pre>
 <p class="image-container"><img alt="the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager" src="img/fe96299a43e29aa4.png"></p>
-<p><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/setup-deploy-key.sh" target="_blank"><code>scripts/setup-deploy-key.sh</code></a> is what does it.</p>
-<p>The script generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
+<p>The push it makes to prove the key works is a <code>--dry-run</code>, so it is a real authorization check that leaves no ref behind. Nothing is left on your machine.</p>
 <aside class="special"><p>A deploy key is for one repository, by construction. Revoking deploy keys is removing it from the repo.</p>
 </aside>
 <h2 is-upgraded>Verify your work</h2>
@@ -337,11 +357,21 @@ call, before you wait.
       </google-codelab-step>
     
       <google-codelab-step label="Tear it down" duration="4">
-        <p>One command removes everything the day created:</p>
+        <p>One command removes everything the day created: <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/teardown.sh" target="_blank"><code>scripts/teardown.sh</code></a>.</p>
+<p><strong>What it removes:</strong></p>
+<ul>
+<li>The deployed <code>coder-agent</code> and sessions</li>
+<li>The <code>agentic-sdlc-deploy-key</code> secret</li>
+<li>The deploy key on your fork</li>
+</ul>
+<p><strong>What it leaves:</strong></p>
+<ul>
+<li>Your branches and the agent&#39;s commits</li>
+<li>The APIs, still enabled</li>
+</ul>
 <pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
-<p><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/teardown.sh" target="_blank"><code>scripts/teardown.sh</code></a> shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
-<p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs — your project may have been using them before today.</p>
+<p>It prints that list for your project, then asks before doing any of it. Use <code>--dry-run</code> first if you would rather look than trust. The APIs stay on because your project may have been using them before today, and turning them off is not this script&#39;s call.</p>
 <h2 is-upgraded>What you did</h2>
 <ul>
 <li>Improved a spec using an adversarial review skill, which lives in your fork at <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md" target="_blank"><code>.agents/skills/spec-adversary/SKILL.md</code></a></li>
