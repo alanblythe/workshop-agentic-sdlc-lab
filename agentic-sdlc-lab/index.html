@@ -223,7 +223,9 @@ id on every assertion that came from one.
 <p class="image-container"><img alt="The contract-writer subagent launching" src="img/71a410fa60478a16.png"></p>
 <p>These tests are the contract. They are what &#34;done&#34; means. They provide codified assertions to ensure the written code fulfills the spec requirement.</p>
 <h2 is-upgraded>Verify your work</h2>
-<p>Stay in <code>agy</code> for these. Type <code>!</code> first, then the command: the shell runs the rest of the line, so you can check the agent&#39;s work without losing the session that did it. Type the <code>!</code> rather than pasting it, which <code>agy</code> warns about.</p>
+<p>Leave <code>agy</code> first, so these run in the shell:</p>
+<pre><code language="language-text" class="language-text">/exit
+</code></pre>
 <p>First, check what files the subagent created:</p>
 <pre><code language="language-bash" class="language-bash">git status --short scorer/
 </code></pre>
@@ -238,7 +240,7 @@ id on every assertion that came from one.
       </google-codelab-step>
     
       <google-codelab-step label="Check the deploy landed" duration="3">
-        <p>Your agent should be up by now. Still in <code>agy</code>, so each of these still goes after a typed <code>!</code>.</p>
+        <p>Your agent should be up by now, and you are back in the shell.</p>
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --status)
 </code></pre>
 <p class="image-container"><img alt="agents-cli reporting the deployment succeeded, with the agent card URL and runtime id" src="img/492dec40e1922746.png"></p>
@@ -341,7 +343,9 @@ call, before you wait.
 <p>Watch which files it edits. Only <code>scorer/usage.py</code> means it is working inside the contract; an edit naming a test is the agent changing what &#34;done&#34; means.</p>
 <p>Leaving <code>agy</code> does not stop the agent. It runs on Agent Platform and keeps going; <code>read_query</code> picks the trajectory back up from any cursor.</p>
 <h2 is-upgraded>Verify your work</h2>
-<p>The agent&#39;s branch appears on your fork and at least one commit lands on it. Ask for the compare page when the run reports it is done:</p>
+<p>The agent&#39;s branch appears on your fork and at least one commit lands on it. When the run reports it is done, leave <code>agy</code> and ask for the compare page:</p>
+<pre><code language="language-text" class="language-text">/exit
+</code></pre>
 <pre><code language="language-bash" class="language-bash">echo &#34;https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/compare/main...agent/parse&#34;
 </code></pre>
 <p>Narration going quiet is not the agent stopping. <code>read_query</code> returning no new lines with a state of &#34;running&#34; means it is working, which is why the branch, not the narration, is what tells you it landed.</p>
