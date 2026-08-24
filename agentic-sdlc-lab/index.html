@@ -28,7 +28,7 @@
                   environment="web"
                   feedback-link="https://github.com/alanblythe/workshop-agentic-sdlc/issues">
     
-      <google-codelab-step label="Before you begin" duration="4">
+      <google-codelab-step label="Before you begin" duration="2">
         <p>This lab simulates the common scenario for feature requests that provide detailed information, though lack to cover edge and boundary conditions.</p>
 <p>In this lab you&#39;ll:</p>
 <ul>
@@ -57,8 +57,35 @@
 <p>Open this in Cloud Shell and the guide comes with you, in a panel beside the terminal you are typing into:</p>
 <p><a href="https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/alanblythe/workshop-agentic-sdlc-lab&cloudshell_tutorial=lab.tutorial.md" target="_blank"><paper-button class="colored" raised>Open in Cloud Shell</paper-button></a></p>
 <p>That clones the lab repository. You fork it in the next step, from inside that same clone.</p>
-<h2 is-upgraded>Restore your Cloud Shell</h2>
-<p>Cloud Shell keeps your <code>$HOME</code> and forgets the rest. Four things have to be true before you start:</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Fork the lab repository" duration="3">
+        <p>The application lives in its own repository. You fork it, because the agent will push to your copy and you will merge its work.</p>
+<pre><code language="language-bash" class="language-bash">gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
+cd workshop-agentic-sdlc-lab
+gh repo set-default &#34;$(git remote get-url origin)&#34;
+gh repo edit --enable-issues
+</code></pre>
+<p><code>origin</code> now points at your fork and <code>upstream</code> at the original. The rest is not housekeeping:</p>
+<ul>
+<li><code>gh repo set-default</code> — forking points <code>gh</code> at <strong>upstream</strong>, so without it the issue you file lands on the workshop&#39;s copy rather than yours, and nothing tells you</li>
+<li><code>gh repo edit --enable-issues</code> — GitHub disables issues on every new fork, which you would otherwise discover two steps from here, when you try to file one</li>
+</ul>
+<aside class="special"><p>A fork does not copy the issues from the repository it came from either. That is deliberate. You are about to file one, and it should be yours.</p>
+</aside>
+<h2 is-upgraded>Verify your work</h2>
+<pre><code language="language-bash" class="language-bash">gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
+  --jq &#39;.nameWithOwner + &#34; fork=&#34; + (.isFork|tostring) + &#34; issues=&#34; + (.hasIssuesEnabled|tostring)&#39;
+</code></pre>
+<p>The owner should be <strong>you</strong>, with <code>fork=true</code> and <code>issues=true</code>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Restore your Cloud Shell" duration="2">
+        <p>Cloud Shell keeps your <code>$HOME</code> and forgets the rest, so a session opened today has none of setup&#39;s environment. Four things have to be true before anything below will work:</p>
 <ul>
 <li><code>agy</code> is current, and still logged in</li>
 <li><code>gcloud</code> is pointed at your project</li>
@@ -91,29 +118,6 @@ echo &#34;$MODEL_LOCATION / $AGENT_ENGINE_LOCATION&#34;
 <pre><code language="language-bash" class="language-bash">gcloud secrets describe agentic-sdlc-deploy-key --format=&#39;value(name)&#39;
 </code></pre>
 <p>It should print the secret&#39;s resource name. That secret is empty. Preflight created the container, and you will put a key in it later today.</p>
-
-
-      </google-codelab-step>
-    
-      <google-codelab-step label="Fork the lab repository" duration="3">
-        <p>The application lives in its own repository. You fork it, because the agent will push to your copy and you will merge its work.</p>
-<pre><code language="language-bash" class="language-bash">gh repo fork alanblythe/workshop-agentic-sdlc-lab --clone --remote
-cd workshop-agentic-sdlc-lab
-gh repo set-default &#34;$(git remote get-url origin)&#34;
-gh repo edit --enable-issues
-</code></pre>
-<p><code>origin</code> now points at your fork and <code>upstream</code> at the original. The rest is not housekeeping:</p>
-<ul>
-<li><code>gh repo set-default</code> — forking points <code>gh</code> at <strong>upstream</strong>, so without it the issue you file lands on the workshop&#39;s copy rather than yours, and nothing tells you</li>
-<li><code>gh repo edit --enable-issues</code> — GitHub disables issues on every new fork, which you would otherwise discover two steps from here, when you try to file one</li>
-</ul>
-<aside class="special"><p>A fork does not copy the issues from the repository it came from either. That is deliberate. You are about to file one, and it should be yours.</p>
-</aside>
-<h2 is-upgraded>Verify your work</h2>
-<pre><code language="language-bash" class="language-bash">gh repo view --json nameWithOwner,isFork,hasIssuesEnabled \
-  --jq &#39;.nameWithOwner + &#34; fork=&#34; + (.isFork|tostring) + &#34; issues=&#34; + (.hasIssuesEnabled|tostring)&#39;
-</code></pre>
-<p>The owner should be <strong>you</strong>, with <code>fork=true</code> and <code>issues=true</code>.</p>
 
 
       </google-codelab-step>
