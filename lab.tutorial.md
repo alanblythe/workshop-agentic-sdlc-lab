@@ -259,8 +259,6 @@ As you read the spec you may ask these questions:
 
 The data the spec is written against is <walkthrough-editor-open-file filePath="cloudshell_open/workshop-agentic-sdlc-lab/fixtures/usage.csv">fixtures/usage.csv</walkthrough-editor-open-file>.
 
-### Verify your work
-
 ## Interrogate the spec
 
 <walkthrough-tutorial-duration duration="12"></walkthrough-tutorial-duration>

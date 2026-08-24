@@ -263,8 +263,6 @@ As you read the spec you may ask these questions:
 
 The data the spec is written against is [`fixtures/usage.csv`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/fixtures/usage.csv).
 
-### Verify your work
-
 ## Interrogate the spec
 
 Duration: 12
