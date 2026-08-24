@@ -97,10 +97,11 @@ The owner should be **you**, with `fork=true` and `issues=true`.
 <walkthrough-tutorial-duration duration="2"></walkthrough-tutorial-duration>
 
 Cloud Shell keeps your `$HOME` and forgets the rest, so a session opened today
-has none of setup's environment. Four things have to be true before anything
+has none of setup's environment. Five things have to be true before anything
 below will work:
 
 - `agy` is current, and still logged in
+- `gcloud` is logged in, **and so is ADC**
 - `gcloud` is pointed at your project
 - `MODEL_LOCATION` and `AGENT_ENGINE_LOCATION` are set
 - `gh` is still authenticated
@@ -121,6 +122,20 @@ agy -p "Reply with exactly: authenticated"
 If it asks you to open a URL instead of answering, the grant has lapsed. Log in
 again with [Authenticate agy](https://alanblythe.github.io/workshop-agentic-sdlc/agentic-sdlc-setup/#7)
 from the setup guide, then come back.
+
+Now your two Google grants, before anything that calls `gcloud`. The `gcloud`
+login and Application Default Credentials are separate, and `--update-adc` does
+both in one command:
+
+```bash
+gcloud auth login --update-adc
+```
+
+> **Careful:**
+>
+> **ADC is the one that goes missing.** It is a different file from your `gcloud`
+> login, and it is what `agents-cli` and the `geap` tools read. Without it the
+> deploy fails on credentials rather than on anything it was asked to do.
 
 Select the project you ran preflight against. **Ignore the offer to create a
 new one** — that link belongs to the picker, and a fresh project has none of
@@ -148,25 +163,28 @@ export AGENT_ENGINE_LOCATION=$(gcloud secrets describe agentic-sdlc-deploy-key \
 echo "$MODEL_LOCATION / $AGENT_ENGINE_LOCATION"
 ```
 
-Then the last one, your GitHub login, which should have survived:
-
-```bash
-gh auth status
-```
-
 > **Careful:**
 >
 > Setting those two to the same value produces a 404 that names the model and
 > reads like a typo in the model name rather than a wrong location.
 
+Then your GitHub login, which should have survived:
+
+```bash
+gh auth status
+```
+
 ### Verify your work
 
 ```bash
+gcloud auth application-default print-access-token >/dev/null && echo "ADC ok"
 gcloud secrets describe agentic-sdlc-deploy-key --format='value(name)'
 ```
 
-It should print the secret's resource name. That secret is empty. Preflight
-created the container, and you will put a key in it later today.
+The first prints `ADC ok` — minting a token is what proves the credential is
+live rather than merely present on disk. The second prints the secret's
+resource name. That secret is empty: preflight created the container, and you
+put a key in it later today.
 
 ## Deploy the coder-agent
 
