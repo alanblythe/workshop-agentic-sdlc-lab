@@ -203,7 +203,7 @@ four steps happen while it builds.
 
 Duration: 6
 
-`docs/request.md` is the request as it arrived. It is short, and
+[`docs/request.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/request.md) is the request as it arrived. It is short, and
 it is the only statement of what anyone actually wants.
 
 ```bash
@@ -217,7 +217,7 @@ merging its branch will close it:
 gh issue create --title "Account health scoring" --body-file docs/request.md
 ```
 
-Read `docs/spec.md`. We'll use an adversarial refinement skill to
+Read [`docs/spec.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec.md). We'll use an adversarial refinement skill to
 ensure the spec is clear and can be used for creating acceptance tests and
 writing code.
 
@@ -231,7 +231,7 @@ cat docs/spec.md
 > gaps that would often survive review. After going through the Human in the loop (HITL)
 > adversarial review the gaps will become clear.
 
-It already conforms to `docs/spec-template.md`, a representative template
+It already conforms to [`docs/spec-template.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec-template.md), a representative template
 that may be used as part of a broader SDLC.
 
 As you read the spec you may ask these questions:
@@ -240,7 +240,7 @@ As you read the spec you may ask these questions:
 > independently from each other?
 > Are there subtle gaps in the understanding of the data?
 
-The data the spec is written against is `fixtures/usage.csv`.
+The data the spec is written against is [`fixtures/usage.csv`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/fixtures/usage.csv).
 
 ### Verify your work
 
@@ -249,7 +249,7 @@ The data the spec is written against is `fixtures/usage.csv`.
 Duration: 12
 
 The interrogator is a skill called **spec-adversary**, and it ships in this
-repository at `.agents/skills/spec-adversary/SKILL.md`, Antigravity CLI
+repository at [`.agents/skills/spec-adversary/SKILL.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md), Antigravity CLI
 will automatically load it. A workspace skill is found
 relative to where `agy` starts, so start it from the lab repo, workshop-agentic-sdlc-lab:
 
@@ -266,13 +266,13 @@ agy --mode accept-edits
 
 ### Use the skill to clarify the spec
 
-Open `.agents/skills/spec-adversary/SKILL.md` and read it. 
+Open [`.agents/skills/spec-adversary/SKILL.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md) and read it. 
 The skill instructs: 
 - sweep the spec before asking anything
 - one question at a time
 - never recommend a reading. 
 - to give choices allowing simple selection
-- writes decisions into `docs/spec.md`
+- writes decisions into [`docs/spec.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec.md)
 
 Ask Antigravity CLI to use the skill:
 
@@ -281,7 +281,7 @@ Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 ```
 
-The sample data it asks about is `fixtures/usage.csv`.
+The sample data it asks about is [`fixtures/usage.csv`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/fixtures/usage.csv).
 
 > aside positive
 >
@@ -328,7 +328,7 @@ id on every assertion that came from one.
 > aside positive
 >
 > The agent name "contract-writer" is specifically used to ensure Antigravity CLI
-> chooses the configured subagent in `.agents/agents/contract-writer/agent.md`.
+> chooses the configured subagent in [`.agents/agents/contract-writer/agent.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/agents/contract-writer/agent.md).
 
 The adversary skill helps you the product manager clarify requirements.
 The **contract-writer** subagent writes the stubbed tests.
@@ -386,7 +386,7 @@ after a typed `!`.
 
 Confirm it is running under its own identity rather than a service
 account. `gcloud` lacks this so the script uses the REST API:  
-`scripts/agent-identity.sh`
+[`scripts/agent-identity.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh)
 
 ```bash
 bash scripts/agent-identity.sh
@@ -442,7 +442,7 @@ bash scripts/setup-deploy-key.sh
 
 ![the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager](docs/images/deploy-key-verified.png)
 
-`scripts/setup-deploy-key.sh` is what does it.
+[`scripts/setup-deploy-key.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/setup-deploy-key.sh) is what does it.
 
 The script generates an SSH key, gives it write access to **this repository only**,
 proves it works, and puts the private half in the Secret Manager secret preflight
@@ -570,7 +570,7 @@ One command removes everything the day created:
 bash scripts/teardown.sh
 ```
 
-`scripts/teardown.sh` shows you what it is about to remove and asks
+[`scripts/teardown.sh`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/teardown.sh) shows you what it is about to remove and asks
 before doing it. Use `--dry-run` first if you would rather look than trust.
 
 It deletes three things: the deployed agent, the Secret Manager secret, and the
@@ -580,7 +580,7 @@ and so are the APIs — your project may have been using them before today.
 ### What you did
 
 - Improved a spec using an adversarial review skill, which lives in your fork
-  at `.agents/skills/spec-adversary/SKILL.md`
+  at [`.agents/skills/spec-adversary/SKILL.md`](https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md)
 - Used [Antigravity CLI](https://antigravity.google/docs/cli/overview) to turn
   the resolved decisions into acceptance tests
 - Deployed a coding agent to Agent Runtime on
