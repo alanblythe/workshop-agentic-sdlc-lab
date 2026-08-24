@@ -137,47 +137,47 @@ gh repo edit --enable-issues
       </google-codelab-step>
     
       <google-codelab-step label="Read the request, then the spec" duration="6">
-        <p><code>docs/request.md</code> is the request as it arrived. It is short, and it is the only statement of what anyone actually wants.</p>
+        <p><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/request.md" target="_blank"><code>docs/request.md</code></a> is the request as it arrived. It is short, and it is the only statement of what anyone actually wants.</p>
 <pre><code language="language-bash" class="language-bash">cat docs/request.md
 </code></pre>
 <p>Create the GitHub issue, the agent&#39;s commits will reference it and merging its branch will close it:</p>
 <pre><code language="language-bash" class="language-bash">gh issue create --title &#34;Account health scoring&#34; --body-file docs/request.md
 </code></pre>
-<p>Read <code>docs/spec.md</code>. We&#39;ll use an adversarial refinement skill to ensure the spec is clear and can be used for creating acceptance tests and writing code.</p>
+<p>Read <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec.md" target="_blank"><code>docs/spec.md</code></a>. We&#39;ll use an adversarial refinement skill to ensure the spec is clear and can be used for creating acceptance tests and writing code.</p>
 <pre><code language="language-bash" class="language-bash">cat docs/spec.md
 </code></pre>
 <aside class="special"><p><strong>This spec was written to be flawed.</strong> It reads well, but it has subtle gaps that would often survive review. After going through the Human in the loop (HITL) adversarial review the gaps will become clear.</p>
 </aside>
-<p>It already conforms to <code>docs/spec-template.md</code>, a representative template that may be used as part of a broader SDLC.</p>
+<p>It already conforms to <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec-template.md" target="_blank"><code>docs/spec-template.md</code></a>, a representative template that may be used as part of a broader SDLC.</p>
 <p>As you read the spec you may ask these questions:</p>
 <p>Could acceptance tests and code be implemented independently from each other? Are there subtle gaps in the understanding of the data?</p>
-<p>The data the spec is written against is <code>fixtures/usage.csv</code>.</p>
+<p>The data the spec is written against is <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/fixtures/usage.csv" target="_blank"><code>fixtures/usage.csv</code></a>.</p>
 <h2 is-upgraded>Verify your work</h2>
 
 
       </google-codelab-step>
     
       <google-codelab-step label="Interrogate the spec" duration="12">
-        <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository at <code>.agents/skills/spec-adversary/SKILL.md</code>, Antigravity CLI will automatically load it. A workspace skill is found relative to where <code>agy</code> starts, so start it from the lab repo, workshop-agentic-sdlc-lab:</p>
+        <p>The interrogator is a skill called <strong>spec-adversary</strong>, and it ships in this repository at <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md" target="_blank"><code>.agents/skills/spec-adversary/SKILL.md</code></a>, Antigravity CLI will automatically load it. A workspace skill is found relative to where <code>agy</code> starts, so start it from the lab repo, workshop-agentic-sdlc-lab:</p>
 <pre><code language="language-bash" class="language-bash">cd ~/cloudshell_open/workshop-agentic-sdlc-lab
 agy --mode accept-edits
 </code></pre>
 <aside class="special"><p><code>--mode accept-edits</code> allows auto-editing of files, otherwise you would need to approve every file create/edit, including the ones the subagent writes.<br><code>shift</code> + <code>tab</code> cycles the mode if you would rather approve each one.</p>
 </aside>
 <h2 is-upgraded>Use the skill to clarify the spec</h2>
-<p>Open <code>.agents/skills/spec-adversary/SKILL.md</code> and read it. The skill instructs:</p>
+<p>Open <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md" target="_blank"><code>.agents/skills/spec-adversary/SKILL.md</code></a> and read it. The skill instructs:</p>
 <ul>
 <li>sweep the spec before asking anything</li>
 <li>one question at a time</li>
 <li>never recommend a reading.</li>
 <li>to give choices allowing simple selection</li>
-<li>writes decisions into <code>docs/spec.md</code></li>
+<li>writes decisions into <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/docs/spec.md" target="_blank"><code>docs/spec.md</code></a></li>
 </ul>
 <p>Ask Antigravity CLI to use the skill:</p>
 <pre><code language="language-text" class="language-text">Use the spec-adversary skill on docs/spec.md. The sample data is
 fixtures/usage.csv. One ambiguity at a time.
 </code></pre>
-<p>The sample data it asks about is <code>fixtures/usage.csv</code>.</p>
+<p>The sample data it asks about is <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/fixtures/usage.csv" target="_blank"><code>fixtures/usage.csv</code></a>.</p>
 <aside class="special"><p>Answer as the person who owns the product, not as the person who has to build it. &#34;Whichever is easier&#34; is not a decision. It hands the choice back to whoever writes the code, which is exactly the situation you are removing.</p>
 </aside>
 <p>Keep going until it stops finding anything consequential. That usually takes longer than people expect, and the questions get better as they get smaller.</p>
@@ -204,7 +204,7 @@ the parsing rules and the scoring rules separately. Every function body in
 scorer/usage.py raises NotImplementedError and nothing else. Cite the decision
 id on every assertion that came from one.
 </code></pre>
-<aside class="special"><p>The agent name &#34;contract-writer&#34; is specifically used to ensure Antigravity CLI chooses the configured subagent in <code>.agents/agents/contract-writer/agent.md</code>.</p>
+<aside class="special"><p>The agent name &#34;contract-writer&#34; is specifically used to ensure Antigravity CLI chooses the configured subagent in <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/agents/contract-writer/agent.md" target="_blank"><code>.agents/agents/contract-writer/agent.md</code></a>.</p>
 </aside>
 <p>The adversary skill helps you the product manager clarify requirements. The <strong>contract-writer</strong> subagent writes the stubbed tests. You&#39;ll see the agent spawn: turning resolved decisions into assertions, and which is not allowed to decide anything. If it reports an assertion it could not derive, that is an ambiguity the interrogation missed, and the adversary reopens it rather than letting a guess into a test.</p>
 <p class="image-container"><img alt="The contract-writer subagent launching" src="img/71a410fa60478a16.png"></p>
@@ -231,7 +231,7 @@ id on every assertion that came from one.
 <p class="image-container"><img alt="agents-cli reporting the deployment succeeded, with the agent card URL and runtime id" src="img/492dec40e1922746.png"></p>
 <pre><code language="language-bash" class="language-bash">(cd coder-agent &amp;&amp; agents-cli deploy --list)
 </code></pre>
-<p>Confirm it is running under its own identity rather than a service account. <code>gcloud</code> lacks this so the script uses the REST API:<br><code>scripts/agent-identity.sh</code></p>
+<p>Confirm it is running under its own identity rather than a service account. <code>gcloud</code> lacks this so the script uses the REST API:<br><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/agent-identity.sh" target="_blank"><code>scripts/agent-identity.sh</code></a></p>
 <pre><code language="language-bash" class="language-bash">bash scripts/agent-identity.sh
 </code></pre>
 <h2 is-upgraded>Verify your work</h2>
@@ -270,7 +270,7 @@ id on every assertion that came from one.
 <pre><code language="language-bash" class="language-bash">bash scripts/setup-deploy-key.sh
 </code></pre>
 <p class="image-container"><img alt="the script reporting a clone over SSH, a push accepted, and the key written to Secret Manager" src="img/fe96299a43e29aa4.png"></p>
-<p><code>scripts/setup-deploy-key.sh</code> is what does it.</p>
+<p><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/setup-deploy-key.sh" target="_blank"><code>scripts/setup-deploy-key.sh</code></a> is what does it.</p>
 <p>The script generates an SSH key, gives it write access to <strong>this repository only</strong>, proves it works, and puts the private half in the Secret Manager secret preflight made. Nothing is left on your machine.</p>
 <aside class="special"><p>A deploy key is for one repository, by construction. Revoking deploy keys is removing it from the repo.</p>
 </aside>
@@ -340,11 +340,11 @@ call, before you wait.
         <p>One command removes everything the day created:</p>
 <pre><code language="language-bash" class="language-bash">bash scripts/teardown.sh
 </code></pre>
-<p><code>scripts/teardown.sh</code> shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
+<p><a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/scripts/teardown.sh" target="_blank"><code>scripts/teardown.sh</code></a> shows you what it is about to remove and asks before doing it. Use <code>--dry-run</code> first if you would rather look than trust.</p>
 <p>It deletes three things: the deployed agent, the Secret Manager secret, and the deploy key on your fork. Your branches and the agent&#39;s commits are left alone, and so are the APIs — your project may have been using them before today.</p>
 <h2 is-upgraded>What you did</h2>
 <ul>
-<li>Improved a spec using an adversarial review skill, which lives in your fork at <code>.agents/skills/spec-adversary/SKILL.md</code></li>
+<li>Improved a spec using an adversarial review skill, which lives in your fork at <a href="https://github.com/alanblythe/workshop-agentic-sdlc-lab/blob/main/.agents/skills/spec-adversary/SKILL.md" target="_blank"><code>.agents/skills/spec-adversary/SKILL.md</code></a></li>
 <li>Used <a href="https://antigravity.google/docs/cli/overview" target="_blank">Antigravity CLI</a> to turn the resolved decisions into acceptance tests</li>
 <li>Deployed a coding agent to Agent Runtime on <a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform" target="_blank">Gemini Enterprise Agent Platform</a>, under an identity of its own</li>
 <li>Dispatched work to it at a pinned commit, and merged what it pushed</li>
