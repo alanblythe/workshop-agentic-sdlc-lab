@@ -513,7 +513,7 @@ git add -A && git commit -m "The contract: the resolved spec and the tests it im
 > will work from the commit before yours without saying so.
 
 The agent runs on Agent Platform, not on this machine. You reach it through
-`geap-mcp`, the plugin you installed during setup, from inside `agy`:
+`geap`, the MCP server registered during setup, from inside `agy`:
 
 ```bash
 agy
