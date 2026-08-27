@@ -1,0 +1,73 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'lab.lab.md'
+      - 'docs/images/**'
+      - '.github/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Only run on the upstream repository, never on attendee forks
+    if: github.repository == 'alanblythe/workshop-agentic-sdlc-lab'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install claat
+        run: go install github.com/googlecodelabs/tools/claat@latest
+
+      - name: Build Codelab
+        run: |
+          mkdir -p dist
+          claat export -ga "" -o dist lab.lab.md
+          node .github/scripts/collapse-sections.mjs dist/agentic-sdlc-lab/index.html
+          node .github/scripts/add-copy-buttons.mjs dist/agentic-sdlc-lab/index.html
+          touch dist/.nojekyll
+          cat > dist/index.html <<'HTML'
+          <!doctype html>
+          <meta charset="utf-8">
+          <title>The agentic SDLC lab</title>
+          <meta http-equiv="refresh" content="0; url=./agentic-sdlc-lab/">
+          <link rel="canonical" href="./agentic-sdlc-lab/">
+          <p>Redirecting to <a href="./agentic-sdlc-lab/">the lab</a>.</p>
+          HTML
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
