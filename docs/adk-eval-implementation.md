@@ -25,17 +25,17 @@ coder-agent/
 ```
 
 ### 1. Dependency Configuration
-* **File:** [`coder-agent/pyproject.toml`](file:///home/ablythe/repos/workshop-agentic-sdlc-lab/coder-agent/pyproject.toml)
+* **File:** [`coder-agent/pyproject.toml`](../coder-agent/pyproject.toml)
 * Enables ADK evaluation support via `google-adk[eval]>=2.5.0,<3.0.0`.
 
 ### 2. Evaluation Suite Configuration
-* **File:** [`coder-agent/tests/eval/eval_config.yaml`](file:///home/ablythe/repos/workshop-agentic-sdlc-lab/coder-agent/tests/eval/eval_config.yaml)
+* **File:** [`coder-agent/tests/eval/eval_config.yaml`](../coder-agent/tests/eval/eval_config.yaml)
 * Defines which metrics are active during grading:
   * `custom_response_quality`: Points to the local Python evaluator `response_quality.py`.
   * `agent_turn_count`: Inline Python metric evaluating the conversation turn count from `agent_data`.
 
 ### 3. Custom LLM-as-a-Judge Metric
-* **File:** [`coder-agent/tests/eval/response_quality.py`](file:///home/ablythe/repos/workshop-agentic-sdlc-lab/coder-agent/tests/eval/response_quality.py)
+* **File:** [`coder-agent/tests/eval/response_quality.py`](../coder-agent/tests/eval/response_quality.py)
 * Uses the Google GenAI SDK (`google-genai`) with model `gemini-3.6-flash` (via Application Default Credentials or `GEMINI_API_KEY`).
 * Implements structured grading output using Pydantic:
   ```python
@@ -46,9 +46,9 @@ coder-agent/
 * Evaluates accuracy, relevance, and factual consistency against expected ground truth references.
 
 ### 4. Evaluation Datasets
-* **File:** [`coder-agent/tests/eval/datasets/basic-dataset.json`](file:///home/ablythe/repos/workshop-agentic-sdlc-lab/coder-agent/tests/eval/datasets/basic-dataset.json)
+* **File:** [`coder-agent/tests/eval/datasets/basic-dataset.json`](../coder-agent/tests/eval/datasets/basic-dataset.json)
   * Supports single-prompt prompts (Shape A) and continued-conversation turns with prior events (Shape B).
-* **File:** [`coder-agent/tests/eval/datasets/README.md`](file:///home/ablythe/repos/workshop-agentic-sdlc-lab/coder-agent/tests/eval/datasets/README.md)
+* **File:** [`coder-agent/tests/eval/datasets/README.md`](../coder-agent/tests/eval/datasets/README.md)
   * Detailed documentation on dataset formats, synthesizing test cases, and comparing evaluation runs.
 
 ---
