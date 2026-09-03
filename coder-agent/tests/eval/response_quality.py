@@ -13,13 +13,13 @@ class _Verdict(BaseModel):
 def evaluate(instance):
     reference = instance.get("reference")
     rubric = (
-        "Grade the agent's final response on a 1-5 scale (1 poor, 5 excellent) for "
-        "accuracy, relevance, and clarity."
+        "Grade the coding agent's response on a 1-5 scale (1 poor, 5 excellent) for "
+        "contract adherence, correctness, and adherence to the dispatch protocol."
     )
     if reference:
         rubric += (
             " The response should agree with the expected answer below; penalize "
-            "factual disagreement with it."
+            "failure to reject non-dispatch input or failure to acknowledge valid jobs."
         )
     prompt = (
         f"You are an expert QA evaluator for an enterprise AI assistant. {rubric}\n"

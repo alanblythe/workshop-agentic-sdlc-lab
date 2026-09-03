@@ -18,10 +18,11 @@ coder-agent/
 └── tests/
     └── eval/
         ├── eval_config.yaml               # Metric selection and custom metric definitions
+        ├── protocol_compliance.py         # Deterministic dispatch contract compliance evaluator
         ├── response_quality.py            # Local LLM-as-a-Judge implementation (Gemini Flash)
         └── datasets/
             ├── README.md                  # Dataset shapes, synthesis, and eval CLI guide
-            └── basic-dataset.json         # Sample single-turn & multi-turn evaluation cases
+            └── basic-dataset.json         # Pinned contract evaluation cases (offline)
 ```
 
 ### 1. Dependency Configuration
@@ -31,10 +32,13 @@ coder-agent/
 ### 2. Evaluation Suite Configuration
 * **File:** [`coder-agent/tests/eval/eval_config.yaml`](../coder-agent/tests/eval/eval_config.yaml)
 * Defines which metrics are active during grading:
-  * `custom_response_quality`: Points to the local Python evaluator `response_quality.py`.
+  * `protocol_compliance`: Deterministic Python check verifying payload schema validation and rejection of non-dispatch inputs.
+  * `custom_response_quality`: Local LLM-as-a-judge (`response_quality.py`) evaluating contract fidelity.
   * `agent_turn_count`: Inline Python metric evaluating the conversation turn count from `agent_data`.
 
-### 3. Custom LLM-as-a-Judge Metric
+### 3. Custom Metrics & LLM-as-a-Judge
+* **File:** [`coder-agent/tests/eval/protocol_compliance.py`](../coder-agent/tests/eval/protocol_compliance.py)
+  * Deterministic check that scores 1 (pass) or 0 (fail) on proper contract acknowledgment / rejection.
 * **File:** [`coder-agent/tests/eval/response_quality.py`](../coder-agent/tests/eval/response_quality.py)
 * Uses the Google GenAI SDK (`google-genai`) with model `gemini-3.6-flash` (via Application Default Credentials or `GEMINI_API_KEY`).
 * Implements structured grading output using Pydantic:
@@ -43,7 +47,7 @@ coder-agent/
       score: int  # 1-5
       explanation: str
   ```
-* Evaluates accuracy, relevance, and factual consistency against expected ground truth references.
+* Evaluates accuracy, relevance, and contract adherence against expected ground truth references.
 
 ### 4. Evaluation Datasets
 * **File:** [`coder-agent/tests/eval/datasets/basic-dataset.json`](../coder-agent/tests/eval/datasets/basic-dataset.json)

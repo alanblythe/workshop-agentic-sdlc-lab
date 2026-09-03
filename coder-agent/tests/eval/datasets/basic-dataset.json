@@ -1,29 +1,65 @@
 {
   "eval_cases": [
     {
-      "eval_case_id": "greeting",
+      "eval_case_id": "reject_free_text_prompt",
       "prompt": {
         "role": "user",
-        "parts": [{"text": "Hello, what can you help me with?"}]
-      }
-    },
-    {
-      "eval_case_id": "weather_query",
-      "prompt": {
-        "role": "user",
-        "parts": [{"text": "What's the weather like in San Francisco?"}]
-      }
-    },
-    {
-      "eval_case_id": "capital_lookup",
-      "prompt": {
-        "role": "user",
-        "parts": [{"text": "What is the capital of France?"}]
+        "parts": [
+          {
+            "text": "Please implement the parse_usage function in scorer/usage.py to parse the monthly usage CSV."
+          }
+        ]
       },
       "reference": {
         "response": {
           "role": "model",
-          "parts": [{"text": "The capital of France is Paris."}]
+          "parts": [
+            {
+              "text": "I could not read a dispatch payload.\n\nSend a JSON payload naming the work, for example:\n  {\"repo\": \"you/your-fork\", \"sha\": \"<commit>\", \"branch\": \"agent/parse\",\n   \"issue\": \"1\"}\nThe sha is pinned deliberately: nothing committed after dispatch is visible."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "reject_incomplete_json",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\"repo\": \"alanblythe/workshop-agentic-sdlc-lab\", \"task\": \"implement scoring logic\"}"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "I could not read a dispatch payload.\n\nSend a JSON payload naming the work, for example:\n  {\"repo\": \"you/your-fork\", \"sha\": \"<commit>\", \"branch\": \"agent/parse\",\n   \"issue\": \"1\"}\nThe sha is pinned deliberately: nothing committed after dispatch is visible."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "eval_case_id": "dispatch_acknowledgment",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "{\"repo\": \"alanblythe/workshop-agentic-sdlc-lab\", \"sha\": \"bcf192901234a1b2c3d4\", \"branch\": \"agent/parse-usage\", \"issue\": \"1\"}"
+          }
+        ]
+      },
+      "reference": {
+        "response": {
+          "role": "model",
+          "parts": [
+            {
+              "text": "Dispatching alanblythe/workshop-agentic-sdlc-lab at bcf192901234 onto agent/parse-usage."
+            }
+          ]
         }
       }
     }
