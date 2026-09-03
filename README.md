@@ -7,6 +7,7 @@ This is the lab repository for the Agentic SDLC workshop. **Fork it**, the
 workshop guide tells you when.
 
 - `docs/spec.md`, the draft specification
+- `docs/adk-eval-implementation.md`, guide and key file references for the ADK eval implementation
 - `scorer/main.py`, reads the export; neither half of the scorer touches the file
 - `fixtures/usage.csv`, sample export
 - `scripts/setup-deploy-key.sh`, gives the coding agent write access to your
