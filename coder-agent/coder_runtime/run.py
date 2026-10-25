@@ -19,7 +19,7 @@ when the coding run failed -- the failure is an event, not a crash. The parent
 in ``app/coder_client.py`` is the only caller.
 
 Keeping this a subprocess is not an aesthetic choice. ``google-antigravity``
-needs protobuf >= 7.35 and ``google-cloud-aiplatform`` caps it below 7.0.0, so
+needs protobuf >= 7.35 and ``google-adk[gcp]`` caps it below 7.0.0, so
 the coding harness and the ADK serving surface cannot be imported into the same
 interpreter. See ``coder_runtime/pyproject.toml``.
 """
