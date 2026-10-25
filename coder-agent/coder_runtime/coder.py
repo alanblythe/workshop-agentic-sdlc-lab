@@ -116,10 +116,10 @@ def _session_service(emit):
 
     Agent Platform Sessions is reachable only through
     ``VertexAiSessionService``, whose ``__init__`` does ``import vertexai`` --
-    that is ``google-cloud-aiplatform``, which caps protobuf below 7.0.0 and so
-    cannot exist in this environment. The import is inside the constructor, not
-    at the top of the module, so it does not show up in the module's imports
-    and fails only when the service is built.
+    that is ``google-cloud-aiplatform``, which this environment does not
+    install. The import is inside the constructor, not at the top of the
+    module, so it does not show up in the module's imports and fails only when
+    the service is built.
 
     Durability is not lost, it just lives elsewhere: the branch holds the code,
     and the parent -- which does have aiplatform -- is itself an ADK agent in an

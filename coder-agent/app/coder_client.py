@@ -16,9 +16,8 @@
 
 Agent Platform is where an agent lives; the SDK is what an agent can do -- and
 here they are literally two processes. ``google-antigravity`` needs
-protobuf >= 7.35 at runtime while ``google-cloud-aiplatform`` -- which serves
-the reasoning-engine routes ``:streamQuery`` dispatches to -- caps protobuf
-below 7.0.0. They cannot be imported into one interpreter, so the coding
+protobuf >= 7.35 at runtime while ``google-adk[gcp]``, through
+``google-cloud-discoveryengine`` 0.13, caps protobuf below 7.0.0. They cannot be imported into one interpreter, so the coding
 harness gets its own venv at ``/opt/antigravity`` and this module talks to it
 over a pipe.
 

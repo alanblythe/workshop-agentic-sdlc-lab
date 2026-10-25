@@ -32,11 +32,11 @@ RUN mkdir -p /etc/ssh && ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> /etc/ssh
 RUN git config --system user.name  "agentic-sdlc coder agent" \
  && git config --system user.email "coder-agent@agentic-sdlc.invalid"
 
-RUN pip install --no-cache-dir uv==0.8.13
+RUN pip install --no-cache-dir uv==0.13.5
 
 # The coding harness lives in its own interpreter. google-antigravity needs
-# protobuf >= 7.35 at runtime; google-cloud-aiplatform, which serves the
-# reasoning-engine routes :streamQuery dispatches to, caps protobuf below
+# protobuf >= 7.35 at runtime; google-adk[gcp], which the serving surface
+# installs, pins google-cloud-discoveryengine 0.13, which caps protobuf below
 # 7.0.0. One venv cannot hold both, and the failure is not a resolution error
 # -- it is a VersionError raised when localharness_pb2 is imported.
 COPY ./coder_runtime /opt/antigravity
