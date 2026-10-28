@@ -7,18 +7,18 @@ authors = [
 ]
 
 dependencies = [
-    "google-adk[gcp,otel-gcp]>=2.13.0,<3.0.0",
+    "google-adk[gcp,otel-gcp]>=2.12.0,<3.0.0",
     "opentelemetry-resourcedetector-gcp>=1.14.0",
     "gcsfs>=2026.10.1",
     "a2a-sdk[http-server]>=1.2.3,<2",
     "aiohttp>=3.14.5",
     "google-cloud-logging>=3.17.0,<4.0.0",
-    "google-cloud-aiplatform[agent-engines,evaluation]>=2.6.0",
+    "google-cloud-aiplatform[agent-engines]>=2.6.0",
     "protobuf>=6.33.6,<7.0.0",
     "google-cloud-secret-manager>=2.31.0",
     "pytest>=9.1.1",
 ]
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.13"
 
 
 [dependency-groups]
@@ -29,13 +29,9 @@ dev = [
 ]
 
 [project.optional-dependencies]
-eval = [
-    "google-adk[eval]>=2.13.0,<3.0.0",
-    "google-cloud-aiplatform[evaluation]>=2.6.0",
-]
 lint = [
-    "ruff>=0.17.2,<1.0.0",
-    "ty>=0.0.91",
+    "ruff>=0.17.1,<1.0.0",
+    "ty>=0.0.90",
     "codespell>=2.4.3,<3.0.0",
 ]
 
